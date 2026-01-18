@@ -1,0 +1,6 @@
+{
+	"testKey": "testValue",
+	"systemDict": "system.dic",
+	"userDict": ["user1.dic", "user2.dic"],
+	"allowEmptyMorpheme": true
+}

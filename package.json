@@ -1,0 +1,64 @@
+{
+	"name": "sudachi-ts",
+	"version": "0.1.0",
+	"description": "TypeScript port of Sudachi morphological analyzer for Japanese text",
+	"keywords": [
+		"morphological-analyzer",
+		"nlp",
+		"japanese",
+		"tokenization",
+		"natural-language-processing",
+		"text-processing"
+	],
+	"author": "Works Applications Co., Ltd.",
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/WorksApplications/sudachi.git",
+		"directory": "sudachi-ts"
+	},
+	"bugs": "https://github.com/WorksApplications/sudachi/issues",
+	"homepage": "https://github.com/WorksApplications/sudachi#readme",
+	"type": "module",
+	"main": "./build/src/index.js",
+	"types": "./build/src/index.d.ts",
+	"exports": {
+		".": "./build/src/index.js",
+		"./dictionary": "./build/src/dictionary/index.js",
+		"./config": "./build/src/config/index.js",
+		"./plugins": "./build/src/plugins/index.js"
+	},
+	"bin": {
+		"sudachi": "./build/bin/sudachi.js",
+		"sudachi-build-system": "./build/bin/sudachi-build-system.js",
+		"sudachi-build-user": "./build/bin/sudachi-build-user.js",
+		"sudachi-print-dict": "./build/bin/sudachi-print-dict.js",
+		"sudachi-print-header": "./build/bin/sudachi-print-header.js"
+	},
+	"files": [
+		"build/",
+		"README.md",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"build:clean": "rm -rf build && npm run build",
+		"prepack": "npm run build:clean",
+		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+		"lint": "biome lint src/",
+		"format": "biome format src/",
+		"check": "biome check src/ && tsc --noEmit",
+		"check:fix": "biome check --write src/ && tsc --noEmit"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.1.0",
+		"@types/node": "^22.0.0",
+		"typescript": "^5.7.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
