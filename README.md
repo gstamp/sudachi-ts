@@ -364,23 +364,6 @@ sudachi-ts/
     └── pathAnchor.ts # Path resolution
 ```
 
-## Performance
-
-Sudachi-TS is optimized for performance with:
-
-- TypedArray for efficient binary data access
-- Double array trie for fast word lookup
-- Lazy morpheme list evaluation
-- Minimal object allocation in hot paths
-
-Benchmarks (tokenizing 10,000 sentences):
-
-| Mode | Time | Memory |
-|------|------|--------|
-| A | 1.2s | 45MB |
-| B | 1.0s | 42MB |
-| C | 0.9s | 40MB |
-
 ## License
 
 Apache License 2.0
