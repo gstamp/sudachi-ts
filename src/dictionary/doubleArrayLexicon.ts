@@ -22,15 +22,15 @@ export class DoubleArrayLexicon implements Lexicon {
 		// If offset is not aligned, use DataView to create the array
 		let trieArray: Int32Array;
 		if (offset % 4 === 0) {
-			trieArray = new Int32Array(
-				bytes.buffer,
-				bytes.byteOffset + offset,
-				size,
-			);
+			trieArray = new Int32Array(bytes.buffer, bytes.byteOffset + offset, size);
 		} else {
 			// Copy data to a properly aligned buffer
 			const tempBuffer = new Int32Array(size);
-			const dataView = new DataView(bytes.buffer, bytes.byteOffset + offset, size * 4);
+			const dataView = new DataView(
+				bytes.buffer,
+				bytes.byteOffset + offset,
+				size * 4,
+			);
 			for (let i = 0; i < size; i++) {
 				tempBuffer[i] = dataView.getInt32(i * 4, true);
 			}
