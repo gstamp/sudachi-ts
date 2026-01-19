@@ -50,7 +50,8 @@
     "lint": "biome lint src/",
     "format": "biome format src/",
     "check": "biome check src/ && tsc --noEmit",
-    "check:fix": "biome check --write src/ && tsc --noEmit"
+    "check:fix": "biome check --write src/ && tsc --noEmit",
+    "release": "./scripts/release.sh"
   },
   "devDependencies": {
     "@types/bun": "^1.1.0",
