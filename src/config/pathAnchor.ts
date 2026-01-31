@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { isAbsolute, join } from 'node:path';
 
 export abstract class PathAnchor {
 	static none(): PathAnchor {
@@ -57,11 +58,10 @@ class FilesystemAnchor extends PathAnchor {
 	}
 
 	override async resolve(part: string): Promise<string> {
-		if (part.startsWith('/')) {
+		if (isAbsolute(part)) {
 			return part;
 		}
-		const resolved = `${this.basePath}/${part}`;
-		return resolved.replace(/\/+/g, '/');
+		return join(this.basePath, part);
 	}
 
 	override async exists(path: string): Promise<boolean> {

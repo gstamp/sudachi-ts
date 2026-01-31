@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
 import { PathAnchor } from './pathAnchor.js';
 import { Settings } from './settings.js';
 
@@ -17,7 +18,7 @@ export class Config {
 
 	static async fromFile(filePath: string): Promise<Config> {
 		const content = await readFile(filePath, 'utf-8');
-		const baseDir = filePath.split('/').slice(0, -1).join('/');
+		const baseDir = dirname(filePath);
 		const anchor = PathAnchor.filesystem(baseDir);
 		return new Config(Settings.parse(content), anchor);
 	}
