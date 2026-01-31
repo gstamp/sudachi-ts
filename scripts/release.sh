@@ -175,12 +175,26 @@ check_git_status() {
     fi
 }
 
+# Check npm authentication
+check_npm_auth() {
+    if ! npm whoami &>/dev/null; then
+        echo -e "${RED}Error: Not authenticated to npm registry.${NC}"
+        echo -e "${YELLOW}Please login first with: npm login${NC}"
+        exit 1
+    fi
+}
+
 # Main script
 main() {
     parse_args "$@"
 
     echo -e "${GREEN}🚀 Starting release process...${NC}"
     echo ""
+
+    # Check git status before modifying any files
+    if [[ "$SKIP_GIT" == false && "$DRY_RUN" == false ]]; then
+        check_git_status
+    fi
 
     # Get current version
     CURRENT_VERSION=$(get_current_version)
@@ -215,10 +229,6 @@ main() {
 
     # Git operations
     if [[ "$SKIP_GIT" == false ]]; then
-        if [[ "$DRY_RUN" == false ]]; then
-            check_git_status
-        fi
-
         COMMIT_MSG="chore: release v${NEW_VERSION}"
         run_cmd "git add package.json" "Stage package.json" "$DRY_RUN"
         run_cmd "git commit -m \"$COMMIT_MSG\"" "Commit changes" "$DRY_RUN"
@@ -227,6 +237,9 @@ main() {
 
     # Publish to npm
     if [[ "$SKIP_PUBLISH" == false ]]; then
+        if [[ "$DRY_RUN" == false ]]; then
+            check_npm_auth
+        fi
         run_cmd "bun publish" "Publish to npm" "$DRY_RUN"
     fi
 
