@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { join } from 'node:path';
 import { PathAnchor } from '../../../src/config/pathAnchor.js';
 
 describe('PathAnchor', () => {
@@ -24,13 +25,13 @@ describe('PathAnchor', () => {
 		test('should resolve relative to base path', async () => {
 			const anchor = PathAnchor.filesystem('/base/path');
 			const path = await anchor.resolve('test.json');
-			expect(path).toBe('/base/path/test.json');
+			expect(path).toBe(join('/base/path', 'test.json'));
 		});
 
 		test('should resolve nested paths', async () => {
 			const anchor = PathAnchor.filesystem('/base/path');
 			const path = await anchor.resolve('subdir/test.json');
-			expect(path).toBe('/base/path/subdir/test.json');
+			expect(path).toBe(join('/base/path', 'subdir/test.json'));
 		});
 
 		test('should check file existence', async () => {
