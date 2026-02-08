@@ -123,6 +123,16 @@ Example `sudachi.json`:
 }
 ```
 
+By default, Sudachi-TS enables a built-in compound-particle lexicon
+(`"enableDefaultCompoundParticles": true`) so forms such as `かも`, `のか`,
+and `だから` are tokenized as single morphemes. Set it to `false` to disable:
+
+```json
+{
+  "enableDefaultCompoundParticles": false
+}
+```
+
 ## Working with Morphemes
 
 Access detailed morpheme information:

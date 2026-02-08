@@ -96,6 +96,21 @@ Array of user dictionary paths.
 
 **Default**: `[]`
 
+#### enableDefaultCompoundParticles (optional)
+
+Automatically loads a built-in lightweight user lexicon for common compound particles
+and conjunction-like forms (for example: `かも`, `のか`, `だから`).
+
+```json
+{
+  "enableDefaultCompoundParticles": true
+}
+```
+
+**Type**: `boolean`
+
+**Default**: `true`
+
 #### characterDefinitionFile (optional)
 
 Path to character definition file for OOV handling.

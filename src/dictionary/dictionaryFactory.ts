@@ -5,6 +5,7 @@ import { Dictionary } from '../core/dictionary.js';
 import { PluginLoader } from '../plugins/loader.js';
 import type { OovProviderPlugin } from '../plugins/oov/base.js';
 import { BinaryDictionary } from './binaryDictionary.js';
+import { loadDefaultCompoundLexicon } from './defaultCompoundLexicon.js';
 import type { Lexicon } from './lexicon.js';
 import { LexiconSet } from './lexiconSet.js';
 
@@ -32,17 +33,32 @@ export class DictionaryFactory {
 
 		const grammar = systemDict.getGrammar();
 		let lexicon: Lexicon = systemDict.getLexicon();
+		let lexiconSet: LexiconSet | null = null;
+		const ensureLexiconSet = (): LexiconSet => {
+			if (!lexiconSet) {
+				lexiconSet = new LexiconSet(lexicon);
+				lexicon = lexiconSet;
+			}
+			return lexiconSet;
+		};
+
+		const enableDefaultCompoundParticles = config.getBoolean(
+			'enableDefaultCompoundParticles',
+			true,
+		);
+		if (enableDefaultCompoundParticles) {
+			const defaultCompoundLexicon = await loadDefaultCompoundLexicon(systemDict);
+			ensureLexiconSet().add(defaultCompoundLexicon.getLexicon());
+		}
 
 		const userDictPaths = config.getStringList('userDict');
 		if (userDictPaths.length > 0) {
-			const lexiconSet = new LexiconSet(lexicon);
 			for (const path of userDictPaths) {
 				const userPath = await anchor.resolve(path);
 				const userBuffer = await readFile(userPath);
 				const userDict = new BinaryDictionary(userBuffer);
-				lexiconSet.add(userDict.getLexicon());
+				ensureLexiconSet().add(userDict.getLexicon());
 			}
-			lexicon = lexiconSet;
 		}
 
 		const loader = new PluginLoader();

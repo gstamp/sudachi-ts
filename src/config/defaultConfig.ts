@@ -1,5 +1,6 @@
 export const DEFAULT_CONFIG_JSON = `{
     "systemDict" : "system.dic",
+    "enableDefaultCompoundParticles" : true,
     "inputTextPlugin" : [
         { "class" : "com.worksap.nlp.sudachi.DefaultInputTextPlugin" }
     ],
