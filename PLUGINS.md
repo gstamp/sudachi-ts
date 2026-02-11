@@ -359,8 +359,8 @@ Current proof-of-concept rule:
   noun-particle, pronoun+の, ために).
 - Colloquial/conversational chunking for common contractions and discourse forms
   (for example, `僕じゃない`, `方がいい`, `んじゃない`, `見たい`, `惚れてる`,
-  `作ったって`, `聞きたかった`, `って言ってる`, `進んでた`, `爆発した`, `感動した`,
-  `スカっとした`, `貰えた`,
+  `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
+  `爆発した`, `感動した`, `感動してた`, `スカっとした`, `貰えた`, `貰えない`,
   `ですよ`, `では`), plus variants such as
   `何で`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,

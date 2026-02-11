@@ -721,6 +721,16 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'スカっ + と + し + た',
+				expected: 'スカっとした',
+				specs: [
+					{ surface: 'スカっ', posId: 9 },
+					{ surface: 'と', posId: 2 },
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
 				name: 'verb + たい (words like 見たい)',
 				expected: '食べたい',
 				specs: [
@@ -747,6 +757,19 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '貰えない',
+				expected: '貰えない',
+				specs: [
+					{
+						surface: '貰え',
+						posId: 5,
+						dictionaryForm: '貰う',
+						reading: 'モラエ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
 				name: 'だって',
 				expected: 'だって',
 				specs: [
@@ -766,6 +789,19 @@ describe('TokenChunkerPlugin', () => {
 					},
 					{ surface: 'て', posId: 4 },
 					{ surface: 'る', posId: 7 },
+				],
+			},
+			{
+				name: '惚れ + てる',
+				expected: '惚れてる',
+				specs: [
+					{
+						surface: '惚れ',
+						posId: 5,
+						dictionaryForm: '惚れる',
+						reading: 'ホレ',
+					},
+					{ surface: 'てる', posId: 7 },
 				],
 			},
 			{
@@ -810,6 +846,19 @@ describe('TokenChunkerPlugin', () => {
 					},
 					{ surface: 'た', posId: 7 },
 					{ surface: 'って', posId: 2 },
+				],
+			},
+			{
+				name: '作っ + たって',
+				expected: '作ったって',
+				specs: [
+					{
+						surface: '作っ',
+						posId: 5,
+						dictionaryForm: '作る',
+						reading: 'ツクッ',
+					},
+					{ surface: 'たって', posId: 2 },
 				],
 			},
 			{
@@ -858,12 +907,30 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'もう + 一回',
+				expected: 'もう一回',
+				specs: [
+					{ surface: 'もう', posId: 9 },
+					{ surface: '一回', posId: 1 },
+				],
+			},
+			{
 				name: 'もーいっかい',
 				expected: 'もーいっかい',
 				specs: [
 					{ surface: 'もー', posId: 9 },
 					{ surface: 'いっ', posId: 3 },
 					{ surface: 'かい', posId: 1 },
+				],
+			},
+			{
+				name: 'もー + いっ + か + い',
+				expected: 'もーいっかい',
+				specs: [
+					{ surface: 'もー', posId: 9 },
+					{ surface: 'いっ', posId: 3 },
+					{ surface: 'か', posId: 1 },
+					{ surface: 'い', posId: 1 },
 				],
 			},
 			{
@@ -1040,6 +1107,19 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '泣い + てん',
+				expected: '泣いてん',
+				specs: [
+					{
+						surface: '泣い',
+						posId: 5,
+						dictionaryForm: '泣く',
+						reading: 'ナイ',
+					},
+					{ surface: 'てん', posId: 2 },
+				],
+			},
+			{
 				name: '言っちゃう',
 				expected: '言っちゃう',
 				specs: [
@@ -1108,6 +1188,61 @@ describe('TokenChunkerPlugin', () => {
 					},
 					{ surface: 'て', posId: 4 },
 					{ surface: 'る', posId: 7 },
+				],
+			},
+			{
+				name: 'って言ってた',
+				expected: 'って言ってた',
+				specs: [
+					{ surface: 'って', posId: 2 },
+					{
+						surface: '言っ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イッ',
+					},
+					{ surface: 'て', posId: 4 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: 'って + 言ってた',
+				expected: 'って言ってた',
+				specs: [
+					{ surface: 'って', posId: 2 },
+					{
+						surface: '言ってた',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イッテタ',
+					},
+				],
+			},
+			{
+				name: '感動してた',
+				expected: '感動してた',
+				specs: [
+					{ surface: '感動', posId: 1 },
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'て', posId: 4 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '感動 + してた',
+				expected: '感動してた',
+				specs: [
+					{ surface: '感動', posId: 1 },
+					{ surface: 'してた', posId: 5 },
+				],
+			},
+			{
+				name: 'スカっ + と + したい',
+				expected: 'スカっとしたい',
+				specs: [
+					{ surface: 'スカっ', posId: 9 },
+					{ surface: 'と', posId: 2 },
+					{ surface: 'したい', posId: 7 },
 				],
 			},
 			{
