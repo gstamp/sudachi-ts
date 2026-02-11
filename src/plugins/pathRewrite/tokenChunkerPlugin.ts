@@ -762,7 +762,244 @@ const COUNTER_PHONOLOGY: CounterPhonology = {
 	},
 };
 
-const SEQUENCE_RULES: SequenceRule[] = [
+const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
+	{
+		name: 'quotative_tte_itteru',
+		priority: 102,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'って', pos0: '助詞' },
+			{ dictionaryForm: '言う', pos0: '動詞' },
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'る', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'suru_masu',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'し', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: 'ます', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_desiderative_takatta',
+		priority: 100,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['たい', 'たかっ'], pos0: ['助動詞', '形容詞'] },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_desiderative_tai',
+		priority: 99,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'たい', pos0: '助動詞' }],
+	},
+	{
+		name: 'verb_ta_tte',
+		priority: 98,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+			{ surface: 'って', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'colloquial_te_ru',
+		priority: 97,
+		resultType: 'progressive_form',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'る', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_te_nai',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'ない', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_te_n',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'ん' },
+		],
+	},
+	{
+		name: 'verb_chau',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: ['ちゃう', 'じゃう'] }],
+	},
+	{
+		name: 'verb_nakya',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'なきゃ' }],
+	},
+	{
+		name: 'verb_nakucha',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'なく' }, { surface: 'ちゃ' }],
+	},
+	{
+		name: 'n_ja_nai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'ん' },
+			{ surface: 'じゃ', pos0: '助詞' },
+			{ surface: 'ない', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'noun_or_pronoun_ja_nai',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞'] },
+			{ surface: 'じゃ', pos0: '助詞' },
+			{ surface: 'ない', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'fixed_hou_ga_ii',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: '方' }, { surface: 'が' }, { surface: 'いい' }],
+	},
+	{
+		name: 'fixed_da_mon',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'だ' }, { surface: 'もん' }],
+	},
+	{
+		name: 'fixed_nande',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: ['なん', '何'] }, { surface: 'で' }],
+	},
+	{
+		name: 'fixed_datte',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'だ' }, { surface: 'って' }],
+	},
+	{
+		name: 'fixed_dakara',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'だ' }, { surface: 'から' }],
+	},
+	{
+		name: 'fixed_sore_ni',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'それ' }, { surface: 'に' }],
+	},
+	{
+		name: 'fixed_ni_naranai',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'に', pos0: '助詞' },
+			{ surface: 'なら', dictionaryForm: 'なる', pos0: '動詞' },
+			{ surface: 'ない', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'fixed_mokkai',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'もっ' }, { surface: 'かい' }],
+	},
+	{
+		name: 'fixed_mou_ikkai_variants',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: ['もう', 'もー'] },
+			{ surface: ['一', 'いっ'] },
+			{ surface: ['回', 'かい'] },
+		],
+	},
+	{
+		name: 'fixed_tsumannai',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'つまん' }, { surface: 'ない' }],
+	},
+	{
+		name: 'fixed_tsumaranai',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'つまら' }, { surface: 'ない' }],
+	},
+	{
+		name: 'adjective_nai',
+		priority: 94,
+		resultType: 'phrase',
+		pattern: [{ pos0: '形容詞' }, { surface: 'ない', pos0: '助動詞' }],
+	},
+	{
+		name: 'adjective_wa_nai',
+		priority: 94,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '形容詞' },
+			{ surface: 'は', pos0: '助詞' },
+			{ surface: 'ない', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'fixed_kousan_small_tsu',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: '降参' }, { surface: 'っ' }],
+	},
+	{
+		name: 'fixed_gucha_gucha',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'ぐちゃ' }, { surface: 'ぐちゃ' }],
+	},
+	{
+		name: 'fixed_desu_yo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'です' }, { surface: 'よ', pos0: '助詞' }],
+	},
+	{
+		name: 'fixed_ja_n',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'じゃ' }, { surface: 'ん' }],
+	},
+	{
+		name: 'fixed_desho',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'で' }, { surface: 'しょ' }],
+	},
+];
+
+const VERB_SEQUENCE_RULES: SequenceRule[] = [
 	{
 		name: 'suru_verb_progressive',
 		priority: 100,
@@ -815,6 +1052,9 @@ const SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
 		],
 	},
+];
+
+const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 	{
 		name: 'noun_particle',
 		priority: 75,
@@ -889,6 +1129,9 @@ const SEQUENCE_RULES: SequenceRule[] = [
 			{ dictionaryForm: 'いう', pos0: '動詞' },
 		],
 	},
+];
+
+const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 	{
 		name: 'fixed_wake_ga_nai',
 		priority: 72,
@@ -965,6 +1208,13 @@ const SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: 'て' },
 		],
 	},
+];
+
+const SEQUENCE_RULES: SequenceRule[] = [
+	...COLLOQUIAL_SEQUENCE_RULES,
+	...VERB_SEQUENCE_RULES,
+	...PHRASE_SEQUENCE_RULES,
+	...FIXED_SEQUENCE_RULES,
 ];
 
 const BROAD_SEQUENCE_RULES: SequenceRule[] = [

@@ -357,6 +357,12 @@ Current proof-of-concept rule:
   `tryCompoundNouns` in token-chunker-ts.
 - Conservative pattern-rule families (fixed expressions, suru/progressive, te-form,
   noun-particle, pronoun+の, ために).
+- Colloquial/conversational chunking for common contractions and discourse forms
+  (for example, `僕じゃない`, `方がいい`, `んじゃない`, `見たい`, `惚れてる`,
+  `作ったって`, `聞きたかった`, `って言ってる`, `ですよ`), plus variants such as
+  `何で`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
+  families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
+  `〜じゃん`, `〜でしょ`.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
 
 Settings:

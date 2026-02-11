@@ -114,6 +114,47 @@ function createInputText(): InputText {
 	return {} as InputText;
 }
 
+type NodeSpec = {
+	surface: string;
+	posId: number;
+	dictionaryForm?: string;
+	reading?: string;
+};
+
+function createPath(specs: NodeSpec[]): LatticeNodeImpl[] {
+	const path: LatticeNodeImpl[] = [];
+	let begin = 0;
+	for (const spec of specs) {
+		const end = begin + spec.surface.length;
+		const dictionaryForm = spec.dictionaryForm ?? spec.surface;
+		const reading = spec.reading ?? spec.surface;
+		path.push(
+			createNodeWithForms(
+				spec.surface,
+				dictionaryForm,
+				reading,
+				spec.posId,
+				begin,
+				end,
+			),
+		);
+		begin = end;
+	}
+	return path;
+}
+
+function createPatternOnlyPlugin(): TokenChunkerPlugin {
+	const plugin = new TokenChunkerPlugin();
+	plugin.setSettings(
+		new Settings({
+			enablePatternRules: true,
+			enableCompoundNouns: false,
+		}),
+	);
+	plugin.setUp(createGrammar());
+	return plugin;
+}
+
 describe('TokenChunkerPlugin', () => {
 	test('merges consecutive nouns into one chunk', () => {
 		const plugin = new TokenChunkerPlugin();
@@ -568,6 +609,516 @@ describe('TokenChunkerPlugin', () => {
 		plugin.rewrite(createInputText(), path, createLattice());
 
 		expect(path.length).toBe(2);
+	});
+
+	test('merges requested colloquial and conversational expressions', () => {
+		const cases: Array<{
+			name: string;
+			expected: string;
+			specs: NodeSpec[];
+		}> = [
+			{
+				name: '僕じゃない',
+				expected: '僕じゃない',
+				specs: [
+					{ surface: '僕', posId: 8 },
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: 'noun + じゃ + ない (words like 僕じゃない)',
+				expected: '嘘じゃない',
+				specs: [
+					{ surface: '嘘', posId: 1 },
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '方がいい',
+				expected: '方がいい',
+				specs: [
+					{ surface: '方', posId: 1 },
+					{ surface: 'が', posId: 2 },
+					{ surface: 'いい', posId: 12 },
+				],
+			},
+			{
+				name: 'んじゃない',
+				expected: 'んじゃない',
+				specs: [
+					{ surface: 'ん', posId: 1 },
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: 'だもん',
+				expected: 'だもん',
+				specs: [
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'もん', posId: 1 },
+				],
+			},
+			{
+				name: 'なんで',
+				expected: 'なんで',
+				specs: [
+					{ surface: 'なん', posId: 8 },
+					{ surface: 'で', posId: 2 },
+				],
+			},
+			{
+				name: '何で',
+				expected: '何で',
+				specs: [
+					{ surface: '何', posId: 8 },
+					{ surface: 'で', posId: 2 },
+				],
+			},
+			{
+				name: '見たい',
+				expected: '見たい',
+				specs: [
+					{ surface: '見', posId: 5, dictionaryForm: '見る', reading: 'ミ' },
+					{ surface: 'たい', posId: 7 },
+				],
+			},
+			{
+				name: 'verb + たい (words like 見たい)',
+				expected: '食べたい',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'たい', posId: 7 },
+				],
+			},
+			{
+				name: 'だって',
+				expected: 'だって',
+				specs: [
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'って', posId: 2 },
+				],
+			},
+			{
+				name: '惚れてる',
+				expected: '惚れてる',
+				specs: [
+					{
+						surface: '惚れ',
+						posId: 5,
+						dictionaryForm: '惚れる',
+						reading: 'ホレ',
+					},
+					{ surface: 'て', posId: 4 },
+					{ surface: 'る', posId: 7 },
+				],
+			},
+			{
+				name: 'verb + て + る (words like 惚れてる)',
+				expected: '泣いてる',
+				specs: [
+					{
+						surface: '泣い',
+						posId: 5,
+						dictionaryForm: '泣く',
+						reading: 'ナイ',
+					},
+					{ surface: 'て', posId: 4 },
+					{ surface: 'る', posId: 7 },
+				],
+			},
+			{
+				name: 'だから',
+				expected: 'だから',
+				specs: [
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'から', posId: 2 },
+				],
+			},
+			{
+				name: 'それに',
+				expected: 'それに',
+				specs: [
+					{ surface: 'それ', posId: 8 },
+					{ surface: 'に', posId: 2 },
+				],
+			},
+			{
+				name: '作ったって',
+				expected: '作ったって',
+				specs: [
+					{
+						surface: '作っ',
+						posId: 5,
+						dictionaryForm: '作る',
+						reading: 'ツクッ',
+					},
+					{ surface: 'た', posId: 7 },
+					{ surface: 'って', posId: 2 },
+				],
+			},
+			{
+				name: 'verb + た + って (words like 作ったって)',
+				expected: '言ったって',
+				specs: [
+					{
+						surface: '言っ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イッ',
+					},
+					{ surface: 'た', posId: 7 },
+					{ surface: 'って', posId: 2 },
+				],
+			},
+			{
+				name: 'にならない',
+				expected: 'にならない',
+				specs: [
+					{ surface: 'に', posId: 2 },
+					{
+						surface: 'なら',
+						posId: 5,
+						dictionaryForm: 'なる',
+						reading: 'ナラ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: 'もっかい',
+				expected: 'もっかい',
+				specs: [
+					{ surface: 'もっ', posId: 9 },
+					{ surface: 'かい', posId: 1 },
+				],
+			},
+			{
+				name: 'もう一回',
+				expected: 'もう一回',
+				specs: [
+					{ surface: 'もう', posId: 9 },
+					{ surface: '一', posId: 3 },
+					{ surface: '回', posId: 1 },
+				],
+			},
+			{
+				name: 'もーいっかい',
+				expected: 'もーいっかい',
+				specs: [
+					{ surface: 'もー', posId: 9 },
+					{ surface: 'いっ', posId: 3 },
+					{ surface: 'かい', posId: 1 },
+				],
+			},
+			{
+				name: 'つまんない',
+				expected: 'つまんない',
+				specs: [
+					{ surface: 'つまん', posId: 12 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: 'つまらない',
+				expected: 'つまらない',
+				specs: [
+					{ surface: 'つまら', posId: 12 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '悪くない',
+				expected: '悪くない',
+				specs: [
+					{
+						surface: '悪く',
+						posId: 12,
+						dictionaryForm: '悪い',
+						reading: 'ワルク',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '悪くはない',
+				expected: '悪くはない',
+				specs: [
+					{
+						surface: '悪く',
+						posId: 12,
+						dictionaryForm: '悪い',
+						reading: 'ワルク',
+					},
+					{ surface: 'は', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: 'adjective + ない (words like 悪くない)',
+				expected: '高くない',
+				specs: [
+					{
+						surface: '高く',
+						posId: 12,
+						dictionaryForm: '高い',
+						reading: 'タカク',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '降参っ',
+				expected: '降参っ',
+				specs: [
+					{ surface: '降参', posId: 1 },
+					{ surface: 'っ', posId: 13 },
+				],
+			},
+			{
+				name: 'します',
+				expected: 'します',
+				specs: [
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'ます', posId: 7 },
+				],
+			},
+			{
+				name: 'ぐちゃぐちゃ',
+				expected: 'ぐちゃぐちゃ',
+				specs: [
+					{ surface: 'ぐちゃ', posId: 9 },
+					{ surface: 'ぐちゃ', posId: 9 },
+				],
+			},
+			{
+				name: '聞きたかった',
+				expected: '聞きたかった',
+				specs: [
+					{
+						surface: '聞き',
+						posId: 5,
+						dictionaryForm: '聞く',
+						reading: 'キキ',
+					},
+					{ surface: 'たかっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: 'verb + たかっ + た (words like 聞きたかった)',
+				expected: '知りたかった',
+				specs: [
+					{
+						surface: '知り',
+						posId: 5,
+						dictionaryForm: '知る',
+						reading: 'シリ',
+					},
+					{ surface: 'たかっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '食べてない',
+				expected: '食べてない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'て', posId: 4 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '泣いてん',
+				expected: '泣いてん',
+				specs: [
+					{
+						surface: '泣い',
+						posId: 5,
+						dictionaryForm: '泣く',
+						reading: 'ナイ',
+					},
+					{ surface: 'て', posId: 4 },
+					{ surface: 'ん', posId: 2 },
+				],
+			},
+			{
+				name: '言っちゃう',
+				expected: '言っちゃう',
+				specs: [
+					{
+						surface: '言っ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イッ',
+					},
+					{ surface: 'ちゃう', posId: 7 },
+				],
+			},
+			{
+				name: '食べなきゃ',
+				expected: '食べなきゃ',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なきゃ', posId: 2 },
+				],
+			},
+			{
+				name: '行かなくちゃ',
+				expected: '行かなくちゃ',
+				specs: [
+					{
+						surface: '行か',
+						posId: 5,
+						dictionaryForm: '行く',
+						reading: 'イカ',
+					},
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'ちゃ', posId: 2 },
+				],
+			},
+			{
+				name: 'じゃん',
+				expected: 'じゃん',
+				specs: [
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'ん', posId: 2 },
+				],
+			},
+			{
+				name: 'でしょ',
+				expected: 'でしょ',
+				specs: [
+					{ surface: 'で', posId: 7 },
+					{ surface: 'しょ', posId: 7 },
+				],
+			},
+			{
+				name: 'って言ってる',
+				expected: 'って言ってる',
+				specs: [
+					{ surface: 'って', posId: 2 },
+					{
+						surface: '言っ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イッ',
+					},
+					{ surface: 'て', posId: 4 },
+					{ surface: 'る', posId: 7 },
+				],
+			},
+			{
+				name: 'ですよ',
+				expected: 'ですよ',
+				specs: [
+					{ surface: 'です', posId: 7 },
+					{ surface: 'よ', posId: 2 },
+				],
+			},
+		];
+
+		for (const chunkCase of cases) {
+			const plugin = createPatternOnlyPlugin();
+			const path = createPath(chunkCase.specs);
+			plugin.rewrite(createInputText(), path, createLattice());
+
+			expect(path.length).toBe(1);
+			expect(path[0]?.getWordInfo().getSurface()).toBe(chunkCase.expected);
+		}
+	});
+
+	test('does not over-merge colloquial rules in unrelated contexts', () => {
+		const cases: Array<{
+			name: string;
+			specs: NodeSpec[];
+			expected: string[];
+		}> = [
+			{
+				name: 'noun + は + ない should stay split',
+				specs: [
+					{ surface: '東京', posId: 1 },
+					{ surface: 'は', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+				expected: ['東京', 'は', 'ない'],
+			},
+			{
+				name: 'noun + たい should stay split',
+				specs: [
+					{ surface: '東京', posId: 1 },
+					{ surface: 'たい', posId: 7 },
+				],
+				expected: ['東京', 'たい'],
+			},
+			{
+				name: 'もう + 一 + 日 should not match もう一回 rule',
+				specs: [
+					{ surface: 'もう', posId: 9 },
+					{ surface: '一', posId: 3 },
+					{ surface: '日', posId: 1 },
+				],
+				expected: ['もう', '一日'],
+			},
+			{
+				name: 'じゃ + ない should stay split',
+				specs: [
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+				expected: ['じゃ', 'ない'],
+			},
+			{
+				name: 'non-verb + なく + ちゃ should stay split',
+				specs: [
+					{ surface: '東京', posId: 1 },
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'ちゃ', posId: 2 },
+				],
+				expected: ['東京', 'なく', 'ちゃ'],
+			},
+			{
+				name: 'verb + で + ない with non-接続助詞 should stay split',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'で', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+				expected: ['食べ', 'で', 'ない'],
+			},
+		];
+
+		for (const chunkCase of cases) {
+			const plugin = createPatternOnlyPlugin();
+			const path = createPath(chunkCase.specs);
+			plugin.rewrite(createInputText(), path, createLattice());
+
+			expect(path.map((node) => node.getWordInfo().getSurface())).toEqual(
+				chunkCase.expected,
+			);
+		}
 	});
 
 	test('uses surface as fallback when merged reading part is placeholder', () => {
