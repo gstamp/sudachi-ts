@@ -136,6 +136,11 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 				baseline: ['悪く', 'は', 'ない'],
 				merged: ['悪くはない'],
 			},
+			{
+				text: '東京では',
+				baseline: ['東京', 'で', 'は'],
+				merged: ['東京', 'では'],
+			},
 			{ text: '何で', baseline: ['何', 'で'], merged: ['何で'] },
 			{ text: '見たい', baseline: ['見', 'たい'], merged: ['見たい'] },
 			{
@@ -194,7 +199,7 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 		const cases = [
 			{ text: '東京はない', expected: ['東京', 'は', 'ない'] },
 			{ text: '東京たい', expected: ['東京', 'たい'] },
-			{ text: 'じゃない', expected: ['じゃ', 'ない'] },
+			{ text: 'じゃない', expected: ['じゃない'] },
 			{ text: '東京なくちゃ', expected: ['東京', 'なく', 'ちゃ'] },
 		];
 

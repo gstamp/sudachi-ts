@@ -775,6 +775,25 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'quotative_tte_itteru_compact',
+		priority: 102,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'って', pos0: '助詞' },
+			{ dictionaryForm: '言う', pos0: '動詞' },
+			{ surface: ['てる', 'でる'] },
+		],
+	},
+	{
+		name: 'quotative_tte_itteru_single_verb',
+		priority: 102,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'って', pos0: '助詞' },
+			{ surface: ['言ってる', 'いってる'] },
+		],
+	},
+	{
 		name: 'suru_masu',
 		priority: 101,
 		resultType: 'phrase',
@@ -784,12 +803,53 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'noun_suru_past',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'し', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'noun_suru_past_compact',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'した', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+		],
+	},
+	{
+		name: 'emphatic_tto_shita',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['副詞', '名詞', '形容詞', '感動詞'] },
+			{ surface: 'っと' },
+			{ surface: 'し', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_desiderative_ta_katta',
+		priority: 100,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+			{ surface: 'かっ', pos0: ['助動詞', '形容詞'] },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
 		name: 'verb_desiderative_takatta',
 		priority: 100,
 		resultType: 'phrase',
 		pattern: [
 			{ pos0: '動詞' },
-			{ surface: ['たい', 'たかっ'], pos0: ['助動詞', '形容詞'] },
+			{ surface: 'たかっ', pos0: ['助動詞', '形容詞'] },
 			{ surface: 'た', pos0: '助動詞' },
 		],
 	},
@@ -798,6 +858,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 99,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: 'たい', pos0: '助動詞' }],
+	},
+	{
+		name: 'morau_potential_past',
+		priority: 99,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: '貰え', dictionaryForm: ['貰う', 'もらう'], pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
 	},
 	{
 		name: 'verb_ta_tte',
@@ -817,6 +886,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ pos0: '動詞' },
 			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
 			{ surface: 'る', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'colloquial_te_ta',
+		priority: 97,
+		resultType: 'progressive_form',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'た', pos0: '助動詞' },
 		],
 	},
 	{
@@ -863,6 +942,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		resultType: 'phrase',
 		pattern: [
 			{ surface: 'ん' },
+			{ surface: 'じゃ', pos0: '助詞' },
+			{ surface: 'ない', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'ja_nai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
 			{ surface: 'じゃ', pos0: '助詞' },
 			{ surface: 'ない', pos0: '助動詞' },
 		],
@@ -983,7 +1071,13 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		name: 'fixed_desu_yo',
 		priority: 94,
 		resultType: 'fixed_expression',
-		pattern: [{ surface: 'です' }, { surface: 'よ', pos0: '助詞' }],
+		pattern: [{ surface: 'です' }, { surface: 'よ' }],
+	},
+	{
+		name: 'fixed_de_su_yo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'で' }, { surface: 'す' }, { surface: 'よ' }],
 	},
 	{
 		name: 'fixed_ja_n',
@@ -1167,6 +1261,15 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 72,
 		resultType: 'phrase',
 		pattern: [{ surface: 'で' }, { surface: 'は' }, { surface: 'なく' }],
+	},
+	{
+		name: 'fixed_dewa',
+		priority: 72,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'で', pos0: '助詞' },
+			{ surface: 'は', pos0: '助詞' },
+		],
 	},
 	{
 		name: 'fixed_dewa_nakute',
