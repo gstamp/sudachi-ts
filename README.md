@@ -266,6 +266,15 @@ const plugin = await loader.loadInputTextPlugin(
 
 See [PLUGINS.md](./PLUGINS.md) for detailed plugin development guide.
 
+Quick local comparison for the PoC token chunker plugin:
+
+```bash
+bun examples/token-chunker-plugin.ts /path/to/system.dic "東京大学"
+```
+
+This example prints each token as `surface/reading` so the chunking impact on
+readings is visible in the baseline vs plugin outputs.
+
 ## Dictionary Building
 
 Build binary dictionaries from CSV source:

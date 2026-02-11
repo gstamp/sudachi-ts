@@ -17,3 +17,4 @@ export { SimpleOovProviderPlugin } from './oov/simpleOovProviderPlugin.js';
 export { PathRewritePlugin } from './pathRewrite/base.js';
 export { JoinKatakanaOovPlugin } from './pathRewrite/joinKatakanaOovPlugin.js';
 export { JoinNumericPlugin } from './pathRewrite/joinNumericPlugin.js';
+export { TokenChunkerPlugin } from './pathRewrite/tokenChunkerPlugin.js';

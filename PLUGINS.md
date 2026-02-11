@@ -347,6 +347,29 @@ export class JoinKatakanaOovPlugin extends Plugin implements PathRewritePlugin {
 }
 ```
 
+### Built-In Placeholder: TokenChunkerPlugin
+
+Sudachi-TS also provides a built-in `TokenChunkerPlugin` for coarse-token
+chunking behavior.
+
+Current proof-of-concept rule:
+- Merge consecutive noun tokens into one chunk (compound noun style), similar to
+  `tryCompoundNouns` in token-chunker-ts.
+- Conservative pattern-rule families (fixed expressions, suru/progressive, te-form,
+  noun-particle, pronoun+の, ために).
+- Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
+
+Settings:
+- `enablePatternRules` (default: `true`)
+- `enableBroadRules` (default: `false`) for more aggressive phrase-merging rules
+- `enableCompoundNouns` (default: `true`)
+- `minCompoundLength` (default: `2`)
+- `excludedNounSubcategories` (default: `["数詞", "接尾"]`)
+
+```typescript
+import { TokenChunkerPlugin } from 'sudachi-ts/plugins/index.js';
+```
+
 ## EditConnectionCostPlugin
 
 Connection cost plugins modify the cost of connecting two morphemes. This is useful for:

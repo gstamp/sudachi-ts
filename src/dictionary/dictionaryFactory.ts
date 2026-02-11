@@ -47,7 +47,8 @@ export class DictionaryFactory {
 			true,
 		);
 		if (enableDefaultCompoundParticles) {
-			const defaultCompoundLexicon = await loadDefaultCompoundLexicon(systemDict);
+			const defaultCompoundLexicon =
+				await loadDefaultCompoundLexicon(systemDict);
 			ensureLexiconSet().add(defaultCompoundLexicon.getLexicon());
 		}
 

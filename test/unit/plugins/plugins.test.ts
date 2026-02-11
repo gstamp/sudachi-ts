@@ -18,6 +18,7 @@ import { InputTextPlugin } from '../../../src/plugins/inputText/base.js';
 import { PluginLoader } from '../../../src/plugins/loader.js';
 import { OovProviderPlugin } from '../../../src/plugins/oov/base.js';
 import { PathRewritePlugin } from '../../../src/plugins/pathRewrite/base.js';
+import { TokenChunkerPlugin } from '../../../src/plugins/pathRewrite/tokenChunkerPlugin.js';
 
 function createMockGrammar(): Grammar {
 	const matrix = new Int16Array([0]);
@@ -346,5 +347,17 @@ describe('PluginLoader', () => {
 		expect(plugin.className).toBe(
 			'../../test/unit/plugins/testInputTextPlugin.ts',
 		);
+	});
+
+	test('should load built-in TokenChunkerPlugin', async () => {
+		const loader = new PluginLoader();
+		const settings = new Settings({});
+
+		const plugin = await loader.loadPathRewritePlugin(
+			'TokenChunkerPlugin',
+			settings,
+		);
+		expect(plugin.plugin).toBeInstanceOf(TokenChunkerPlugin);
+		expect(plugin.className).toBe('TokenChunkerPlugin');
 	});
 });
