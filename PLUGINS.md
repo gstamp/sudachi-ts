@@ -352,6 +352,12 @@ export class JoinKatakanaOovPlugin extends Plugin implements PathRewritePlugin {
 Sudachi-TS also provides a built-in `TokenChunkerPlugin` for coarse-token
 chunking behavior.
 
+Design note:
+- `TokenChunkerPlugin` rule behavior is designed and validated against the full
+  Sudachi system dictionary (`system_full.dic` / `system.dic` in this repo).
+  Rule additions should be checked against full-dictionary tokenization, not
+  only mock grammars.
+
 Current proof-of-concept rule:
 - Merge consecutive noun tokens into one chunk (compound noun style), similar to
   `tryCompoundNouns` in token-chunker-ts.

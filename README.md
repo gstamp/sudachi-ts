@@ -274,6 +274,9 @@ bun examples/token-chunker-plugin.ts /path/to/system.dic "東京大学"
 
 This example prints each token as `surface/reading` so the chunking impact on
 readings is visible in the baseline vs plugin outputs.
+`TokenChunkerPlugin` is designed and validated against the full Sudachi system
+dictionary (`system_full.dic` / `system.dic`), so prefer full-dictionary checks
+when adding or tuning chunk rules.
 
 ## Dictionary Building
 

@@ -1434,6 +1434,17 @@ describe('TokenChunkerPlugin', () => {
 					{ surface: 'た', posId: 7 },
 				],
 			},
+			{
+				name: 'バカ + に + さ + れ + た',
+				expected: 'バカにされた',
+				specs: [
+					{ surface: 'バカ', posId: 1 },
+					{ surface: 'に', posId: 7, dictionaryForm: 'だ', reading: 'ニ' },
+					{ surface: 'さ', posId: 5, dictionaryForm: 'する', reading: 'サ' },
+					{ surface: 'れ', posId: 7, dictionaryForm: 'れる', reading: 'レ' },
+					{ surface: 'た', posId: 7 },
+				],
+			},
 		];
 
 		for (const chunkCase of cases) {

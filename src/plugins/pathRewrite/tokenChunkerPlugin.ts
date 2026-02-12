@@ -993,6 +993,20 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'colloquial_te_ta_aux_teru',
+		priority: 97,
+		resultType: 'progressive_form',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['て', 'で'],
+				dictionaryForm: ['てる', 'でる'],
+				pos0: '助動詞',
+			},
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
 		name: 'colloquial_te_ta_compact',
 		priority: 97,
 		resultType: 'progressive_form',
@@ -1102,6 +1116,19 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'noun_suru_volitional_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{
+				surface: 'しよう',
+				dictionaryForm: ['する', '為る'],
+				pos0: '動詞',
+			},
+		],
+	},
+	{
 		name: 'copula_datta_ra',
 		priority: 96,
 		resultType: 'phrase',
@@ -1110,6 +1137,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: ['だ', 'だっ', 'だった'] },
 			{ surface: 'た' },
 			{ surface: 'ら' },
+		],
+	},
+	{
+		name: 'copula_dapp_tara',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞', '形容詞'] },
+			{ surface: 'だっ' },
+			{ surface: 'たら' },
 		],
 	},
 	{
@@ -1179,8 +1216,20 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		resultType: 'phrase',
 		pattern: [
 			{ pos0: '名詞' },
-			{ surface: 'に', pos0: '助詞' },
+			{ surface: 'に' },
 			{ surface: 'され' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'noun_ni_sa_re_ta',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'に' },
+			{ surface: 'さ', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: 'れ', dictionaryForm: 'れる', pos0: '助動詞' },
 			{ surface: 'た', pos0: '助動詞' },
 		],
 	},
@@ -1188,11 +1237,7 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		name: 'noun_ni_sareta_compact',
 		priority: 95,
 		resultType: 'phrase',
-		pattern: [
-			{ pos0: '名詞' },
-			{ surface: 'に', pos0: '助詞' },
-			{ surface: 'された' },
-		],
+		pattern: [{ pos0: '名詞' }, { surface: 'に' }, { surface: 'された' }],
 	},
 	{
 		name: 'n_ja_nai',
@@ -1448,6 +1493,15 @@ const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [
 			{ surface: 'について' },
 			{ surface: ['は', 'も', 'の', 'が', 'を', 'に', 'から', 'まで'] },
+		],
+	},
+	{
+		name: 'verb_made',
+		priority: 73,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'まで', pos0: '助詞', pos1: '副助詞' },
 		],
 	},
 	{
