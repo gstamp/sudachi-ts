@@ -53,9 +53,6 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 	private grammar: Grammar | null = null;
 	private enablePatternRules = true;
 	private enableBroadRules = false;
-	private enableCompoundNouns = true;
-	private minCompoundLength = 2;
-	private excludedNounSubcategories = new Set(['数詞', '接尾']);
 
 	override setUp(grammar: Grammar): void {
 		this.grammar = grammar;
@@ -64,19 +61,6 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			true,
 		);
 		this.enableBroadRules = this.settings.getBoolean('enableBroadRules', false);
-		this.enableCompoundNouns = this.settings.getBoolean(
-			'enableCompoundNouns',
-			true,
-		);
-		this.minCompoundLength = this.settings.getInt('minCompoundLength', 2);
-		if (this.minCompoundLength < 2) {
-			throw new Error('minCompoundLength must be >= 2');
-		}
-
-		const configured = this.settings.getStringList('excludedNounSubcategories');
-		if (configured.length > 0) {
-			this.excludedNounSubcategories = new Set(configured);
-		}
 	}
 
 	rewrite(_text: InputText, path: LatticeNode[], lattice: Lattice): void {
@@ -90,9 +74,6 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			chunks = this.applyNumericExpressionStage(chunks);
 			chunks = this.applyCounterStage(chunks);
 			chunks = this.applyMergeStage(chunks);
-		}
-		if (this.enableCompoundNouns) {
-			chunks = this.applyCompoundNounStage(chunks);
 		}
 
 		this.rehydratePath(path, chunks, lattice);
@@ -449,7 +430,9 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			if (
 				(current.chunkType === 'te_form' ||
 					current.chunkType === 'suru_verb_te_form') &&
-				(next.chunkType === 'single_token' || next.chunkType === 'phrase') &&
+				(next.chunkType === 'single_token' ||
+					next.chunkType === 'phrase' ||
+					next.chunkType === 'te_form') &&
 				['いる', '居る', 'いく'].includes(next.dictionaryForm)
 			) {
 				const resultType: ChunkType =
@@ -464,63 +447,6 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			i++;
 		}
 		return chunks;
-	}
-
-	private applyCompoundNounStage(source: ChunkToken[]): ChunkToken[] {
-		const chunks = [...source];
-		for (let i = 0; i < chunks.length; i++) {
-			if (!this.isChunkableNoun(chunks[i])) {
-				continue;
-			}
-
-			let end = i + 1;
-			while (
-				end < chunks.length &&
-				this.isChunkableNoun(chunks[end]) &&
-				this.canMergeAsCompoundNoun(chunks[end - 1], chunks[end])
-			) {
-				end++;
-			}
-			const length = end - i;
-			if (length >= this.minCompoundLength) {
-				const merged = this.mergeChunks(chunks.slice(i, end), 'compound_noun');
-				chunks.splice(i, end - i, merged);
-			}
-		}
-		return chunks;
-	}
-
-	private isChunkableNoun(chunk: ChunkToken | undefined): boolean {
-		if (!chunk) {
-			return false;
-		}
-		if (chunk.chunkType !== 'single_token') {
-			return false;
-		}
-		const pos = this.getPosById(chunk.posId);
-		if (!pos || pos[0] !== '名詞') {
-			return false;
-		}
-		if (COMPOUND_NOUN_SYMBOL_SURFACES.has(chunk.surface)) {
-			return false;
-		}
-		return !this.excludedNounSubcategories.has(pos[1] ?? '');
-	}
-
-	private canMergeAsCompoundNoun(
-		left: ChunkToken | undefined,
-		right: ChunkToken | undefined,
-	): boolean {
-		if (!left || !right) {
-			return false;
-		}
-		if (
-			COMPOUND_NOUN_BLOCKED_RIGHT_SURFACES.has(right.surface) ||
-			COMPOUND_NOUN_BLOCKED_LEFT_SURFACES.has(left.surface)
-		) {
-			return false;
-		}
-		return true;
 	}
 
 	private getPosById(posId: number): string[] | null {
@@ -620,37 +546,6 @@ const NUMBER_SURFACE_PATTERN = /^[0-9０-９一二三四五六七八九十百千
 const NUMERIC_COMMA_SURFACES = new Set([',', '，']);
 const NUMERIC_DOT_SURFACES = new Set(['.', '．']);
 const NUMERIC_SIGN_SURFACES = new Set(['-', '−', '－', '+', '＋']);
-
-const COMPOUND_NOUN_SYMBOL_SURFACES = new Set([
-	'%',
-	'％',
-	'¥',
-	'￥',
-	',',
-	'，',
-	'.',
-	'．',
-	'/',
-]);
-
-const COMPOUND_NOUN_BLOCKED_RIGHT_SURFACES = new Set([
-	'以上',
-	'以下',
-	'未満',
-	'以内',
-	'程度',
-	'くらい',
-	'ぐらい',
-	'ほど',
-]);
-
-const COMPOUND_NOUN_BLOCKED_LEFT_SURFACES = new Set([
-	'%',
-	'％',
-	'¥',
-	'￥',
-	'まま',
-]);
 
 const COUNTER_WORDS = new Set([
 	'本',
@@ -1091,10 +986,54 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: '動詞' }, { surface: 'なかった' }],
 	},
 	{
+		name: 'adjective_past_n_da',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '形容詞' },
+			{ surface: 'た', pos0: '助動詞' },
+			{ surface: 'ん' },
+			{ surface: 'だ' },
+		],
+	},
+	{
+		name: 'adjective_past_n_da_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '形容詞' }, { surface: 'たんだ' }],
+	},
+	{
 		name: 'verb_past',
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: 'た', pos0: '助動詞' }],
+	},
+	{
+		name: 'verb_aux_reru_split_ru',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['れ', 'られ'],
+				dictionaryForm: ['れる', 'られる'],
+				pos0: ['助動詞', '動詞'],
+			},
+			{ surface: 'る', pos0: ['助動詞', '動詞'] },
+		],
+	},
+	{
+		name: 'verb_aux_reru_split',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['れ', 'られ'],
+				dictionaryForm: ['れる', 'られる'],
+				pos0: ['助動詞', '動詞'],
+			},
+		],
 	},
 	{
 		name: 'verb_aux_reru',
@@ -1246,6 +1185,22 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: 'ん' }, { surface: 'じゃ' }, { surface: 'ない' }],
 	},
 	{
+		name: 'nan_ja_nai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: ['なん', '何'] },
+			{ surface: 'じゃ' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'nan_ja_nai_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ surface: ['なん', '何'] }, { surface: 'じゃない' }],
+	},
+	{
 		name: 'ja_nai',
 		priority: 96,
 		resultType: 'phrase',
@@ -1290,6 +1245,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'だ' }, { surface: 'から' }],
+	},
+	{
+		name: 'fixed_dakedo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'だ' }, { surface: 'けど' }],
 	},
 	{
 		name: 'fixed_sore_ni',
@@ -1404,6 +1365,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'で' }, { surface: 'しょ' }],
 	},
+	{
+		name: 'fixed_sentence_ending_kana',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'か', pos0: '助詞' },
+			{ surface: 'な', pos0: '助詞' },
+		],
+	},
 ];
 
 const VERB_SEQUENCE_RULES: SequenceRule[] = [
@@ -1462,6 +1432,12 @@ const VERB_SEQUENCE_RULES: SequenceRule[] = [
 ];
 
 const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
+	{
+		name: 'noun_teki_suffix',
+		priority: 75,
+		resultType: 'phrase',
+		pattern: [{ pos0: '名詞' }, { surface: '的', pos0: '接尾辞' }],
+	},
 	{
 		name: 'noun_particle',
 		priority: 75,

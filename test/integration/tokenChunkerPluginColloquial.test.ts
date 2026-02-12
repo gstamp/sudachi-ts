@@ -15,7 +15,10 @@ const TEST_LEXICON = `僕,0,0,5000,僕,代名詞,*,*,*,*,*,ボク,僕,*,A,*,*,*,
 悪く,0,0,5000,悪く,形容詞,一般,*,*,*,*,ワルク,悪い,*,A,*,*,*,*
 は,0,0,5000,は,助詞,係助詞,*,*,*,*,ハ,は,*,A,*,*,*,*
 何,0,0,5000,何,代名詞,*,*,*,*,*,ナニ,何,*,A,*,*,*,*
+なん,0,0,5000,なん,副詞,*,*,*,*,*,ナン,なん,*,A,*,*,*,*
 で,0,0,5000,で,助詞,格助詞,*,*,*,*,デ,で,*,A,*,*,*,*
+か,0,0,5000,か,助詞,終助詞,*,*,*,*,カ,か,*,A,*,*,*,*
+な,0,0,5000,な,助詞,終助詞,*,*,*,*,ナ,な,*,A,*,*,*,*
 見,0,0,5000,見,動詞,一般,*,*,*,*,ミ,見る,*,A,*,*,*,*
 たい,0,0,5000,たい,助動詞,*,*,*,*,*,タイ,たい,*,A,*,*,*,*
 食べ,0,0,5000,食べ,動詞,一般,*,*,*,*,タベ,食べる,*,A,*,*,*,*
@@ -92,7 +95,6 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 						{
 							class: 'com.worksap.nlp.sudachi.TokenChunkerPlugin',
 							enablePatternRules: true,
-							enableCompoundNouns: false,
 						},
 					],
 				},
@@ -132,6 +134,11 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 				merged: ['方がいい'],
 			},
 			{
+				text: 'なんじゃない',
+				baseline: ['なん', 'じゃ', 'ない'],
+				merged: ['なんじゃない'],
+			},
+			{
 				text: '悪くはない',
 				baseline: ['悪く', 'は', 'ない'],
 				merged: ['悪くはない'],
@@ -167,6 +174,11 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 				text: '行かなくちゃ',
 				baseline: ['行か', 'なく', 'ちゃ'],
 				merged: ['行かなくちゃ'],
+			},
+			{
+				text: 'いいかな',
+				baseline: ['いい', 'か', 'な'],
+				merged: ['いい', 'かな'],
 			},
 			{ text: 'でしょ', baseline: ['で', 'しょ'], merged: ['でしょ'] },
 			{
@@ -212,3 +224,4 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 		}
 	});
 });
+

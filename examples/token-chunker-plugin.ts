@@ -71,9 +71,6 @@ async function tokenizeWithConfig(
 						{ class: 'com.worksap.nlp.sudachi.JoinNumericPlugin' },
 						{
 							class: 'com.worksap.nlp.sudachi.TokenChunkerPlugin',
-							enableCompoundNouns: true,
-							minCompoundLength: 2,
-							excludedNounSubcategories: ['数詞', '接尾'],
 						},
 					]
 				: [{ class: 'com.worksap.nlp.sudachi.JoinNumericPlugin' }],
@@ -102,3 +99,4 @@ async function main(): Promise<void> {
 }
 
 void main();
+

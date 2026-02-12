@@ -34,7 +34,6 @@ function createWithChunkerConfig() {
 				{
 					class: 'com.worksap.nlp.sudachi.TokenChunkerPlugin',
 					enablePatternRules: true,
-					enableCompoundNouns: false,
 				},
 			],
 		}),
@@ -117,6 +116,42 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				with: ['みんな', 'に', '言われる'],
 			},
 			{
+				text: 'みんなに言われた',
+				without: ['みんな', 'に', '言わ', 'れ', 'た'],
+				with: ['みんな', 'に', '言われた'],
+			},
+			{
+				text: '母親の映像とか僕がボロクソ言われたシーンも',
+				without: [
+					'母親',
+					'の',
+					'映像',
+					'と',
+					'か',
+					'僕',
+					'が',
+					'ボロクソ',
+					'言わ',
+					'れ',
+					'た',
+					'シーン',
+					'も',
+				],
+				with: [
+					'母親',
+					'の',
+					'映像',
+					'と',
+					'か',
+					'僕',
+					'が',
+					'ボロクソ',
+					'言われた',
+					'シーン',
+					'も',
+				],
+			},
+			{
 				text: 'それで傷ついた',
 				without: ['それ', 'で', '傷つい', 'た'],
 				with: ['それで', '傷ついた'],
@@ -125,6 +160,21 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				text: '優太と言ったら有名だ',
 				without: ['優太', 'と', '言っ', 'たら', '有名', 'だ'],
 				with: ['優太', 'と言ったら', '有名', 'だ'],
+			},
+			{
+				text: '撮って欲しかったんだ',
+				without: ['撮っ', 'て', '欲しかっ', 'た', 'ん', 'だ'],
+				with: ['撮って', '欲しかったんだ'],
+			},
+			{
+				text: 'だけど吸血鬼はだんだん弱っていって',
+				without: ['だ', 'けど', '吸血鬼', 'は', 'だんだん', '弱っ', 'て', 'いっ', 'て'],
+				with: ['だけど', '吸血鬼', 'は', 'だんだん', '弱っていって'],
+			},
+			{
+				text: '半分自伝的映画だから',
+				without: ['半分', '自伝', '的', '映画', 'だ', 'から'],
+				with: ['半分', '自伝的', '映画', 'だから'],
 			},
 		];
 
@@ -167,3 +217,4 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 		}
 	});
 });
+

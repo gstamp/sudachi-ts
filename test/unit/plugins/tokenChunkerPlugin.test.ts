@@ -24,6 +24,8 @@ function createGrammar(): Grammar {
 		[11, new POS('接頭辞', '*', '*', '*', '*', '*')],
 		[12, new POS('形容詞', '一般', '*', '*', '*', '*')],
 		[13, new POS('補助記号', '一般', '*', '*', '*', '*')],
+		[14, new POS('助詞', '終助詞', '*', '*', '*', '*')],
+		[15, new POS('接尾辞', '形状詞的', '*', '*', '*', '*')],
 	]);
 
 	return {
@@ -148,7 +150,6 @@ function createPatternOnlyPlugin(): TokenChunkerPlugin {
 	plugin.setSettings(
 		new Settings({
 			enablePatternRules: true,
-			enableCompoundNouns: false,
 		}),
 	);
 	plugin.setUp(createGrammar());
@@ -156,7 +157,7 @@ function createPatternOnlyPlugin(): TokenChunkerPlugin {
 }
 
 describe('TokenChunkerPlugin', () => {
-	test('merges consecutive nouns into one chunk', () => {
+	test('does not merge consecutive nouns', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
@@ -164,8 +165,9 @@ describe('TokenChunkerPlugin', () => {
 		const path = [createNode('東京', 1, 0, 2), createNode('大学', 1, 2, 4)];
 		plugin.rewrite(createInputText(), path, createLattice());
 
-		expect(path.length).toBe(1);
-		expect(path[0]?.getWordInfo().getSurface()).toBe('東京大学');
+		expect(path.length).toBe(2);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('東京');
+		expect(path[1]?.getWordInfo().getSurface()).toBe('大学');
 	});
 
 	test('does not merge across non-noun tokens', () => {
@@ -185,7 +187,7 @@ describe('TokenChunkerPlugin', () => {
 		expect(path[2]?.getWordInfo().getSurface()).toBe('大学');
 	});
 
-	test('does not merge excluded noun subcategory by default', () => {
+	test('keeps noun plus numeral split', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
@@ -198,7 +200,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges fixed expression わけがない', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [
@@ -214,7 +216,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges suru progressive sequence', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [
@@ -234,7 +236,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges pronoun + の', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [createNode('私', 8, 0, 1), createNode('の', 2, 1, 2)];
@@ -246,7 +248,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges については sequence', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [
@@ -263,7 +265,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges quotative というのは sequence', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [
@@ -280,7 +282,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges conjunction だけではなく', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [
@@ -297,7 +299,7 @@ describe('TokenChunkerPlugin', () => {
 
 	test('merges verb progressive past sequence', () => {
 		const plugin = new TokenChunkerPlugin();
-		plugin.setSettings(new Settings({ enableCompoundNouns: false }));
+		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
 
 		const path = [
@@ -315,7 +317,7 @@ describe('TokenChunkerPlugin', () => {
 	test('does not apply broad rules by default', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
-			new Settings({ enablePatternRules: true, enableCompoundNouns: false }),
+			new Settings({ enablePatternRules: true }),
 		);
 		plugin.setUp(createGrammar());
 
@@ -331,7 +333,6 @@ describe('TokenChunkerPlugin', () => {
 			new Settings({
 				enablePatternRules: true,
 				enableBroadRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -348,7 +349,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -368,7 +368,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -388,7 +387,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -409,7 +407,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -430,7 +427,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -453,7 +449,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -474,7 +469,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -497,7 +491,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -520,7 +513,6 @@ describe('TokenChunkerPlugin', () => {
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: false,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -537,12 +529,11 @@ describe('TokenChunkerPlugin', () => {
 		expect(path.length).toBe(5);
 	});
 
-	test('does not merge blocked noun suffix like 以上 in compound stage', () => {
+	test('keeps noun + suffix-like noun split when only noun chunking would apply', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: false,
-				enableCompoundNouns: true,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -553,12 +544,11 @@ describe('TokenChunkerPlugin', () => {
 		expect(path.length).toBe(2);
 	});
 
-	test('does not merge symbol with following noun in compound stage', () => {
+	test('keeps symbol + noun split when pattern rules are disabled', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: false,
-				enableCompoundNouns: true,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -569,12 +559,11 @@ describe('TokenChunkerPlugin', () => {
 		expect(path.length).toBe(2);
 	});
 
-	test('does not merge non-single chunks as compound nouns', () => {
+	test('keeps noun before merged te-form chunk split', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: true,
-				enableCompoundNouns: true,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -592,12 +581,11 @@ describe('TokenChunkerPlugin', () => {
 		expect(path[1]?.getWordInfo().getSurface()).toBe('注意して');
 	});
 
-	test('does not merge まま with following noun as compound noun', () => {
+	test('keeps まま with following noun split', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
 			new Settings({
 				enablePatternRules: false,
-				enableCompoundNouns: true,
 			}),
 		);
 		plugin.setUp(createGrammar());
@@ -654,11 +642,28 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'なんじゃない',
+				expected: 'なんじゃない',
+				specs: [
+					{ surface: 'なん', posId: 9 },
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
 				name: 'じゃない',
 				expected: 'じゃない',
 				specs: [
 					{ surface: 'じゃ', posId: 2 },
 					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: 'かな',
+				expected: 'かな',
+				specs: [
+					{ surface: 'か', posId: 14 },
+					{ surface: 'な', posId: 14 },
 				],
 			},
 			{
@@ -1176,6 +1181,34 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'だけど',
+				expected: 'だけど',
+				specs: [
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'けど', posId: 2 },
+				],
+			},
+			{
+				name: '欲しかったんだ',
+				expected: '欲しかったんだ',
+				specs: [
+					{ surface: '欲しかっ', posId: 12 },
+					{ surface: 'た', posId: 7 },
+					{ surface: 'ん', posId: 14 },
+					{ surface: 'だ', posId: 7 },
+				],
+			},
+			{
+				name: '弱っていって',
+				expected: '弱っていって',
+				specs: [
+					{ surface: '弱っ', posId: 5, dictionaryForm: '弱る', reading: 'ヨワッ' },
+					{ surface: 'て', posId: 4 },
+					{ surface: 'いっ', posId: 5, dictionaryForm: 'いく', reading: 'イッ' },
+					{ surface: 'て', posId: 4 },
+				],
+			},
+			{
 				name: 'って言ってる',
 				expected: 'って言ってる',
 				specs: [
@@ -1364,6 +1397,53 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '言わ + れ + る',
+				expected: '言われる',
+				specs: [
+					{
+						surface: '言わ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イワ',
+					},
+					{ surface: 'れ', posId: 7, dictionaryForm: 'れる', reading: 'レ' },
+					{ surface: 'る', posId: 7, dictionaryForm: 'れる', reading: 'ル' },
+				],
+			},
+			{
+				name: '言わ + れ + た',
+				expected: '言われた',
+				specs: [
+					{
+						surface: '言わ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イワ',
+					},
+					{ surface: 'れ', posId: 7, dictionaryForm: 'れる', reading: 'レ' },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '食べ + られ + た',
+				expected: '食べられた',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{
+						surface: 'られ',
+						posId: 7,
+						dictionaryForm: 'られる',
+						reading: 'ラレ',
+					},
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
 				name: 'それで',
 				expected: 'それで',
 				specs: [
@@ -1407,6 +1487,14 @@ describe('TokenChunkerPlugin', () => {
 				specs: [
 					{ surface: 'なん', posId: 8 },
 					{ surface: 'と', posId: 2 },
+				],
+			},
+			{
+				name: '名詞 + 的',
+				expected: '自伝的',
+				specs: [
+					{ surface: '自伝', posId: 1 },
+					{ surface: '的', posId: 15 },
 				],
 			},
 			{
@@ -1512,6 +1600,42 @@ describe('TokenChunkerPlugin', () => {
 				],
 				expected: ['食べ', 'で', 'ない'],
 			},
+			{
+				name: 'noun + な should not match sentence-ending かな rule',
+				specs: [
+					{ surface: 'か', posId: 1 },
+					{ surface: 'な', posId: 14 },
+				],
+				expected: ['か', 'な'],
+			},
+			{
+				name: 'te-form chain should not merge when second verb is not いく/いる',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'て', posId: 4 },
+					{
+						surface: '作っ',
+						posId: 5,
+						dictionaryForm: '作る',
+						reading: 'ツクッ',
+					},
+					{ surface: 'て', posId: 4 },
+				],
+				expected: ['食べて', '作って'],
+			},
+			{
+				name: 'non-noun + 的 should stay split',
+				specs: [
+					{ surface: 'かなり', posId: 9 },
+					{ surface: '的', posId: 15 },
+				],
+				expected: ['かなり', '的'],
+			},
 		];
 
 		for (const chunkCase of cases) {
@@ -1529,19 +1653,21 @@ describe('TokenChunkerPlugin', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
 			new Settings({
-				enablePatternRules: false,
-				enableCompoundNouns: true,
+				enablePatternRules: true,
 			}),
 		);
 		plugin.setUp(createGrammar());
 
 		const path = [
-			createNodeWithForms('再生', '再生', '*', 1, 0, 2),
-			createNodeWithForms('回数', '回数', 'カイスウ', 1, 2, 4),
+			createNodeWithForms('で', 'で', '*', 2, 0, 1),
+			createNodeWithForms('は', 'は', 'ハ', 2, 1, 2),
 		];
 		plugin.rewrite(createInputText(), path, createLattice());
 
 		expect(path.length).toBe(1);
-		expect(path[0]?.getWordInfo().getReadingForm()).toBe('再生カイスウ');
+		expect(path[0]?.getWordInfo().getSurface()).toBe('では');
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('でハ');
 	});
 });
+
+

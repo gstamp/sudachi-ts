@@ -359,27 +359,22 @@ Design note:
   only mock grammars.
 
 Current proof-of-concept rule:
-- Merge consecutive noun tokens into one chunk (compound noun style), similar to
-  `tryCompoundNouns` in token-chunker-ts.
 - Conservative pattern-rule families (fixed expressions, suru/progressive, te-form,
   noun-particle, pronoun+の, ために).
 - Colloquial/conversational chunking for common contractions and discourse forms
-  (for example, `僕じゃない`, `方がいい`, `んじゃない`, `見たい`, `惚れてる`,
+  (for example, `僕じゃない`, `方がいい`, `んじゃない`, `なんじゃない`, `見たい`, `惚れてる`,
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
-  `爆発した`, `感動した`, `感動してた`, `スカっとした`, `貰えた`, `貰えない`,
-  `ですよ`, `では`), plus variants such as
-  `何で`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
+  `爆発した`, `感動した`, `感動してた`, `スカっとした`, `欲しかったんだ`, `貰えた`, `貰えない`,
+  `言われた`, `ですよ`, `では`), plus variants such as
+  `何で`, `だけど`, `弱っていって`, `自伝的`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
-  `〜じゃん`, `〜でしょ`, copula/negative forms such as `〜だった`, `〜だったら`,
+  `〜じゃん`, `〜でしょ`, sentence endings like `かな`, copula/negative forms such as `〜だった`, `〜だったら`,
   `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
 
 Settings:
 - `enablePatternRules` (default: `true`)
 - `enableBroadRules` (default: `false`) for more aggressive phrase-merging rules
-- `enableCompoundNouns` (default: `true`)
-- `minCompoundLength` (default: `2`)
-- `excludedNounSubcategories` (default: `["数詞", "接尾"]`)
 
 ```typescript
 import { TokenChunkerPlugin } from 'sudachi-ts/plugins/index.js';
