@@ -1289,6 +1289,151 @@ describe('TokenChunkerPlugin', () => {
 					{ surface: 'よ', posId: 2 },
 				],
 			},
+			{
+				name: '私だったら',
+				expected: '私だったら',
+				specs: [
+					{ surface: '私', posId: 8 },
+					{ surface: 'だっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+					{ surface: 'ら', posId: 2 },
+				],
+			},
+			{
+				name: '優太だった',
+				expected: '優太だった',
+				specs: [
+					{ surface: '優太', posId: 1 },
+					{ surface: 'だっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '魅力的だった',
+				expected: '魅力的だった',
+				specs: [
+					{ surface: '魅力的', posId: 1 },
+					{ surface: 'だっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: 'じゃなくて',
+				expected: 'じゃなくて',
+				specs: [
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'て', posId: 4 },
+				],
+			},
+			{
+				name: '事じゃなくて',
+				expected: '事じゃなくて',
+				specs: [
+					{ surface: '事', posId: 1 },
+					{ surface: 'じゃ', posId: 2 },
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'て', posId: 4 },
+				],
+			},
+			{
+				name: '撮れなかった',
+				expected: '撮れなかった',
+				specs: [
+					{
+						surface: '撮れ',
+						posId: 5,
+						dictionaryForm: '撮れる',
+						reading: 'トレ',
+					},
+					{ surface: 'なかっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '言われる',
+				expected: '言われる',
+				specs: [
+					{
+						surface: '言わ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イワ',
+					},
+					{ surface: 'れる', posId: 7 },
+				],
+			},
+			{
+				name: 'それで',
+				expected: 'それで',
+				specs: [
+					{ surface: 'それ', posId: 8 },
+					{ surface: 'で', posId: 2 },
+				],
+			},
+			{
+				name: '傷ついた',
+				expected: '傷ついた',
+				specs: [
+					{
+						surface: '傷つい',
+						posId: 5,
+						dictionaryForm: '傷つく',
+						reading: 'キズツイ',
+					},
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '自殺しよう',
+				expected: '自殺しよう',
+				specs: [
+					{ surface: '自殺', posId: 1 },
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'よう', posId: 7 },
+				],
+			},
+			{
+				name: 'のは',
+				expected: 'のは',
+				specs: [
+					{ surface: 'の', posId: 2 },
+					{ surface: 'は', posId: 2 },
+				],
+			},
+			{
+				name: 'なんと',
+				expected: 'なんと',
+				specs: [
+					{ surface: 'なん', posId: 8 },
+					{ surface: 'と', posId: 2 },
+				],
+			},
+			{
+				name: 'と言ったら',
+				expected: 'と言ったら',
+				specs: [
+					{ surface: 'と', posId: 2 },
+					{
+						surface: '言っ',
+						posId: 5,
+						dictionaryForm: '言う',
+						reading: 'イッ',
+					},
+					{ surface: 'た', posId: 7 },
+					{ surface: 'ら', posId: 2 },
+				],
+			},
+			{
+				name: 'バカにされた',
+				expected: 'バカにされた',
+				specs: [
+					{ surface: 'バカ', posId: 1 },
+					{ surface: 'に', posId: 2 },
+					{ surface: 'され', posId: 5, dictionaryForm: 'する', reading: 'サレ' },
+					{ surface: 'た', posId: 7 },
+				],
+			},
 		];
 
 		for (const chunkCase of cases) {

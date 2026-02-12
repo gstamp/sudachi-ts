@@ -1061,6 +1061,140 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: '動詞' }, { surface: 'なく' }, { surface: 'ちゃ' }],
 	},
 	{
+		name: 'verb_negative_past',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['ない', 'なかっ', 'なかった'] },
+			{ surface: ['た'], pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_negative_past_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'なかった' }],
+	},
+	{
+		name: 'verb_past',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'た', pos0: '助動詞' }],
+	},
+	{
+		name: 'verb_aux_reru',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['れる', 'られる'], pos0: ['助動詞', '動詞'] },
+		],
+	},
+	{
+		name: 'noun_suru_volitional',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'し', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: ['よう', 'う'], pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'copula_datta_ra',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞', '形容詞'] },
+			{ surface: ['だ', 'だっ', 'だった'] },
+			{ surface: 'た' },
+			{ surface: 'ら' },
+		],
+	},
+	{
+		name: 'copula_dattara_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞', '形容詞'] },
+			{ surface: ['だったら', 'だった'] },
+			{ surface: 'ら' },
+		],
+	},
+	{
+		name: 'copula_dattara_single',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: ['名詞', '代名詞', '形容詞'] }, { surface: 'だったら' }],
+	},
+	{
+		name: 'copula_datta',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞', '形容詞'] },
+			{ surface: ['だ', 'だっ'] },
+			{ surface: 'た' },
+		],
+	},
+	{
+		name: 'copula_datta_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: ['名詞', '代名詞', '形容詞'] }, { surface: 'だった' }],
+	},
+	{
+		name: 'ja_nakute',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ surface: 'じゃ' }, { surface: 'なく' }, { surface: 'て' }],
+	},
+	{
+		name: 'ja_nakute_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ surface: 'じゃなくて' }],
+	},
+	{
+		name: 'noun_ja_nakute',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [{ pos0: ['名詞', '代名詞'] }, { surface: 'じゃなくて' }],
+	},
+	{
+		name: 'noun_ja_nakute_split',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞'] },
+			{ surface: 'じゃ' },
+			{ surface: 'なく' },
+			{ surface: 'て' },
+		],
+	},
+	{
+		name: 'noun_ni_sareta',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'に', pos0: '助詞' },
+			{ surface: 'され' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'noun_ni_sareta_compact',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'に', pos0: '助詞' },
+			{ surface: 'された' },
+		],
+	},
+	{
 		name: 'n_ja_nai',
 		priority: 96,
 		resultType: 'phrase',
@@ -1357,6 +1491,36 @@ const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 			{ dictionaryForm: 'いう', pos0: '動詞' },
 		],
 	},
+	{
+		name: 'quotative_to_itta_ra',
+		priority: 73,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'と', pos0: '助詞' },
+			{ dictionaryForm: '言う', pos0: '動詞' },
+			{ surface: 'たら' },
+		],
+	},
+	{
+		name: 'quotative_to_itta_ra_split',
+		priority: 73,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'と', pos0: '助詞' },
+			{ dictionaryForm: '言う', pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+			{ surface: 'ら', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'fixed_no_wa',
+		priority: 73,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'の', pos0: '助詞' },
+			{ surface: 'は', pos0: '助詞' },
+		],
+	},
 ];
 
 const FIXED_SEQUENCE_RULES: SequenceRule[] = [
@@ -1377,6 +1541,28 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 72,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'と' }, { surface: '共に' }],
+	},
+	{
+		name: 'fixed_sorede',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'それ' }, { surface: 'で' }],
+	},
+	{
+		name: 'fixed_nanto',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: ['なん', '何'] }, { surface: 'と' }],
+	},
+	{
+		name: 'fixed_souieba',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'そう' },
+			{ surface: ['いえ', '言え'] },
+			{ surface: 'ば' },
+		],
 	},
 	{
 		name: 'fixed_tashika_ni',

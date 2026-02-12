@@ -364,7 +364,8 @@ Current proof-of-concept rule:
   `ですよ`, `では`), plus variants such as
   `何で`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
-  `〜じゃん`, `〜でしょ`.
+  `〜じゃん`, `〜でしょ`, copula/negative forms such as `〜だった`, `〜だったら`,
+  `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
 
 Settings:
