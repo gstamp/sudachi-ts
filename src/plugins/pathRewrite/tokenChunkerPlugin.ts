@@ -70,10 +70,12 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 
 		let chunks = this.toInitialChunks(path);
 		if (this.enablePatternRules) {
+			chunks = this.applyInlineRubyExactStage(chunks);
 			chunks = this.applyPatternStage(chunks);
 			chunks = this.applyNumericExpressionStage(chunks);
 			chunks = this.applyCounterStage(chunks);
 			chunks = this.applyMergeStage(chunks);
+			chunks = this.applyInlineRubyPrefixStage(chunks);
 		}
 
 		this.rehydratePath(path, chunks, lattice);
@@ -449,6 +451,107 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 		return chunks;
 	}
 
+	private applyInlineRubyExactStage(source: ChunkToken[]): ChunkToken[] {
+		const chunks = [...source];
+		let i = 0;
+		while (i < chunks.length - 1) {
+			const current = chunks[i];
+			const next = chunks[i + 1];
+			if (!current || !next) {
+				i++;
+				continue;
+			}
+			if (this.shouldMergeInlineRubyExact(current, next)) {
+				const merged = this.mergeChunks([current, next], 'phrase');
+				chunks.splice(i, 2, merged);
+				continue;
+			}
+			i++;
+		}
+		return chunks;
+	}
+
+	private applyInlineRubyPrefixStage(source: ChunkToken[]): ChunkToken[] {
+		const chunks = [...source];
+		let i = 0;
+		while (i < chunks.length - 1) {
+			const current = chunks[i];
+			const next = chunks[i + 1];
+			if (!current || !next) {
+				i++;
+				continue;
+			}
+			if (this.shouldMergeInlineRubyPrefix(current, next)) {
+				const merged = this.mergeChunks([current, next], 'phrase');
+				chunks.splice(i, 2, merged);
+				continue;
+			}
+			i++;
+		}
+		return chunks;
+	}
+
+	private shouldMergeInlineRubyExact(
+		current: ChunkToken,
+		next: ChunkToken,
+	): boolean {
+		if (
+			!KANJI_PATTERN.test(current.surface) ||
+			!KANA_PATTERN.test(next.surface)
+		) {
+			return false;
+		}
+		if (
+			current.chunkType !== 'single_token' ||
+			next.chunkType !== 'single_token'
+		) {
+			return false;
+		}
+		const reading = this.toHiragana(this.readingPart(current));
+		const nextSurface = this.toHiragana(next.surface);
+		return reading.length >= 2 && reading === nextSurface;
+	}
+
+	private shouldMergeInlineRubyPrefix(
+		current: ChunkToken,
+		next: ChunkToken,
+	): boolean {
+		if (
+			!KANJI_PATTERN.test(current.surface) ||
+			!KANA_PATTERN.test(next.surface)
+		) {
+			return false;
+		}
+		const reading = this.toHiragana(this.readingPart(current));
+		const nextSurface = this.toHiragana(next.surface);
+		if (reading.length < 2 || !nextSurface.startsWith(reading)) {
+			if (
+				KANJI_ONLY_PATTERN.test(current.surface) &&
+				current.surface.length <= 2 &&
+				next.surface.length >= 3 &&
+				HIRAGANA_PATTERN.test(next.surface) &&
+				(next.chunkType === 'phrase' ||
+					next.chunkType === 'te_form' ||
+					next.chunkType === 'progressive_form')
+			) {
+				return true;
+			}
+			return false;
+		}
+		return (
+			next.chunkType === 'phrase' ||
+			next.chunkType === 'te_form' ||
+			next.chunkType === 'progressive_form' ||
+			next.chunkType === 'single_token'
+		);
+	}
+
+	private toHiragana(value: string): string {
+		return value.replace(/[ァ-ヶ]/g, (ch) =>
+			String.fromCharCode(ch.charCodeAt(0) - 0x60),
+		);
+	}
+
 	private getPosById(posId: number): string[] | null {
 		if (!this.grammar || posId < 0) {
 			return null;
@@ -546,6 +649,10 @@ const NUMBER_SURFACE_PATTERN = /^[0-9０-９一二三四五六七八九十百千
 const NUMERIC_COMMA_SURFACES = new Set([',', '，']);
 const NUMERIC_DOT_SURFACES = new Set(['.', '．']);
 const NUMERIC_SIGN_SURFACES = new Set(['-', '−', '－', '+', '＋']);
+const KANJI_PATTERN = /\p{Script=Han}/u;
+const KANJI_ONLY_PATTERN = /^[\p{Script=Han}々〆ヵヶ]+$/u;
+const KANA_PATTERN = /^[ぁ-ゖァ-ヺー]+$/u;
+const HIRAGANA_PATTERN = /^[ぁ-ゖー]+$/u;
 
 const COUNTER_WORDS = new Set([
 	'本',
@@ -946,6 +1053,37 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_te_irare_nai',
+		priority: 98,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'] },
+			{ surface: 'い', dictionaryForm: ['いる', '居る'], pos0: '動詞' },
+			{
+				surface: ['られ', 'れ'],
+				dictionaryForm: ['られる', 'れる'],
+				pos0: ['助動詞', '動詞'],
+			},
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_te_rare_nai',
+		priority: 98,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'] },
+			{
+				surface: ['られ', 'れ'],
+				dictionaryForm: ['られる', 'れる'],
+				pos0: ['助動詞', '動詞'],
+			},
+			{ surface: 'ない' },
+		],
+	},
+	{
 		name: 'verb_kire_nai',
 		priority: 96,
 		resultType: 'phrase',
@@ -1005,6 +1143,148 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: 'なっ', dictionaryForm: 'なる', pos0: '動詞' },
 			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
 			{ surface: 'しまう', dictionaryForm: ['しまう', '仕舞う'], pos0: '動詞' },
+		],
+	},
+	{
+		name: 'verb_nakutewa_ikenai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なく' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'は', pos0: '助詞' },
+			{ surface: ['いけ', '行け'], dictionaryForm: 'いける', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_tewa_ikenai_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['ては', 'では'] },
+			{ surface: ['いけ', '行け'], dictionaryForm: 'いける', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_tewa_ikenai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['て', 'で'] },
+			{ surface: 'は', pos0: '助詞' },
+			{ surface: ['いけ', '行け'], dictionaryForm: 'いける', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_nakereba_naranai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なけれ' },
+			{ surface: 'ば', pos0: '助詞' },
+			{ surface: 'なら', dictionaryForm: 'なる', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_nakereba_ikenai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なけれ' },
+			{ surface: 'ば', pos0: '助詞' },
+			{ surface: ['いけ', '行け'], dictionaryForm: 'いける', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_naito_ikenai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ない' },
+			{ surface: 'と', pos0: '助詞' },
+			{ surface: ['いけ', '行け'], dictionaryForm: 'いける', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_you_ni_naru',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'よう' },
+			{ surface: 'に' },
+			{ surface: 'なる', dictionaryForm: 'なる', pos0: '動詞' },
+		],
+	},
+	{
+		name: 'verb_temo_ii',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['ても', 'でも'] },
+			{ surface: 'いい' },
+		],
+	},
+	{
+		name: 'verb_nakutemo_ii_compact',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['なくても', 'なくったって'] },
+			{ surface: 'いい' },
+		],
+	},
+	{
+		name: 'verb_nakutemo_ii',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なく' },
+			{ surface: 'て' },
+			{ surface: 'も', pos0: '助詞' },
+			{ surface: 'いい' },
+		],
+	},
+	{
+		name: 'te_form_mo_ii',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [{ chunkType: 'te_form' }, { surface: 'も' }, { surface: 'いい' }],
+	},
+	{
+		name: 'verb_ba_ii',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ば', pos0: '助詞' },
+			{ surface: 'いい' },
+		],
+	},
+	{
+		name: 'ja_ire_nai',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞', '形容詞', '形状詞'] },
+			{ surface: 'じゃ' },
+			{ surface: ['いれ', 'いられ'], pos0: ['動詞', '助動詞'] },
+			{ surface: 'ない' },
 		],
 	},
 	{
@@ -1081,6 +1361,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ pos0: '動詞' },
 			{ surface: ['れる', 'られる'], pos0: ['助動詞', '動詞'] },
 		],
+	},
+	{
+		name: 'verb_negative_nonpast',
+		priority: 89,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'ない' }],
 	},
 	{
 		name: 'noun_suru_volitional',
@@ -1217,6 +1503,35 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: '名詞' }, { surface: 'に' }, { surface: 'された' }],
 	},
 	{
+		name: 'noun_ni_sarete',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [{ pos0: '名詞' }, { surface: 'に' }, { surface: 'されて' }],
+	},
+	{
+		name: 'noun_ni_saremasu_yo',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'に' },
+			{ surface: 'され' },
+			{ surface: 'ます', pos0: '助動詞' },
+			{ surface: 'よ' },
+		],
+	},
+	{
+		name: 'noun_ni_saremasu',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'に' },
+			{ surface: 'され' },
+			{ surface: 'ます', pos0: '助動詞' },
+		],
+	},
+	{
 		name: 'n_ja_nai',
 		priority: 96,
 		resultType: 'phrase',
@@ -1243,6 +1558,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ surface: 'じゃ' }, { surface: 'ない' }],
+	},
+	{
+		name: 'dewa_nai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ surface: 'で' }, { surface: 'は' }, { surface: 'ない' }],
 	},
 	{
 		name: 'noun_or_pronoun_ja_nai',
@@ -1501,6 +1822,15 @@ const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: '代名詞' }, { surface: 'の', pos0: '助詞' }],
 	},
 	{
+		name: 'nanimo',
+		priority: 74,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: '何', pos0: '代名詞' },
+			{ surface: 'も', pos0: '助詞' },
+		],
+	},
+	{
 		name: 'tame_ni',
 		priority: 73,
 		resultType: 'phrase',
@@ -1614,6 +1944,12 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: 'はず' }, { surface: 'が' }, { surface: 'ない' }],
 	},
 	{
+		name: 'fixed_shikata_ga_nai',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: '仕方' }, { surface: 'が' }, { surface: 'ない' }],
+	},
+	{
 		name: 'fixed_kamo_shirenai',
 		priority: 72,
 		resultType: 'fixed_expression',
@@ -1663,6 +1999,24 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 72,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: '確か' }, { surface: 'に' }],
+	},
+	{
+		name: 'fixed_honto_ni',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: ['ホント', 'ほんと', '本当'] }, { surface: 'に' }],
+	},
+	{
+		name: 'fixed_zaruwo_enai',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ざる' },
+			{ surface: 'を', pos0: '助詞' },
+			{ surface: '得', dictionaryForm: '得る', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
 	},
 	{
 		name: 'fixed_node',

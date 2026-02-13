@@ -376,6 +376,13 @@ Current proof-of-concept rule:
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`, `進めなくなってしまう`.
 - Additional fixed-expression merges include patterns like `かもしれない`.
+- Additional learner-oriented merges include obligation/constraint forms (`〜なくてはいけない`,
+  `〜なければならない`, `〜ないといけない`, `〜てはいけない`), inability forms (`〜ていられない`, `〜てられない`,
+  `〜じゃいれない`), progression/permission chunks (`〜ようになる`, `〜てもいい`, `〜なくてもいい`, `何も`,
+  `〜ばいい`, `ではない`, `行けない`),
+  and fixed expressions like `〜ざるを得ない`, `仕方がない`.
+- Inline furigana-style text (for example, `面白おもしろくない`, `作つくったら`, `馬鹿ばか...`)
+  is also merged into learner-friendly chunks when reliable kana/kanji alignment signals are present.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
 
 Settings:

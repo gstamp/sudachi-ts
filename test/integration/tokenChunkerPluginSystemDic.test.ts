@@ -253,6 +253,44 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				text: '感謝してもしきれない',
 				expectedWithChunker: ['感謝しても', 'しきれない'],
 			},
+			{ text: 'マトモじゃいれない', expectedWithChunker: ['マトモじゃいれない'] },
+			{
+				text: 'やらなくてはいけない',
+				expectedWithChunker: ['やらなくてはいけない'],
+			},
+			{
+				text: 'やらなければならない',
+				expectedWithChunker: ['やらなければならない'],
+			},
+			{ text: '見ていられない', expectedWithChunker: ['見ていられない'] },
+			{ text: 'やってられない', expectedWithChunker: ['やってられない'] },
+			{ text: 'やらざるを得ない', expectedWithChunker: ['やらざるを得ない'] },
+			{ text: '食べないといけない', expectedWithChunker: ['食べないといけない'] },
+			{ text: 'それは仕方がない', expectedWithChunker: ['それ', 'は', '仕方がない'] },
+			{ text: '行かなければいけない', expectedWithChunker: ['行かなければいけない'] },
+			{ text: '飲んでもいい', expectedWithChunker: ['飲んでもいい'] },
+			{ text: '見てはいけない', expectedWithChunker: ['見てはいけない'] },
+			{ text: '何もできない', expectedWithChunker: ['何も', 'できない'] },
+			{ text: 'できるようになる', expectedWithChunker: ['できるようになる'] },
+			{ text: '雨で行けない', expectedWithChunker: ['雨', 'で', '行けない'] },
+			{
+				text: '時間がなくてできない',
+				expectedWithChunker: ['時間', 'が', 'なく', 'て', 'できない'],
+			},
+			{ text: '大丈夫ではない', expectedWithChunker: ['大丈夫', 'ではない'] },
+			{ text: 'できればいい', expectedWithChunker: ['できればいい'] },
+			{ text: '行かなくてもいい', expectedWithChunker: ['行かなくてもいい'] },
+			{
+				text: '面白おもしろくないの作つくったらホントに馬鹿ばかにされてオモチャにされますよ',
+				expectedWithChunker: [
+					'面白おもしろくない',
+					'の',
+					'作つくったら',
+					'ホントに',
+					'馬鹿ばかにされて',
+					'オモチャにされますよ',
+				],
+			},
 		];
 
 		for (const chunkCase of cases) {
