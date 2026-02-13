@@ -357,6 +357,9 @@ Design note:
   Sudachi system dictionary (`system_full.dic` / `system.dic` in this repo).
   Rule additions should be checked against full-dictionary tokenization, not
   only mock grammars.
+- Learner-facing goal: prefer grammar-unit chunks that are easier to study
+  (for example, `かもしれない`, `〜なくなってしまう`, `〜てない`) rather than
+  raw dictionary-level token fragments.
 
 Current proof-of-concept rule:
 - Conservative pattern-rule families (fixed expressions, suru/progressive, te-form,
@@ -368,8 +371,11 @@ Current proof-of-concept rule:
   `言われた`, `ですよ`, `では`), plus variants such as
   `何で`, `だけど`, `弱っていって`, `自伝的`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
-  `〜じゃん`, `〜でしょ`, sentence endings like `かな`, copula/negative forms such as `〜だった`, `〜だったら`,
+  `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, copula/negative forms such as `〜だった`, `〜だったら`,
   `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
+- Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`.
+- Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`, `進めなくなってしまう`.
+- Additional fixed-expression merges include patterns like `かもしれない`.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
 
 Settings:

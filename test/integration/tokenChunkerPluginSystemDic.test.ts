@@ -176,6 +176,26 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				without: ['半分', '自伝', '的', '映画', 'だ', 'から'],
 				with: ['半分', '自伝的', '映画', 'だから'],
 			},
+			{
+				text: '感謝してもしきれない',
+				without: ['感謝', 'し', 'て', 'も', 'し', 'きれ', 'ない'],
+				with: ['感謝しても', 'しきれない'],
+			},
+			{
+				text: '傷ついたら',
+				without: ['傷つい', 'たら'],
+				with: ['傷ついたら'],
+			},
+			{
+				text: 'かもしれない',
+				without: ['か', 'も', 'しれ', 'ない'],
+				with: ['かもしれない'],
+			},
+			{
+				text: '進めなくなってしまう',
+				without: ['進め', 'なく', 'なっ', 'て', 'しまう'],
+				with: ['進めなくなってしまう'],
+			},
 		];
 
 		for (const chunkCase of cases) {
@@ -214,6 +234,32 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			const withChunkerResult = tokenizeSurfaces(withChunker, chunkCase.text);
 			expect(without).toEqual(chunkCase.expected);
 			expect(withChunkerResult).toEqual(chunkCase.expected);
+		}
+	});
+
+	test('prefers learner-friendly grammar chunks over dictionary-fragmented tokens', () => {
+		const cases: Array<{
+			text: string;
+			expectedWithChunker: string[];
+		}> = [
+			{ text: 'かもしれない', expectedWithChunker: ['かもしれない'] },
+			{
+				text: '進めなくなってしまう',
+				expectedWithChunker: ['進めなくなってしまう'],
+			},
+			{ text: '食べてない', expectedWithChunker: ['食べてない'] },
+			{ text: '行かなくちゃ', expectedWithChunker: ['行かなくちゃ'] },
+			{
+				text: '感謝してもしきれない',
+				expectedWithChunker: ['感謝しても', 'しきれない'],
+			},
+		];
+
+		for (const chunkCase of cases) {
+			const without = tokenizeSurfaces(withoutChunker, chunkCase.text);
+			const withChunkerResult = tokenizeSurfaces(withChunker, chunkCase.text);
+			expect(withChunkerResult).toEqual(chunkCase.expectedWithChunker);
+			expect(withChunkerResult.length).toBeLessThan(without.length);
 		}
 	});
 });

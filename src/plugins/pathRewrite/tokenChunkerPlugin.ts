@@ -946,6 +946,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_kire_nai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'きれ', dictionaryForm: 'きれる', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
 		name: 'verb_te_n_compact',
 		priority: 96,
 		resultType: 'phrase',
@@ -986,6 +996,18 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: '動詞' }, { surface: 'なかった' }],
 	},
 	{
+		name: 'verb_naku_natte_shimau',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なく' },
+			{ surface: 'なっ', dictionaryForm: 'なる', pos0: '動詞' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'しまう', dictionaryForm: ['しまう', '仕舞う'], pos0: '動詞' },
+		],
+	},
+	{
 		name: 'adjective_past_n_da',
 		priority: 96,
 		resultType: 'phrase',
@@ -1007,6 +1029,22 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: 'た', pos0: '助動詞' }],
+	},
+	{
+		name: 'verb_tara_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'たら' }],
+	},
+	{
+		name: 'verb_tara',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+			{ surface: 'ら', pos0: '助詞' },
+		],
 	},
 	{
 		name: 'verb_aux_reru_split_ru',
@@ -1448,6 +1486,15 @@ const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'suru_verb_te_mo',
+		priority: 74,
+		resultType: 'phrase',
+		pattern: [
+			{ chunkType: 'suru_verb_te_form' },
+			{ surface: 'も', pos0: '助詞' },
+		],
+	},
+	{
 		name: 'pronoun_no',
 		priority: 74,
 		resultType: 'phrase',
@@ -1565,6 +1612,23 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 72,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'はず' }, { surface: 'が' }, { surface: 'ない' }],
+	},
+	{
+		name: 'fixed_kamo_shirenai',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'かも' }, { surface: 'しれ' }, { surface: 'ない' }],
+	},
+	{
+		name: 'fixed_kamo_shirenai_split',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'か' },
+			{ surface: 'も' },
+			{ surface: 'しれ' },
+			{ surface: 'ない' },
+		],
 	},
 	{
 		name: 'fixed_toshitomo',
