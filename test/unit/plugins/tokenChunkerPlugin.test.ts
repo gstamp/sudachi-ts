@@ -26,6 +26,7 @@ function createGrammar(): Grammar {
 		[13, new POS('補助記号', '一般', '*', '*', '*', '*')],
 		[14, new POS('助詞', '終助詞', '*', '*', '*', '*')],
 		[15, new POS('接尾辞', '形状詞的', '*', '*', '*', '*')],
+		[16, new POS('形状詞', '一般', '*', '*', '*', '*')],
 	]);
 
 	return {
@@ -691,6 +692,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'なんか',
+				expected: 'なんか',
+				specs: [
+					{ surface: 'なん', posId: 8 },
+					{ surface: 'か', posId: 2 },
+				],
+			},
+			{
 				name: '見たい',
 				expected: '見たい',
 				specs: [
@@ -955,6 +964,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'わけない',
+				expected: 'わけない',
+				specs: [
+					{ surface: 'わけ', posId: 1 },
+					{ surface: 'ない', posId: 12 },
+				],
+			},
+			{
 				name: '悪くない',
 				expected: '悪くない',
 				specs: [
@@ -1011,11 +1028,75 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '血い',
+				expected: '血い',
+				specs: [
+					{ surface: '血', posId: 1 },
+					{ surface: 'い', posId: 14 },
+				],
+			},
+			{
+				name: '汚いっ',
+				expected: '汚いっ',
+				specs: [
+					{
+						surface: '汚',
+						posId: 12,
+						dictionaryForm: '汚い',
+						reading: 'キタナ',
+					},
+					{ surface: 'いっ', posId: 5 },
+				],
+			},
+			{
 				name: 'します',
 				expected: 'します',
 				specs: [
 					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
 					{ surface: 'ます', posId: 7 },
+				],
+			},
+			{
+				name: '来ました',
+				expected: '来ました',
+				specs: [
+					{ surface: '来', posId: 5, dictionaryForm: '来る', reading: 'キ' },
+					{ surface: 'まし', posId: 7, dictionaryForm: 'ます', reading: 'マシ' },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '撮影してます',
+				expected: '撮影してます',
+				specs: [
+					{ surface: '撮影', posId: 1 },
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'て', posId: 4 },
+					{ surface: 'ます', posId: 7 },
+				],
+			},
+			{
+				name: '撮らせてた',
+				expected: '撮らせてた',
+				specs: [
+					{ surface: '撮ら', posId: 5, dictionaryForm: '撮る', reading: 'トラ' },
+					{ surface: 'せ', posId: 7, dictionaryForm: 'せる', reading: 'セ' },
+					{ surface: 'て', posId: 4 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: '撮らせてたんだ',
+				expected: '撮らせてたんだ',
+				specs: [
+					{
+						surface: '撮らせてた',
+						posId: 5,
+						dictionaryForm: '撮る',
+						reading: 'トラセテタ',
+					},
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'だ', posId: 7 },
 				],
 			},
 			{
@@ -1181,11 +1262,46 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'やだ',
+				expected: 'やだ',
+				specs: [
+					{ surface: 'や', posId: 16 },
+					{ surface: 'だ', posId: 7 },
+				],
+			},
+			{
 				name: 'だけど',
 				expected: 'だけど',
 				specs: [
 					{ surface: 'だ', posId: 7 },
 					{ surface: 'けど', posId: 2 },
+				],
+			},
+			{
+				name: 'なんだけど (な + ん + だ + けど)',
+				expected: 'なんだけど',
+				specs: [
+					{ surface: 'な', posId: 7, dictionaryForm: 'だ', reading: 'ナ' },
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'けど', posId: 2 },
+				],
+			},
+			{
+				name: 'なんだけど (な + ん + だけど)',
+				expected: 'なんだけど',
+				specs: [
+					{ surface: 'な', posId: 7, dictionaryForm: 'だ', reading: 'ナ' },
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'だけど', posId: 2 },
+				],
+			},
+			{
+				name: 'なんだけど (なん + だけど)',
+				expected: 'なんだけど',
+				specs: [
+					{ surface: 'なん', posId: 8 },
+					{ surface: 'だけど', posId: 2 },
 				],
 			},
 			{
@@ -1310,6 +1426,15 @@ describe('TokenChunkerPlugin', () => {
 				expected: 'ですよ',
 				specs: [
 					{ surface: 'です', posId: 7 },
+					{ surface: 'よ', posId: 2 },
+				],
+			},
+			{
+				name: 'んだよ',
+				expected: 'んだよ',
+				specs: [
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'だ', posId: 7 },
 					{ surface: 'よ', posId: 2 },
 				],
 			},
@@ -1635,6 +1760,16 @@ describe('TokenChunkerPlugin', () => {
 					{ surface: '的', posId: 15 },
 				],
 				expected: ['かなり', '的'],
+			},
+			{
+				name: '日中 + いない should not be merged by inline ruby fallback',
+				specs: [
+					{ surface: '日', posId: 15 },
+					{ surface: '中', posId: 15 },
+					{ surface: 'い', posId: 5, dictionaryForm: 'いる', reading: 'イ' },
+					{ surface: 'ない', posId: 7 },
+				],
+				expected: ['日中', 'いない'],
 			},
 		];
 

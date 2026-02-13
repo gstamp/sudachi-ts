@@ -369,9 +369,10 @@ Current proof-of-concept rule:
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
   `爆発した`, `感動した`, `感動してた`, `スカっとした`, `欲しかったんだ`, `貰えた`, `貰えない`,
   `言われた`, `ですよ`, `では`), plus variants such as
-  `何で`, `だけど`, `弱っていって`, `自伝的`, `つまらない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
+  `何で`, `なんか`, `だけど`, `なんだけど`, `やだ`, `撮影してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
-  `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, copula/negative forms such as `〜だった`, `〜だったら`,
+  `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
+  colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`,
   `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`, `進めなくなってしまう`.

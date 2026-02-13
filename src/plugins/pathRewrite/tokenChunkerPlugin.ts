@@ -525,11 +525,13 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 		const reading = this.toHiragana(this.readingPart(current));
 		const nextSurface = this.toHiragana(next.surface);
 		if (reading.length < 2 || !nextSurface.startsWith(reading)) {
+			const currentPos0 = this.getPosById(current.posId)?.[0] ?? '';
 			if (
 				KANJI_ONLY_PATTERN.test(current.surface) &&
 				current.surface.length <= 2 &&
 				next.surface.length >= 3 &&
 				HIRAGANA_PATTERN.test(next.surface) &&
+				!['接尾辞', '助詞', '助動詞', '補助記号'].includes(currentPos0) &&
 				(next.chunkType === 'phrase' ||
 					next.chunkType === 'te_form' ||
 					next.chunkType === 'progressive_form')
@@ -846,6 +848,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_masu_past',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'まし', dictionaryForm: 'ます', pos0: '助動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
 		name: 'noun_suru_past',
 		priority: 101,
 		resultType: 'phrase',
@@ -880,6 +892,23 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 101,
 		resultType: 'phrase',
 		pattern: [{ pos0: '名詞' }, { surface: ['してた', 'している', 'してる'] }],
+	},
+	{
+		name: 'noun_suru_te_masu',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '名詞' },
+			{ surface: 'し', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: ['て', 'で'] },
+			{ surface: 'ます', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'noun_suru_te_masu_compact',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [{ pos0: '名詞' }, { surface: 'してます' }],
 	},
 	{
 		name: 'emphatic_tto_shita',
@@ -1051,6 +1080,37 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
 			{ surface: 'ん' },
 		],
+	},
+	{
+		name: 'verb_causative_te_ta',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['せ', 'させ'],
+				dictionaryForm: ['せる', 'させる'],
+				pos0: ['助動詞', '動詞'],
+			},
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_past_n_da',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ん', pos0: '助詞' },
+			{ surface: 'だ', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_past_n_da_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'んだ' }],
 	},
 	{
 		name: 'verb_te_irare_nai',
@@ -1594,6 +1654,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: ['なん', '何'] }, { surface: 'で' }],
 	},
 	{
+		name: 'fixed_nanka',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: ['なん', '何'] }, { surface: 'か', pos0: '助詞' }],
+	},
+	{
 		name: 'fixed_datte',
 		priority: 94,
 		resultType: 'fixed_expression',
@@ -1604,6 +1670,33 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'だ' }, { surface: 'から' }],
+	},
+	{
+		name: 'fixed_na_n_da_kedo',
+		priority: 95,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'な', dictionaryForm: 'だ', pos0: '助動詞' },
+			{ surface: 'ん', pos0: '助詞' },
+			{ surface: 'だ', pos0: '助動詞' },
+			{ surface: 'けど', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'fixed_na_n_dakedo',
+		priority: 95,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'な', dictionaryForm: 'だ', pos0: '助動詞' },
+			{ surface: 'ん', pos0: '助詞' },
+			{ surface: 'だけど' },
+		],
+	},
+	{
+		name: 'fixed_nan_dakedo',
+		priority: 95,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: ['なん', '何'] }, { surface: 'だけど' }],
 	},
 	{
 		name: 'fixed_dakedo',
@@ -1673,6 +1766,21 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: 'つまら' }, { surface: 'ない' }],
 	},
 	{
+		name: 'fixed_wake_nai',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'わけ' }, { surface: 'ない' }],
+	},
+	{
+		name: 'fixed_nicchu',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: '日', pos0: '接尾辞' },
+			{ surface: '中', pos0: '接尾辞' },
+		],
+	},
+	{
 		name: 'adjective_nai',
 		priority: 94,
 		resultType: 'phrase',
@@ -1695,6 +1803,21 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: '降参' }, { surface: 'っ' }],
 	},
 	{
+		name: 'fixed_chii',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: '血', pos0: '名詞' },
+			{ surface: 'い', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'adjective_i_small_tsu',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ pos0: '形容詞' }, { surface: 'いっ' }],
+	},
+	{
 		name: 'fixed_gucha_gucha',
 		priority: 94,
 		resultType: 'fixed_expression',
@@ -1705,6 +1828,24 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'です' }, { surface: 'よ' }],
+	},
+	{
+		name: 'fixed_n_da_yo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'ん' }, { surface: 'だ' }, { surface: 'よ' }],
+	},
+	{
+		name: 'fixed_n_da_yo_compact',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'ん' }, { surface: 'だよ' }],
+	},
+	{
+		name: 'fixed_nda_yo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'んだ' }, { surface: 'よ' }],
 	},
 	{
 		name: 'fixed_de_su_yo',
@@ -1731,6 +1872,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [
 			{ surface: 'か', pos0: '助詞' },
 			{ surface: 'な', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'fixed_yada',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'や', pos0: '形状詞' },
+			{ surface: 'だ', pos0: '助動詞' },
 		],
 	},
 ];
