@@ -54,6 +54,309 @@ function tokenizeSurfaces(dictionary: Dictionary, text: string): string[] {
 	return [...tokenizer.tokenize(SplitMode.C, text)].map((m) => m.surface());
 }
 
+type ObligationSentencePattern = {
+	naiToIkenai: string;
+	nakerebaNaranai: string;
+	nakerebaIkenai: string;
+	nakutewaIkenai: string;
+	nakutemoIi: string;
+	temoIi: string;
+	nakyaIkenai: string;
+	nakyaNaranai: string;
+	nakuchaIkenai: string;
+	nakuchaNaranai: string;
+};
+
+type AdversarialChunkCase = {
+	text: string;
+	expectedChunk: string;
+};
+
+function createObligationSentencePatterns(): ObligationSentencePattern[] {
+	return [
+		{
+			naiToIkenai: '食べないといけない',
+			nakerebaNaranai: '食べなければならない',
+			nakerebaIkenai: '食べなければいけない',
+			nakutewaIkenai: '食べなくてはいけない',
+			nakutemoIi: '食べなくてもいい',
+			temoIi: '食べてもいい',
+			nakyaIkenai: '食べなきゃいけない',
+			nakyaNaranai: '食べなきゃならない',
+			nakuchaIkenai: '食べなくちゃいけない',
+			nakuchaNaranai: '食べなくちゃならない',
+		},
+		{
+			naiToIkenai: '飲まないといけない',
+			nakerebaNaranai: '飲まなければならない',
+			nakerebaIkenai: '飲まなければいけない',
+			nakutewaIkenai: '飲まなくてはいけない',
+			nakutemoIi: '飲まなくてもいい',
+			temoIi: '飲んでもいい',
+			nakyaIkenai: '飲まなきゃいけない',
+			nakyaNaranai: '飲まなきゃならない',
+			nakuchaIkenai: '飲まなくちゃいけない',
+			nakuchaNaranai: '飲まなくちゃならない',
+		},
+		{
+			naiToIkenai: '行かないといけない',
+			nakerebaNaranai: '行かなければならない',
+			nakerebaIkenai: '行かなければいけない',
+			nakutewaIkenai: '行かなくてはいけない',
+			nakutemoIi: '行かなくてもいい',
+			temoIi: '行ってもいい',
+			nakyaIkenai: '行かなきゃいけない',
+			nakyaNaranai: '行かなきゃならない',
+			nakuchaIkenai: '行かなくちゃいけない',
+			nakuchaNaranai: '行かなくちゃならない',
+		},
+		{
+			naiToIkenai: '読まないといけない',
+			nakerebaNaranai: '読まなければならない',
+			nakerebaIkenai: '読まなければいけない',
+			nakutewaIkenai: '読まなくてはいけない',
+			nakutemoIi: '読まなくてもいい',
+			temoIi: '読んでもいい',
+			nakyaIkenai: '読まなきゃいけない',
+			nakyaNaranai: '読まなきゃならない',
+			nakuchaIkenai: '読まなくちゃいけない',
+			nakuchaNaranai: '読まなくちゃならない',
+		},
+		{
+			naiToIkenai: '書かないといけない',
+			nakerebaNaranai: '書かなければならない',
+			nakerebaIkenai: '書かなければいけない',
+			nakutewaIkenai: '書かなくてはいけない',
+			nakutemoIi: '書かなくてもいい',
+			temoIi: '書いてもいい',
+			nakyaIkenai: '書かなきゃいけない',
+			nakyaNaranai: '書かなきゃならない',
+			nakuchaIkenai: '書かなくちゃいけない',
+			nakuchaNaranai: '書かなくちゃならない',
+		},
+		{
+			naiToIkenai: '見ないといけない',
+			nakerebaNaranai: '見なければならない',
+			nakerebaIkenai: '見なければいけない',
+			nakutewaIkenai: '見なくてはいけない',
+			nakutemoIi: '見なくてもいい',
+			temoIi: '見てもいい',
+			nakyaIkenai: '見なきゃいけない',
+			nakyaNaranai: '見なきゃならない',
+			nakuchaIkenai: '見なくちゃいけない',
+			nakuchaNaranai: '見なくちゃならない',
+		},
+		{
+			naiToIkenai: '聞かないといけない',
+			nakerebaNaranai: '聞かなければならない',
+			nakerebaIkenai: '聞かなければいけない',
+			nakutewaIkenai: '聞かなくてはいけない',
+			nakutemoIi: '聞かなくてもいい',
+			temoIi: '聞いてもいい',
+			nakyaIkenai: '聞かなきゃいけない',
+			nakyaNaranai: '聞かなきゃならない',
+			nakuchaIkenai: '聞かなくちゃいけない',
+			nakuchaNaranai: '聞かなくちゃならない',
+		},
+		{
+			naiToIkenai: '作らないといけない',
+			nakerebaNaranai: '作らなければならない',
+			nakerebaIkenai: '作らなければいけない',
+			nakutewaIkenai: '作らなくてはいけない',
+			nakutemoIi: '作らなくてもいい',
+			temoIi: '作ってもいい',
+			nakyaIkenai: '作らなきゃいけない',
+			nakyaNaranai: '作らなきゃならない',
+			nakuchaIkenai: '作らなくちゃいけない',
+			nakuchaNaranai: '作らなくちゃならない',
+		},
+		{
+			naiToIkenai: '話さないといけない',
+			nakerebaNaranai: '話さなければならない',
+			nakerebaIkenai: '話さなければいけない',
+			nakutewaIkenai: '話さなくてはいけない',
+			nakutemoIi: '話さなくてもいい',
+			temoIi: '話してもいい',
+			nakyaIkenai: '話さなきゃいけない',
+			nakyaNaranai: '話さなきゃならない',
+			nakuchaIkenai: '話さなくちゃいけない',
+			nakuchaNaranai: '話さなくちゃならない',
+		},
+		{
+			naiToIkenai: '遊ばないといけない',
+			nakerebaNaranai: '遊ばなければならない',
+			nakerebaIkenai: '遊ばなければいけない',
+			nakutewaIkenai: '遊ばなくてはいけない',
+			nakutemoIi: '遊ばなくてもいい',
+			temoIi: '遊んでもいい',
+			nakyaIkenai: '遊ばなきゃいけない',
+			nakyaNaranai: '遊ばなきゃならない',
+			nakuchaIkenai: '遊ばなくちゃいけない',
+			nakuchaNaranai: '遊ばなくちゃならない',
+		},
+		{
+			naiToIkenai: '待たないといけない',
+			nakerebaNaranai: '待たなければならない',
+			nakerebaIkenai: '待たなければいけない',
+			nakutewaIkenai: '待たなくてはいけない',
+			nakutemoIi: '待たなくてもいい',
+			temoIi: '待ってもいい',
+			nakyaIkenai: '待たなきゃいけない',
+			nakyaNaranai: '待たなきゃならない',
+			nakuchaIkenai: '待たなくちゃいけない',
+			nakuchaNaranai: '待たなくちゃならない',
+		},
+		{
+			naiToIkenai: '使わないといけない',
+			nakerebaNaranai: '使わなければならない',
+			nakerebaIkenai: '使わなければいけない',
+			nakutewaIkenai: '使わなくてはいけない',
+			nakutemoIi: '使わなくてもいい',
+			temoIi: '使ってもいい',
+			nakyaIkenai: '使わなきゃいけない',
+			nakyaNaranai: '使わなきゃならない',
+			nakuchaIkenai: '使わなくちゃいけない',
+			nakuchaNaranai: '使わなくちゃならない',
+		},
+		{
+			naiToIkenai: '住まないといけない',
+			nakerebaNaranai: '住まなければならない',
+			nakerebaIkenai: '住まなければいけない',
+			nakutewaIkenai: '住まなくてはいけない',
+			nakutemoIi: '住まなくてもいい',
+			temoIi: '住んでもいい',
+			nakyaIkenai: '住まなきゃいけない',
+			nakyaNaranai: '住まなきゃならない',
+			nakuchaIkenai: '住まなくちゃいけない',
+			nakuchaNaranai: '住まなくちゃならない',
+		},
+		{
+			naiToIkenai: '学ばないといけない',
+			nakerebaNaranai: '学ばなければならない',
+			nakerebaIkenai: '学ばなければいけない',
+			nakutewaIkenai: '学ばなくてはいけない',
+			nakutemoIi: '学ばなくてもいい',
+			temoIi: '学んでもいい',
+			nakyaIkenai: '学ばなきゃいけない',
+			nakyaNaranai: '学ばなきゃならない',
+			nakuchaIkenai: '学ばなくちゃいけない',
+			nakuchaNaranai: '学ばなくちゃならない',
+		},
+		{
+			naiToIkenai: '歩かないといけない',
+			nakerebaNaranai: '歩かなければならない',
+			nakerebaIkenai: '歩かなければいけない',
+			nakutewaIkenai: '歩かなくてはいけない',
+			nakutemoIi: '歩かなくてもいい',
+			temoIi: '歩いてもいい',
+			nakyaIkenai: '歩かなきゃいけない',
+			nakyaNaranai: '歩かなきゃならない',
+			nakuchaIkenai: '歩かなくちゃいけない',
+			nakuchaNaranai: '歩かなくちゃならない',
+		},
+		{
+			naiToIkenai: '泳がないといけない',
+			nakerebaNaranai: '泳がなければならない',
+			nakerebaIkenai: '泳がなければいけない',
+			nakutewaIkenai: '泳がなくてはいけない',
+			nakutemoIi: '泳がなくてもいい',
+			temoIi: '泳いでもいい',
+			nakyaIkenai: '泳がなきゃいけない',
+			nakyaNaranai: '泳がなきゃならない',
+			nakuchaIkenai: '泳がなくちゃいけない',
+			nakuchaNaranai: '泳がなくちゃならない',
+		},
+		{
+			naiToIkenai: '買わないといけない',
+			nakerebaNaranai: '買わなければならない',
+			nakerebaIkenai: '買わなければいけない',
+			nakutewaIkenai: '買わなくてはいけない',
+			nakutemoIi: '買わなくてもいい',
+			temoIi: '買ってもいい',
+			nakyaIkenai: '買わなきゃいけない',
+			nakyaNaranai: '買わなきゃならない',
+			nakuchaIkenai: '買わなくちゃいけない',
+			nakuchaNaranai: '買わなくちゃならない',
+		},
+		{
+			naiToIkenai: '売らないといけない',
+			nakerebaNaranai: '売らなければならない',
+			nakerebaIkenai: '売らなければいけない',
+			nakutewaIkenai: '売らなくてはいけない',
+			nakutemoIi: '売らなくてもいい',
+			temoIi: '売ってもいい',
+			nakyaIkenai: '売らなきゃいけない',
+			nakyaNaranai: '売らなきゃならない',
+			nakuchaIkenai: '売らなくちゃいけない',
+			nakuchaNaranai: '売らなくちゃならない',
+		},
+		{
+			naiToIkenai: '休まないといけない',
+			nakerebaNaranai: '休まなければならない',
+			nakerebaIkenai: '休まなければいけない',
+			nakutewaIkenai: '休まなくてはいけない',
+			nakutemoIi: '休まなくてもいい',
+			temoIi: '休んでもいい',
+			nakyaIkenai: '休まなきゃいけない',
+			nakyaNaranai: '休まなきゃならない',
+			nakuchaIkenai: '休まなくちゃいけない',
+			nakuchaNaranai: '休まなくちゃならない',
+		},
+		{
+			naiToIkenai: '急がないといけない',
+			nakerebaNaranai: '急がなければならない',
+			nakerebaIkenai: '急がなければいけない',
+			nakutewaIkenai: '急がなくてはいけない',
+			nakutemoIi: '急がなくてもいい',
+			temoIi: '急いでもいい',
+			nakyaIkenai: '急がなきゃいけない',
+			nakyaNaranai: '急がなきゃならない',
+			nakuchaIkenai: '急がなくちゃいけない',
+			nakuchaNaranai: '急がなくちゃならない',
+		},
+	];
+}
+
+function createAdversarialChunkCases(): AdversarialChunkCase[] {
+	const subjects = [
+		'私は',
+		'彼は',
+		'彼女は',
+		'先生は',
+		'学生は',
+		'友達は',
+		'母は',
+		'父は',
+		'先輩は',
+		'後輩は',
+	];
+	const patterns = createObligationSentencePatterns();
+	const cases: AdversarialChunkCase[] = [];
+	for (const subject of subjects) {
+		for (const pattern of patterns) {
+			const expectedChunks = [
+				pattern.naiToIkenai,
+				pattern.nakerebaNaranai,
+				pattern.nakerebaIkenai,
+				pattern.nakutewaIkenai,
+				pattern.nakutemoIi,
+				pattern.temoIi,
+				pattern.nakyaIkenai,
+				pattern.nakyaNaranai,
+				pattern.nakuchaIkenai,
+				pattern.nakuchaNaranai,
+			];
+			for (const expectedChunk of expectedChunks) {
+				cases.push({
+					text: `${subject}${expectedChunk}。`,
+					expectedChunk,
+				});
+			}
+		}
+	}
+	return cases;
+}
+
 describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 	let withChunker: Dictionary;
 	let withoutChunker: Dictionary;
@@ -328,6 +631,12 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{ text: '食べてない', expectedWithChunker: ['食べてない'] },
 			{ text: '行かなくちゃ', expectedWithChunker: ['行かなくちゃ'] },
+			{ text: '食べなきゃいけない', expectedWithChunker: ['食べなきゃいけない'] },
+			{ text: '食べなきゃ行けない', expectedWithChunker: ['食べなきゃ行けない'] },
+			{ text: '食べなきゃならない', expectedWithChunker: ['食べなきゃならない'] },
+			{ text: '食べなくちゃいけない', expectedWithChunker: ['食べなくちゃいけない'] },
+			{ text: '食べなくちゃ行けない', expectedWithChunker: ['食べなくちゃ行けない'] },
+			{ text: '食べなくちゃならない', expectedWithChunker: ['食べなくちゃならない'] },
 			{
 				text: '感謝してもしきれない',
 				expectedWithChunker: ['感謝しても', 'しきれない'],
@@ -378,6 +687,34 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			expect(withChunkerResult).toEqual(chunkCase.expectedWithChunker);
 			expect(withChunkerResult.length).toBeLessThan(without.length);
 		}
+	});
+
+	test('handles 2000 adversarial obligation/chunking sentences with system.dic', () => {
+		const cases = createAdversarialChunkCases();
+		expect(cases.length).toBe(2000);
+
+		const failures: string[] = [];
+		for (const chunkCase of cases) {
+			const without = tokenizeSurfaces(withoutChunker, chunkCase.text);
+			const withChunkerResult = tokenizeSurfaces(withChunker, chunkCase.text);
+			if (!withChunkerResult.includes(chunkCase.expectedChunk)) {
+				failures.push(
+					`missing chunk "${chunkCase.expectedChunk}" for "${chunkCase.text}" ` +
+						`with=${JSON.stringify(withChunkerResult)} without=${JSON.stringify(without)}`,
+				);
+			}
+			if (withChunkerResult.length > without.length) {
+				failures.push(
+					`token count regression for "${chunkCase.text}" ` +
+						`with=${withChunkerResult.length} without=${without.length}`,
+				);
+			}
+			if (failures.length >= 20) {
+				break;
+			}
+		}
+
+		expect(failures).toEqual([]);
 	});
 });
 

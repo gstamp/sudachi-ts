@@ -1232,6 +1232,66 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '食べなきゃいけない',
+				expected: '食べなきゃいけない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なきゃ', posId: 2 },
+					{
+						surface: 'いけ',
+						posId: 5,
+						dictionaryForm: 'いける',
+						reading: 'イケ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '食べなきゃ行けない',
+				expected: '食べなきゃ行けない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なきゃ', posId: 2 },
+					{
+						surface: '行け',
+						posId: 5,
+						dictionaryForm: '行ける',
+						reading: 'イケ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '食べなきゃならない',
+				expected: '食べなきゃならない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なきゃ', posId: 2 },
+					{
+						surface: 'なら',
+						posId: 5,
+						dictionaryForm: 'なる',
+						reading: 'ナラ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
 				name: '行かなくちゃ',
 				expected: '行かなくちゃ',
 				specs: [
@@ -1243,6 +1303,69 @@ describe('TokenChunkerPlugin', () => {
 					},
 					{ surface: 'なく', posId: 7 },
 					{ surface: 'ちゃ', posId: 2 },
+				],
+			},
+			{
+				name: '食べなくちゃいけない',
+				expected: '食べなくちゃいけない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'ちゃ', posId: 2 },
+					{
+						surface: 'いけ',
+						posId: 5,
+						dictionaryForm: 'いける',
+						reading: 'イケ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '食べなくちゃ行けない',
+				expected: '食べなくちゃ行けない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'ちゃ', posId: 2 },
+					{
+						surface: '行け',
+						posId: 5,
+						dictionaryForm: '行ける',
+						reading: 'イケ',
+					},
+					{ surface: 'ない', posId: 7 },
+				],
+			},
+			{
+				name: '食べなくちゃならない',
+				expected: '食べなくちゃならない',
+				specs: [
+					{
+						surface: '食べ',
+						posId: 5,
+						dictionaryForm: '食べる',
+						reading: 'タベ',
+					},
+					{ surface: 'なく', posId: 7 },
+					{ surface: 'ちゃ', posId: 2 },
+					{
+						surface: 'なら',
+						posId: 5,
+						dictionaryForm: 'なる',
+						reading: 'ナラ',
+					},
+					{ surface: 'ない', posId: 7 },
 				],
 			},
 			{
