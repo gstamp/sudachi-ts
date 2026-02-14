@@ -6,9 +6,17 @@ import type { Dictionary } from '../../src/core/dictionary.js';
 import { SplitMode } from '../../src/core/tokenizer.js';
 import { DictionaryFactory } from '../../src/dictionary/dictionaryFactory.js';
 
-const SYSTEM_DIC_PATH = join(import.meta.dir, '..', '..', 'resources', 'system.dic');
+const SYSTEM_DIC_PATH = join(
+	import.meta.dir,
+	'..',
+	'..',
+	'resources',
+	'system.dic',
+);
 
-const describeIfSystemDic = existsSync(SYSTEM_DIC_PATH) ? describe : describe.skip;
+const describeIfSystemDic = existsSync(SYSTEM_DIC_PATH)
+	? describe
+	: describe.skip;
 
 function createBaseConfig() {
 	return {
@@ -62,8 +70,8 @@ type ObligationSentencePattern = {
 	nakutemoIi: string;
 	temoIi: string;
 	nakyaIkenai: string;
-	nakyaNaranai: string;
-	nakuchaIkenai: string;
+	naiToNaranai: string;
+	nakutewaNaranai: string;
 	nakuchaNaranai: string;
 };
 
@@ -82,8 +90,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '食べなくてもいい',
 			temoIi: '食べてもいい',
 			nakyaIkenai: '食べなきゃいけない',
-			nakyaNaranai: '食べなきゃならない',
-			nakuchaIkenai: '食べなくちゃいけない',
+			naiToNaranai: '食べないとならない',
+			nakutewaNaranai: '食べなくてはならない',
 			nakuchaNaranai: '食べなくちゃならない',
 		},
 		{
@@ -94,8 +102,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '飲まなくてもいい',
 			temoIi: '飲んでもいい',
 			nakyaIkenai: '飲まなきゃいけない',
-			nakyaNaranai: '飲まなきゃならない',
-			nakuchaIkenai: '飲まなくちゃいけない',
+			naiToNaranai: '飲まないとならない',
+			nakutewaNaranai: '飲まなくてはならない',
 			nakuchaNaranai: '飲まなくちゃならない',
 		},
 		{
@@ -106,8 +114,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '行かなくてもいい',
 			temoIi: '行ってもいい',
 			nakyaIkenai: '行かなきゃいけない',
-			nakyaNaranai: '行かなきゃならない',
-			nakuchaIkenai: '行かなくちゃいけない',
+			naiToNaranai: '行かないとならない',
+			nakutewaNaranai: '行かなくてはならない',
 			nakuchaNaranai: '行かなくちゃならない',
 		},
 		{
@@ -118,8 +126,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '読まなくてもいい',
 			temoIi: '読んでもいい',
 			nakyaIkenai: '読まなきゃいけない',
-			nakyaNaranai: '読まなきゃならない',
-			nakuchaIkenai: '読まなくちゃいけない',
+			naiToNaranai: '読まないとならない',
+			nakutewaNaranai: '読まなくてはならない',
 			nakuchaNaranai: '読まなくちゃならない',
 		},
 		{
@@ -130,8 +138,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '書かなくてもいい',
 			temoIi: '書いてもいい',
 			nakyaIkenai: '書かなきゃいけない',
-			nakyaNaranai: '書かなきゃならない',
-			nakuchaIkenai: '書かなくちゃいけない',
+			naiToNaranai: '書かないとならない',
+			nakutewaNaranai: '書かなくてはならない',
 			nakuchaNaranai: '書かなくちゃならない',
 		},
 		{
@@ -142,8 +150,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '見なくてもいい',
 			temoIi: '見てもいい',
 			nakyaIkenai: '見なきゃいけない',
-			nakyaNaranai: '見なきゃならない',
-			nakuchaIkenai: '見なくちゃいけない',
+			naiToNaranai: '見ないとならない',
+			nakutewaNaranai: '見なくてはならない',
 			nakuchaNaranai: '見なくちゃならない',
 		},
 		{
@@ -154,8 +162,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '聞かなくてもいい',
 			temoIi: '聞いてもいい',
 			nakyaIkenai: '聞かなきゃいけない',
-			nakyaNaranai: '聞かなきゃならない',
-			nakuchaIkenai: '聞かなくちゃいけない',
+			naiToNaranai: '聞かないとならない',
+			nakutewaNaranai: '聞かなくてはならない',
 			nakuchaNaranai: '聞かなくちゃならない',
 		},
 		{
@@ -166,8 +174,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '作らなくてもいい',
 			temoIi: '作ってもいい',
 			nakyaIkenai: '作らなきゃいけない',
-			nakyaNaranai: '作らなきゃならない',
-			nakuchaIkenai: '作らなくちゃいけない',
+			naiToNaranai: '作らないとならない',
+			nakutewaNaranai: '作らなくてはならない',
 			nakuchaNaranai: '作らなくちゃならない',
 		},
 		{
@@ -178,8 +186,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '話さなくてもいい',
 			temoIi: '話してもいい',
 			nakyaIkenai: '話さなきゃいけない',
-			nakyaNaranai: '話さなきゃならない',
-			nakuchaIkenai: '話さなくちゃいけない',
+			naiToNaranai: '話さないとならない',
+			nakutewaNaranai: '話さなくてはならない',
 			nakuchaNaranai: '話さなくちゃならない',
 		},
 		{
@@ -190,8 +198,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '遊ばなくてもいい',
 			temoIi: '遊んでもいい',
 			nakyaIkenai: '遊ばなきゃいけない',
-			nakyaNaranai: '遊ばなきゃならない',
-			nakuchaIkenai: '遊ばなくちゃいけない',
+			naiToNaranai: '遊ばないとならない',
+			nakutewaNaranai: '遊ばなくてはならない',
 			nakuchaNaranai: '遊ばなくちゃならない',
 		},
 		{
@@ -202,8 +210,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '待たなくてもいい',
 			temoIi: '待ってもいい',
 			nakyaIkenai: '待たなきゃいけない',
-			nakyaNaranai: '待たなきゃならない',
-			nakuchaIkenai: '待たなくちゃいけない',
+			naiToNaranai: '待たないとならない',
+			nakutewaNaranai: '待たなくてはならない',
 			nakuchaNaranai: '待たなくちゃならない',
 		},
 		{
@@ -214,8 +222,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '使わなくてもいい',
 			temoIi: '使ってもいい',
 			nakyaIkenai: '使わなきゃいけない',
-			nakyaNaranai: '使わなきゃならない',
-			nakuchaIkenai: '使わなくちゃいけない',
+			naiToNaranai: '使わないとならない',
+			nakutewaNaranai: '使わなくてはならない',
 			nakuchaNaranai: '使わなくちゃならない',
 		},
 		{
@@ -226,8 +234,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '住まなくてもいい',
 			temoIi: '住んでもいい',
 			nakyaIkenai: '住まなきゃいけない',
-			nakyaNaranai: '住まなきゃならない',
-			nakuchaIkenai: '住まなくちゃいけない',
+			naiToNaranai: '住まないとならない',
+			nakutewaNaranai: '住まなくてはならない',
 			nakuchaNaranai: '住まなくちゃならない',
 		},
 		{
@@ -238,8 +246,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '学ばなくてもいい',
 			temoIi: '学んでもいい',
 			nakyaIkenai: '学ばなきゃいけない',
-			nakyaNaranai: '学ばなきゃならない',
-			nakuchaIkenai: '学ばなくちゃいけない',
+			naiToNaranai: '学ばないとならない',
+			nakutewaNaranai: '学ばなくてはならない',
 			nakuchaNaranai: '学ばなくちゃならない',
 		},
 		{
@@ -250,8 +258,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '歩かなくてもいい',
 			temoIi: '歩いてもいい',
 			nakyaIkenai: '歩かなきゃいけない',
-			nakyaNaranai: '歩かなきゃならない',
-			nakuchaIkenai: '歩かなくちゃいけない',
+			naiToNaranai: '歩かないとならない',
+			nakutewaNaranai: '歩かなくてはならない',
 			nakuchaNaranai: '歩かなくちゃならない',
 		},
 		{
@@ -262,8 +270,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '泳がなくてもいい',
 			temoIi: '泳いでもいい',
 			nakyaIkenai: '泳がなきゃいけない',
-			nakyaNaranai: '泳がなきゃならない',
-			nakuchaIkenai: '泳がなくちゃいけない',
+			naiToNaranai: '泳がないとならない',
+			nakutewaNaranai: '泳がなくてはならない',
 			nakuchaNaranai: '泳がなくちゃならない',
 		},
 		{
@@ -274,8 +282,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '買わなくてもいい',
 			temoIi: '買ってもいい',
 			nakyaIkenai: '買わなきゃいけない',
-			nakyaNaranai: '買わなきゃならない',
-			nakuchaIkenai: '買わなくちゃいけない',
+			naiToNaranai: '買わないとならない',
+			nakutewaNaranai: '買わなくてはならない',
 			nakuchaNaranai: '買わなくちゃならない',
 		},
 		{
@@ -286,8 +294,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '売らなくてもいい',
 			temoIi: '売ってもいい',
 			nakyaIkenai: '売らなきゃいけない',
-			nakyaNaranai: '売らなきゃならない',
-			nakuchaIkenai: '売らなくちゃいけない',
+			naiToNaranai: '売らないとならない',
+			nakutewaNaranai: '売らなくてはならない',
 			nakuchaNaranai: '売らなくちゃならない',
 		},
 		{
@@ -298,8 +306,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '休まなくてもいい',
 			temoIi: '休んでもいい',
 			nakyaIkenai: '休まなきゃいけない',
-			nakyaNaranai: '休まなきゃならない',
-			nakuchaIkenai: '休まなくちゃいけない',
+			naiToNaranai: '休まないとならない',
+			nakutewaNaranai: '休まなくてはならない',
 			nakuchaNaranai: '休まなくちゃならない',
 		},
 		{
@@ -310,8 +318,8 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 			nakutemoIi: '急がなくてもいい',
 			temoIi: '急いでもいい',
 			nakyaIkenai: '急がなきゃいけない',
-			nakyaNaranai: '急がなきゃならない',
-			nakuchaIkenai: '急がなくちゃいけない',
+			naiToNaranai: '急がないとならない',
+			nakutewaNaranai: '急がなくてはならない',
 			nakuchaNaranai: '急がなくちゃならない',
 		},
 	];
@@ -342,8 +350,8 @@ function createAdversarialChunkCases(): AdversarialChunkCase[] {
 				pattern.nakutemoIi,
 				pattern.temoIi,
 				pattern.nakyaIkenai,
-				pattern.nakyaNaranai,
-				pattern.nakuchaIkenai,
+				pattern.naiToNaranai,
+				pattern.nakutewaNaranai,
 				pattern.nakuchaNaranai,
 			];
 			for (const expectedChunk of expectedChunks) {
@@ -364,7 +372,10 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 	beforeAll(async () => {
 		const factory = new DictionaryFactory();
 		withChunker = await factory.create(undefined, createWithChunkerConfig());
-		withoutChunker = await factory.create(undefined, createWithoutChunkerConfig());
+		withoutChunker = await factory.create(
+			undefined,
+			createWithoutChunkerConfig(),
+		);
 	});
 
 	test('merges added grammar chunks with real dictionary tokenization', () => {
@@ -395,7 +406,19 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{
 				text: '映画をバカにされた事じゃなくて',
-				without: ['映画', 'を', 'バカ', 'に', 'さ', 'れ', 'た', '事', 'じゃ', 'なく', 'て'],
+				without: [
+					'映画',
+					'を',
+					'バカ',
+					'に',
+					'さ',
+					'れ',
+					'た',
+					'事',
+					'じゃ',
+					'なく',
+					'て',
+				],
 				with: ['映画', 'を', 'バカにされた', '事じゃなくて'],
 			},
 			{
@@ -471,7 +494,17 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{
 				text: 'だけど吸血鬼はだんだん弱っていって',
-				without: ['だ', 'けど', '吸血鬼', 'は', 'だんだん', '弱っ', 'て', 'いっ', 'て'],
+				without: [
+					'だ',
+					'けど',
+					'吸血鬼',
+					'は',
+					'だんだん',
+					'弱っ',
+					'て',
+					'いっ',
+					'て',
+				],
 				with: ['だけど', '吸血鬼', 'は', 'だんだん', '弱っていって'],
 			},
 			{
@@ -516,12 +549,36 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{
 				text: 'えーお父さんが撮影してます．．．',
-				without: ['えー', 'お父さん', 'が', '撮影', 'し', 'て', 'ます', '.', '.', '.'],
+				without: [
+					'えー',
+					'お父さん',
+					'が',
+					'撮影',
+					'し',
+					'て',
+					'ます',
+					'.',
+					'.',
+					'.',
+				],
 				with: ['えー', 'お父さん', 'が', '撮影してます', '.', '.', '.'],
 			},
 			{
 				text: 'お母さんね死んじゃうかもしれないんだよ？',
-				without: ['お母さん', 'ね', '死ん', 'じゃう', 'か', 'も', 'しれ', 'ない', 'ん', 'だ', 'よ', '?'],
+				without: [
+					'お母さん',
+					'ね',
+					'死ん',
+					'じゃう',
+					'か',
+					'も',
+					'しれ',
+					'ない',
+					'ん',
+					'だ',
+					'よ',
+					'?',
+				],
 				with: ['お母さん', 'ね', '死んじゃう', 'かもしれない', 'んだよ', '?'],
 			},
 			{
@@ -631,17 +688,38 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{ text: '食べてない', expectedWithChunker: ['食べてない'] },
 			{ text: '行かなくちゃ', expectedWithChunker: ['行かなくちゃ'] },
-			{ text: '食べなきゃいけない', expectedWithChunker: ['食べなきゃいけない'] },
-			{ text: '食べなきゃ行けない', expectedWithChunker: ['食べなきゃ行けない'] },
-			{ text: '食べなきゃならない', expectedWithChunker: ['食べなきゃならない'] },
-			{ text: '食べなくちゃいけない', expectedWithChunker: ['食べなくちゃいけない'] },
-			{ text: '食べなくちゃ行けない', expectedWithChunker: ['食べなくちゃ行けない'] },
-			{ text: '食べなくちゃならない', expectedWithChunker: ['食べなくちゃならない'] },
+			{
+				text: '食べなきゃいけない',
+				expectedWithChunker: ['食べなきゃいけない'],
+			},
+			{
+				text: '食べなきゃ行けない',
+				expectedWithChunker: ['食べなきゃ行けない'],
+			},
+			{
+				text: '食べなきゃならない',
+				expectedWithChunker: ['食べなきゃならない'],
+			},
+			{
+				text: '食べなくちゃいけない',
+				expectedWithChunker: ['食べなくちゃいけない'],
+			},
+			{
+				text: '食べなくちゃ行けない',
+				expectedWithChunker: ['食べなくちゃ行けない'],
+			},
+			{
+				text: '食べなくちゃならない',
+				expectedWithChunker: ['食べなくちゃならない'],
+			},
 			{
 				text: '感謝してもしきれない',
 				expectedWithChunker: ['感謝しても', 'しきれない'],
 			},
-			{ text: 'マトモじゃいれない', expectedWithChunker: ['マトモじゃいれない'] },
+			{
+				text: 'マトモじゃいれない',
+				expectedWithChunker: ['マトモじゃいれない'],
+			},
 			{
 				text: 'やらなくてはいけない',
 				expectedWithChunker: ['やらなくてはいけない'],
@@ -653,9 +731,26 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			{ text: '見ていられない', expectedWithChunker: ['見ていられない'] },
 			{ text: 'やってられない', expectedWithChunker: ['やってられない'] },
 			{ text: 'やらざるを得ない', expectedWithChunker: ['やらざるを得ない'] },
-			{ text: '食べないといけない', expectedWithChunker: ['食べないといけない'] },
-			{ text: 'それは仕方がない', expectedWithChunker: ['それ', 'は', '仕方がない'] },
-			{ text: '行かなければいけない', expectedWithChunker: ['行かなければいけない'] },
+			{
+				text: '食べないといけない',
+				expectedWithChunker: ['食べないといけない'],
+			},
+			{
+				text: '食べないとならない',
+				expectedWithChunker: ['食べないとならない'],
+			},
+			{
+				text: '食べなくてはならない',
+				expectedWithChunker: ['食べなくてはならない'],
+			},
+			{
+				text: 'それは仕方がない',
+				expectedWithChunker: ['それ', 'は', '仕方がない'],
+			},
+			{
+				text: '行かなければいけない',
+				expectedWithChunker: ['行かなければいけない'],
+			},
 			{ text: '飲んでもいい', expectedWithChunker: ['飲んでもいい'] },
 			{ text: '見てはいけない', expectedWithChunker: ['見てはいけない'] },
 			{ text: '何もできない', expectedWithChunker: ['何も', 'できない'] },
@@ -717,4 +812,3 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 		expect(failures).toEqual([]);
 	});
 });
-

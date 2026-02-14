@@ -1277,6 +1277,31 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_nakutewa_naranai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なく' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'は', pos0: '助詞' },
+			{ surface: 'なら', dictionaryForm: 'なる', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_nakutewa_naranai_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なく' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
+			{ surface: 'は', pos0: '助詞' },
+			{ surface: 'ならない' },
+		],
+	},
+	{
 		name: 'verb_tewa_ikenai_compact',
 		priority: 96,
 		resultType: 'phrase',
@@ -1349,6 +1374,29 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 				pos0: '動詞',
 			},
 			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_naito_naranai',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ない' },
+			{ surface: 'と', pos0: '助詞' },
+			{ surface: 'なら', dictionaryForm: 'なる', pos0: '動詞' },
+			{ surface: 'ない' },
+		],
+	},
+	{
+		name: 'verb_naito_naranai_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ない' },
+			{ surface: 'と', pos0: '助詞' },
+			{ surface: 'ならない' },
 		],
 	},
 	{

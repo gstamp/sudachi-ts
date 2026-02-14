@@ -378,7 +378,8 @@ Current proof-of-concept rule:
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`, `進めなくなってしまう`.
 - Additional fixed-expression merges include patterns like `かもしれない`.
 - Additional learner-oriented merges include obligation/constraint forms (`〜なくてはいけない`,
-  `〜なければならない`, `〜ないといけない`, `〜なきゃいけない`, `〜なくちゃいけない`,
+  `〜なくてはならない`, `〜なければならない`, `〜ないといけない`, `〜ないとならない`,
+  `〜なきゃいけない`, `〜なくちゃいけない`,
   `〜なきゃならない`, `〜なくちゃならない`, `〜てはいけない`), inability forms (`〜ていられない`, `〜てられない`,
   `〜じゃいれない`), progression/permission chunks (`〜ようになる`, `〜てもいい`, `〜なくてもいい`, `何も`,
   `〜ばいい`, `ではない`, `行けない`),
