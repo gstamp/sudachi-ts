@@ -2095,6 +2095,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: 'で' }, { surface: 'しょ' }],
 	},
 	{
+		name: 'fixed_doushiyo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'どう' }, { surface: ['しよ', 'しよう'] }],
+	},
+	{
 		name: 'fixed_sentence_ending_kana',
 		priority: 94,
 		resultType: 'fixed_expression',

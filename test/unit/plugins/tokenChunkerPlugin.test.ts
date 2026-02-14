@@ -1433,6 +1433,27 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'どうしよ',
+				expected: 'どうしよ',
+				specs: [
+					{ surface: 'どう', posId: 9 },
+					{ surface: 'しよ', posId: 5, dictionaryForm: 'する', reading: 'シヨ' },
+				],
+			},
+			{
+				name: 'どうしよう',
+				expected: 'どうしよう',
+				specs: [
+					{ surface: 'どう', posId: 9 },
+					{
+						surface: 'しよう',
+						posId: 5,
+						dictionaryForm: 'する',
+						reading: 'シヨウ',
+					},
+				],
+			},
+			{
 				name: 'やだ',
 				expected: 'やだ',
 				specs: [

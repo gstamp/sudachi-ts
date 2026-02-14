@@ -372,6 +372,7 @@ Current proof-of-concept rule:
   `何で`, `なんか`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
+  contractions like `どうしよ` (`どうしよう`),
   colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`,
   `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`.
