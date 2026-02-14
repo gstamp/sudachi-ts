@@ -80,6 +80,26 @@ type AdversarialChunkCase = {
 	expectedChunk: string;
 };
 
+type VerbSeed = {
+	dictionary: string;
+	te: string;
+	naiStem: string;
+	ba: string;
+};
+
+const ADVERSARIAL_SUBJECTS = [
+	'私は',
+	'彼は',
+	'彼女は',
+	'先生は',
+	'学生は',
+	'友達は',
+	'母は',
+	'父は',
+	'先輩は',
+	'後輩は',
+];
+
 function createObligationSentencePatterns(): ObligationSentencePattern[] {
 	return [
 		{
@@ -326,21 +346,9 @@ function createObligationSentencePatterns(): ObligationSentencePattern[] {
 }
 
 function createAdversarialChunkCases(): AdversarialChunkCase[] {
-	const subjects = [
-		'私は',
-		'彼は',
-		'彼女は',
-		'先生は',
-		'学生は',
-		'友達は',
-		'母は',
-		'父は',
-		'先輩は',
-		'後輩は',
-	];
 	const patterns = createObligationSentencePatterns();
 	const cases: AdversarialChunkCase[] = [];
-	for (const subject of subjects) {
+	for (const subject of ADVERSARIAL_SUBJECTS) {
 		for (const pattern of patterns) {
 			const expectedChunks = [
 				pattern.naiToIkenai,
@@ -353,6 +361,59 @@ function createAdversarialChunkCases(): AdversarialChunkCase[] {
 				pattern.naiToNaranai,
 				pattern.nakutewaNaranai,
 				pattern.nakuchaNaranai,
+			];
+			for (const expectedChunk of expectedChunks) {
+				cases.push({
+					text: `${subject}${expectedChunk}。`,
+					expectedChunk,
+				});
+			}
+		}
+	}
+	return cases;
+}
+
+function createColloquialAdversarialChunkCases(): AdversarialChunkCase[] {
+	const verbs: VerbSeed[] = [
+		{ dictionary: '食べる', te: '食べて', naiStem: '食べ', ba: '食べれば' },
+		{ dictionary: '飲む', te: '飲んで', naiStem: '飲ま', ba: '飲めば' },
+		{ dictionary: '行く', te: '行って', naiStem: '行か', ba: '行けば' },
+		{ dictionary: '読む', te: '読んで', naiStem: '読ま', ba: '読めば' },
+		{ dictionary: '書く', te: '書いて', naiStem: '書か', ba: '書けば' },
+		{ dictionary: '見る', te: '見て', naiStem: '見', ba: '見れば' },
+		{ dictionary: '聞く', te: '聞いて', naiStem: '聞か', ba: '聞けば' },
+		{ dictionary: '作る', te: '作って', naiStem: '作ら', ba: '作れば' },
+		{ dictionary: '話す', te: '話して', naiStem: '話さ', ba: '話せば' },
+		{ dictionary: '遊ぶ', te: '遊んで', naiStem: '遊ば', ba: '遊べば' },
+		{ dictionary: '待つ', te: '待って', naiStem: '待た', ba: '待てば' },
+		{ dictionary: '使う', te: '使って', naiStem: '使わ', ba: '使えば' },
+		{ dictionary: '住む', te: '住んで', naiStem: '住ま', ba: '住めば' },
+		{ dictionary: '学ぶ', te: '学んで', naiStem: '学ば', ba: '学べば' },
+		{ dictionary: '歩く', te: '歩いて', naiStem: '歩か', ba: '歩けば' },
+		{ dictionary: '泳ぐ', te: '泳いで', naiStem: '泳が', ba: '泳げば' },
+		{ dictionary: '買う', te: '買って', naiStem: '買わ', ba: '買えば' },
+		{ dictionary: '売る', te: '売って', naiStem: '売ら', ba: '売れば' },
+		{ dictionary: '休む', te: '休んで', naiStem: '休ま', ba: '休めば' },
+		{ dictionary: '急ぐ', te: '急いで', naiStem: '急が', ba: '急げば' },
+	];
+
+	const cases: AdversarialChunkCase[] = [];
+	for (const subject of ADVERSARIAL_SUBJECTS) {
+		for (const verb of verbs) {
+			const chau = `${verb.te.slice(0, -1)}${
+				verb.te.endsWith('て') ? 'ちゃう' : 'じゃう'
+			}`;
+			const expectedChunks = [
+				`${verb.te}ない`,
+				`${verb.te}ん`,
+				`${verb.te}る`,
+				`${verb.te}た`,
+				chau,
+				`${verb.te}はいけない`,
+				`${verb.naiStem}なくなってしまう`,
+				`${verb.dictionary}ようになる`,
+				`${verb.ba}いい`,
+				`${verb.te}られない`,
 			];
 			for (const expectedChunk of expectedChunks) {
 				cases.push({
@@ -676,6 +737,35 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 		}
 	});
 
+	test('does not over-merge non-ruby noun + te-form sequences', () => {
+		const text = '馬の口とらえて老をむかふる';
+		const without = tokenizeSurfaces(withoutChunker, text);
+		const withChunkerResult = tokenizeSurfaces(withChunker, text);
+
+		expect(without).toEqual([
+			'馬',
+			'の',
+			'口',
+			'とらえ',
+			'て',
+			'老',
+			'を',
+			'むか',
+			'ふる',
+		]);
+		expect(withChunkerResult).toEqual([
+			'馬',
+			'の',
+			'口',
+			'とらえて',
+			'老',
+			'を',
+			'むか',
+			'ふる',
+		]);
+		expect(withChunkerResult).not.toContain('口とらえて');
+	});
+
 	test('prefers learner-friendly grammar chunks over dictionary-fragmented tokens', () => {
 		const cases: Array<{
 			text: string;
@@ -786,6 +876,34 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 
 	test('handles 2000 adversarial obligation/chunking sentences with system.dic', () => {
 		const cases = createAdversarialChunkCases();
+		expect(cases.length).toBe(2000);
+
+		const failures: string[] = [];
+		for (const chunkCase of cases) {
+			const without = tokenizeSurfaces(withoutChunker, chunkCase.text);
+			const withChunkerResult = tokenizeSurfaces(withChunker, chunkCase.text);
+			if (!withChunkerResult.includes(chunkCase.expectedChunk)) {
+				failures.push(
+					`missing chunk "${chunkCase.expectedChunk}" for "${chunkCase.text}" ` +
+						`with=${JSON.stringify(withChunkerResult)} without=${JSON.stringify(without)}`,
+				);
+			}
+			if (withChunkerResult.length > without.length) {
+				failures.push(
+					`token count regression for "${chunkCase.text}" ` +
+						`with=${withChunkerResult.length} without=${without.length}`,
+				);
+			}
+			if (failures.length >= 20) {
+				break;
+			}
+		}
+
+		expect(failures).toEqual([]);
+	});
+
+	test('handles another 2000 adversarial colloquial/progressive sentences with system.dic', () => {
+		const cases = createColloquialAdversarialChunkCases();
 		expect(cases.length).toBe(2000);
 
 		const failures: string[] = [];

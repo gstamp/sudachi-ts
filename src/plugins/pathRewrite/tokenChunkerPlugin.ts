@@ -294,6 +294,10 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			if (!this.isNumberChunk(chunks[i + 1])) {
 				return { endIndex: index };
 			}
+			// Avoid treating hyphens inside latin tokens (e.g. UTF-8) as numeric signs.
+			if (this.isLatinTextChunk(chunks[i - 1])) {
+				return { endIndex: index };
+			}
 			i++;
 		}
 
@@ -357,6 +361,10 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 
 	private isNumericSignChunk(chunk: ChunkToken | undefined): boolean {
 		return Boolean(chunk && NUMERIC_SIGN_SURFACES.has(chunk.surface));
+	}
+
+	private isLatinTextChunk(chunk: ChunkToken | undefined): boolean {
+		return Boolean(chunk && LATIN_TEXT_PATTERN.test(chunk.surface));
 	}
 
 	private isCounterChunk(chunk: ChunkToken | undefined): boolean {
@@ -536,6 +544,15 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 					next.chunkType === 'te_form' ||
 					next.chunkType === 'progressive_form')
 			) {
+				// Guard against false positives like 「口とらえて」 by requiring
+				// at least partial kana overlap between current reading and next surface.
+				const nextPrefix = nextSurface.slice(0, 3);
+				const hasReadingOverlap = [...new Set(reading)].some((kana) =>
+					nextPrefix.includes(kana),
+				);
+				if (!hasReadingOverlap) {
+					return false;
+				}
 				return true;
 			}
 			return false;
@@ -651,6 +668,7 @@ const NUMBER_SURFACE_PATTERN = /^[0-9０-９一二三四五六七八九十百千
 const NUMERIC_COMMA_SURFACES = new Set([',', '，']);
 const NUMERIC_DOT_SURFACES = new Set(['.', '．']);
 const NUMERIC_SIGN_SURFACES = new Set(['-', '−', '－', '+', '＋']);
+const LATIN_TEXT_PATTERN = /^[A-Za-zＡ-Ｚａ-ｚ][A-Za-zＡ-Ｚａ-ｚ0-9０-９]*$/;
 const KANJI_PATTERN = /\p{Script=Han}/u;
 const KANJI_ONLY_PATTERN = /^[\p{Script=Han}々〆ヵヶ]+$/u;
 const KANA_PATTERN = /^[ぁ-ゖァ-ヺー]+$/u;

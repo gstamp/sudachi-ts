@@ -509,6 +509,29 @@ describe('TokenChunkerPlugin', () => {
 		expect(path[0]?.getWordInfo().getReadingForm()).toBe('マイナスニテンハチ');
 	});
 
+	test('does not treat latin-token hyphen as numeric sign', () => {
+		const plugin = new TokenChunkerPlugin();
+		plugin.setSettings(
+			new Settings({
+				enablePatternRules: true,
+			}),
+		);
+		plugin.setUp(createGrammar());
+
+		const path = [
+			createNodeWithForms('UTF', 'UTF', 'UTF', 1, 0, 3),
+			createNodeWithForms('-', '-', '-', 13, 3, 4),
+			createNodeWithForms('8', '8', 'ハチ', 3, 4, 5),
+		];
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
+			'UTF',
+			'-',
+			'8',
+		]);
+	});
+
 	test('does not partially merge version-like multi-dot number sequences', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(
