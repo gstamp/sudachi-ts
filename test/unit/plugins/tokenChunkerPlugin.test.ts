@@ -864,6 +864,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'だからっ',
+				expected: 'だからっ',
+				specs: [
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'からっ', posId: 2 },
+				],
+			},
+			{
 				name: 'それに',
 				expected: 'それに',
 				specs: [
@@ -1242,6 +1250,23 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'しちゃ',
+				expected: 'しちゃ',
+				specs: [
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'ちゃ', posId: 2 },
+				],
+			},
+			{
+				name: 'しちゃった',
+				expected: 'しちゃった',
+				specs: [
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'ちゃっ', posId: 2 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
 				name: '食べなきゃ',
 				expected: '食べなきゃ',
 				specs: [
@@ -1585,6 +1610,41 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'あるんだ + よ',
+				expected: 'あるんだよ',
+				specs: [
+					{
+						surface: 'あるんだ',
+						posId: 5,
+						dictionaryForm: 'ある',
+						reading: 'アルンダ',
+					},
+					{ surface: 'よ', posId: 2 },
+				],
+			},
+			{
+				name: 'なんだよ',
+				expected: 'なんだよ',
+				specs: [
+					{ surface: 'なん', posId: 8 },
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'よ', posId: 2 },
+				],
+			},
+			{
+				name: '買ったんだ + よ',
+				expected: '買ったんだよ',
+				specs: [
+					{
+						surface: '買ったんだ',
+						posId: 5,
+						dictionaryForm: '買う',
+						reading: 'カッタンダ',
+					},
+					{ surface: 'よ', posId: 2 },
+				],
+			},
+			{
 				name: 'で + す + よ',
 				expected: 'ですよ',
 				specs: [
@@ -1608,6 +1668,14 @@ describe('TokenChunkerPlugin', () => {
 				expected: '優太だった',
 				specs: [
 					{ surface: '優太', posId: 1 },
+					{ surface: 'だっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: 'だった',
+				expected: 'だった',
+				specs: [
 					{ surface: 'だっ', posId: 7 },
 					{ surface: 'た', posId: 7 },
 				],
@@ -1720,6 +1788,33 @@ describe('TokenChunkerPlugin', () => {
 				specs: [
 					{ surface: 'それ', posId: 8 },
 					{ surface: 'で', posId: 2 },
+				],
+			},
+			{
+				name: 'それでっ',
+				expected: 'それでっ',
+				specs: [
+					{ surface: 'それ', posId: 8 },
+					{ surface: 'でっ', posId: 2 },
+				],
+			},
+			{
+				name: 'してます',
+				expected: 'してます',
+				specs: [
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'て', posId: 4 },
+					{ surface: 'ます', posId: 7 },
+				],
+			},
+			{
+				name: 'お父さんっ',
+				expected: 'お父さんっ',
+				specs: [
+					{ surface: 'お', posId: 11 },
+					{ surface: '父', posId: 1 },
+					{ surface: 'さ', posId: 14 },
+					{ surface: 'んっ', posId: 2 },
 				],
 			},
 			{

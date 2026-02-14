@@ -453,6 +453,14 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 				chunks.splice(i, 2, merged);
 				continue;
 			}
+			if (
+				current.surface.endsWith('んだ') &&
+				(next.surface === 'よ' || next.surface === 'よっ')
+			) {
+				const merged = this.mergeChunks([current, next], 'fixed_expression');
+				chunks.splice(i, 2, merged);
+				continue;
+			}
 
 			i++;
 		}
@@ -929,6 +937,33 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: '名詞' }, { surface: 'してます' }],
 	},
 	{
+		name: 'suru_te_masu',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{
+				surface: 'し',
+				dictionaryForm: ['する', '為る'],
+				pos0: '動詞',
+			},
+			{ surface: ['て', 'で'] },
+			{ surface: 'ます' },
+		],
+	},
+	{
+		name: 'suru_te_masu_compact',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{
+				surface: 'し',
+				dictionaryForm: ['する', '為る'],
+				pos0: '動詞',
+			},
+			{ surface: 'てます' },
+		],
+	},
+	{
 		name: 'emphatic_tto_shita',
 		priority: 101,
 		resultType: 'phrase',
@@ -1182,6 +1217,33 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: ['ちゃう', 'じゃう'] }],
+	},
+	{
+		name: 'suru_cha',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{
+				surface: 'し',
+				dictionaryForm: ['する', '為る'],
+				pos0: '動詞',
+			},
+			{ surface: ['ちゃ', 'ちゃっ'] },
+		],
+	},
+	{
+		name: 'suru_chatta',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{
+				surface: 'し',
+				dictionaryForm: ['する', '為る'],
+				pos0: '動詞',
+			},
+			{ surface: 'ちゃっ' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
 	},
 	{
 		name: 'verb_nakya',
@@ -1645,6 +1707,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ pos0: ['名詞', '代名詞', '形容詞'] }, { surface: 'だった' }],
 	},
 	{
+		name: 'copula_datta_standalone',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [{ surface: 'だっ' }, { surface: 'た' }],
+	},
+	{
 		name: 'ja_nakute',
 		priority: 96,
 		resultType: 'phrase',
@@ -1809,7 +1877,7 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		name: 'fixed_dakara',
 		priority: 94,
 		resultType: 'fixed_expression',
-		pattern: [{ surface: 'だ' }, { surface: 'から' }],
+		pattern: [{ surface: 'だ' }, { surface: ['から', 'からっ'] }],
 	},
 	{
 		name: 'fixed_na_n_da_kedo',
@@ -1943,6 +2011,17 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: '降参' }, { surface: 'っ' }],
 	},
 	{
+		name: 'fixed_otousan_small_tsu',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'お' },
+			{ surface: '父' },
+			{ surface: 'さ' },
+			{ surface: 'んっ' },
+		],
+	},
+	{
 		name: 'fixed_chii',
 		priority: 94,
 		resultType: 'fixed_expression',
@@ -1974,6 +2053,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'ん' }, { surface: 'だ' }, { surface: 'よ' }],
+	},
+	{
+		name: 'fixed_nan_da_yo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: ['なん', '何'] },
+			{ surface: 'だ' },
+			{ surface: 'よ' },
+		],
 	},
 	{
 		name: 'fixed_n_da_yo_compact',
@@ -2266,7 +2355,7 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		name: 'fixed_sorede',
 		priority: 72,
 		resultType: 'fixed_expression',
-		pattern: [{ surface: 'それ' }, { surface: 'で' }],
+		pattern: [{ surface: 'それ' }, { surface: ['で', 'でっ'] }],
 	},
 	{
 		name: 'fixed_nanto',
