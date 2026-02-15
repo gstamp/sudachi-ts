@@ -14,7 +14,7 @@ export class DefaultInputTextPlugin extends InputTextPlugin {
 			return;
 		}
 
-		const rewriteDefPath = this.settings.getString('rewriteDef');
+		const rewriteDefPath = await this.settings.getPath('rewriteDef');
 		if (rewriteDefPath) {
 			const content = await readFully(rewriteDefPath);
 			this.readRewriteLists(content);

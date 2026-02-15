@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
+import { PathAnchor } from '../../../src/config/pathAnchor.js';
 import { Settings } from '../../../src/config/settings.js';
 import type { InputText } from '../../../src/core/inputText.js';
 import type { InputTextBuilder } from '../../../src/core/inputTextBuilder.js';
@@ -359,5 +360,20 @@ describe('PluginLoader', () => {
 		);
 		expect(plugin.plugin).toBeInstanceOf(TokenChunkerPlugin);
 		expect(plugin.className).toBe('TokenChunkerPlugin');
+	});
+
+	test('should resolve relative plugin modules with anchor', async () => {
+		const anchor = PathAnchor.filesystem(import.meta.dir).andThen(
+			PathAnchor.none(),
+		);
+		const loader = new PluginLoader(anchor);
+		const settings = new Settings({});
+
+		const plugin = await loader.loadInputTextPlugin(
+			'./testInputTextPlugin.ts',
+			settings,
+		);
+		expect(plugin.plugin).toBeInstanceOf(InputTextPlugin);
+		expect(plugin.className).toBe('./testInputTextPlugin.ts');
 	});
 });

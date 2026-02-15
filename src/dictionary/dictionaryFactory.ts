@@ -62,8 +62,8 @@ export class DictionaryFactory {
 			}
 		}
 
-		const loader = new PluginLoader();
-		const defaultConfig = Config.parse(DEFAULT_CONFIG_JSON);
+		const loader = new PluginLoader(anchor);
+		const defaultConfig = Config.parse(DEFAULT_CONFIG_JSON).setAnchor(anchor);
 
 		let inputTextPluginConfs = config.getPlugins('inputTextPlugin');
 		if (!inputTextPluginConfs || inputTextPluginConfs.length === 0) {

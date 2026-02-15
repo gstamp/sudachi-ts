@@ -123,6 +123,10 @@ Example `sudachi.json`:
 }
 ```
 
+For non-absolute file references in config (dictionary files, plugin module paths,
+and built-in plugin file settings), Sudachi-TS tries paths relative to the config
+file first, then relative to the current working directory.
+
 By default, Sudachi-TS enables a built-in compound-particle lexicon
 (`"enableDefaultCompoundParticles": true`) so forms such as `かも`, `のか`,
 and `だから` are tokenized as single morphemes. Set it to `false` to disable:

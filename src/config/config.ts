@@ -19,8 +19,8 @@ export class Config {
 	static async fromFile(filePath: string): Promise<Config> {
 		const content = await readFile(filePath, 'utf-8');
 		const baseDir = dirname(filePath);
-		const anchor = PathAnchor.filesystem(baseDir);
-		return new Config(Settings.parse(content), anchor);
+		const anchor = PathAnchor.filesystem(baseDir).andThen(PathAnchor.none());
+		return new Config(Settings.parse(content, anchor), anchor);
 	}
 
 	static parse(json: string): Config {
@@ -82,7 +82,15 @@ export class Config {
 	getPlugins<T>(
 		key: string,
 	): { className: string; settings: Settings }[] | null {
-		return this.settings.getPlugins<T>(key);
+		const plugins = this.settings.getPlugins<T>(key);
+		if (!plugins) {
+			return null;
+		}
+
+		return plugins.map((plugin) => ({
+			className: plugin.className,
+			settings: plugin.settings.withAnchor(this.anchor),
+		}));
 	}
 }
 

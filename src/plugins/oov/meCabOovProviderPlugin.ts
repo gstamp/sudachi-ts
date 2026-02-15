@@ -31,13 +31,13 @@ export class MeCabOovProviderPlugin extends OovProviderPlugin {
 			return;
 		}
 
-		const charDefPath = this.settings.getString('charDef');
+		const charDefPath = await this.settings.getPath('charDef');
 		if (charDefPath) {
 			const content = await readFully(charDefPath);
 			this.readCharacterProperty(content);
 		}
 
-		const unkDefPath = this.settings.getString('unkDef');
+		const unkDefPath = await this.settings.getPath('unkDef');
 		const userPosMode =
 			this.settings.getString(
 				OovProviderPlugin.USER_POS,

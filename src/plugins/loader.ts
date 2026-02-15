@@ -1,3 +1,6 @@
+import { isAbsolute, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { PathAnchor } from '../config/pathAnchor.js';
 import type { Settings } from '../config/settings.js';
 import type { Grammar } from '../dictionary/grammar.js';
 import type { Plugin } from './base.js';
@@ -23,6 +26,8 @@ export interface LoadedPlugin<T extends Plugin> {
 }
 
 export class PluginLoader {
+	constructor(private readonly anchor: PathAnchor = PathAnchor.none()) {}
+
 	async loadInputTextPlugin(
 		className: string,
 		settings: Settings,
@@ -149,7 +154,8 @@ export class PluginLoader {
 			if (this.isBuiltIn(className)) {
 				PluginClass = this.getBuiltIn(className);
 			} else {
-				const module = await import(className);
+				const classSpecifier = await this.resolveClassSpecifier(className);
+				const module = await import(classSpecifier);
 				PluginClass = this.findPluginClass(module, className);
 			}
 
@@ -200,6 +206,31 @@ export class PluginLoader {
 		} catch {
 			return false;
 		}
+	}
+
+	private async resolveClassSpecifier(className: string): Promise<string> {
+		if (
+			this.anchor === PathAnchor.none() ||
+			!this.isPathLikeSpecifier(className)
+		) {
+			return className;
+		}
+
+		const resolvedPath = await this.anchor.resolve(className);
+		const absolutePath = isAbsolute(resolvedPath)
+			? resolvedPath
+			: resolve(resolvedPath);
+		return pathToFileURL(absolutePath).href;
+	}
+
+	private isPathLikeSpecifier(className: string): boolean {
+		return (
+			className.startsWith('./') ||
+			className.startsWith('../') ||
+			className.startsWith('.\\') ||
+			className.startsWith('..\\') ||
+			isAbsolute(className)
+		);
 	}
 
 	private isBuiltIn(name: string): boolean {

@@ -824,6 +824,8 @@ Dynamic plugin loader.
 
 ```typescript
 class PluginLoader {
+  constructor(anchor?: PathAnchor)
+
   async loadInputTextPlugin(
     className: string,
     settings: Settings
@@ -1014,6 +1016,10 @@ Creates an empty configuration.
 **`fromFile(filePath)`**
 Loads configuration from file.
 
+When a referenced path is not absolute, resolution tries:
+1) the config file directory, then
+2) the current working directory.
+
 ```typescript
 const config = await Config.fromFile('./sudachi.json');
 ```
@@ -1063,9 +1069,12 @@ Settings container.
 ```typescript
 class Settings {
   static empty(): Settings
-  static parse(json: string): Settings
+  static parse(json: string, basePathOrAnchor?: string | PathAnchor): Settings
+  getAnchor(): PathAnchor
+  withAnchor(anchor: PathAnchor): Settings
   withFallback(other: Settings): Settings
   getString(key: string, defaultValue?: string): string | null
+  getPath(key: string, defaultValue?: string): Promise<string | null>
   getInt(key: string, defaultValue?: number): number
   getBoolean(key: string, defaultValue?: boolean): boolean
   getStringList(key: string): string[]
@@ -1082,8 +1091,7 @@ Path resolution anchor.
 class PathAnchor {
   static none(): PathAnchor
   static filesystem(baseDir: string): PathAnchor
-  static resource(resourceName: string): PathAnchor
-  resolve(relativePath: string): string
+  resolve(relativePath: string): Promise<string>
   andThen(other: PathAnchor): PathAnchor
 }
 ```
@@ -1099,9 +1107,6 @@ File system directory anchor.
 ```typescript
 const anchor = PathAnchor.filesystem('/path/to/dict');
 ```
-
-**`resource(resourceName)`**
-Resource name anchor.
 
 #### Methods
 

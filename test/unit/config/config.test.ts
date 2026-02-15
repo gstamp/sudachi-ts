@@ -1,4 +1,7 @@
 import { describe, expect, test } from 'bun:test';
+import { mkdtemp, rm, unlink, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { Config, loadConfig } from '../../../src/config/config.js';
 import { PathAnchor } from '../../../src/config/pathAnchor.js';
 
@@ -139,5 +142,69 @@ describe('loadConfig', () => {
 
 	test('should fail gracefully for non-existent file', async () => {
 		await expect(loadConfig('/non/existent/path.json')).rejects.toThrow();
+	});
+
+	test('should resolve paths relative to config file directory', async () => {
+		const tempDir = await mkdtemp(join(tmpdir(), 'sudachi-config-anchor-'));
+		const configPath = join(tempDir, 'sudachi.json');
+		const dictPath = join(tempDir, 'system.dic');
+
+		try {
+			await writeFile(dictPath, 'dummy');
+			await writeFile(configPath, JSON.stringify({ systemDict: 'system.dic' }));
+
+			const config = await loadConfig(configPath);
+			const resolvedPath = await config.getAnchor().resolve('system.dic');
+			expect(resolve(resolvedPath)).toBe(resolve(dictPath));
+		} finally {
+			await rm(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	test('should fallback to current directory when path is missing beside config', async () => {
+		const tempDir = await mkdtemp(join(tmpdir(), 'sudachi-config-cwd-'));
+		const configPath = join(tempDir, 'sudachi.json');
+		const fileName = `sudachi-cwd-fallback-${Date.now()}.dic`;
+		const cwdPath = join(process.cwd(), fileName);
+
+		try {
+			await writeFile(configPath, JSON.stringify({ systemDict: fileName }));
+			await writeFile(cwdPath, 'dummy');
+
+			const config = await loadConfig(configPath);
+			const resolvedPath = await config.getAnchor().resolve(fileName);
+			expect(resolve(resolvedPath)).toBe(resolve(cwdPath));
+		} finally {
+			await unlink(cwdPath).catch(() => {});
+			await rm(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	test('should resolve plugin file settings relative to config file directory', async () => {
+		const tempDir = await mkdtemp(join(tmpdir(), 'sudachi-config-plugin-'));
+		const configPath = join(tempDir, 'sudachi.json');
+		const rewriteDefPath = join(tempDir, 'rewrite.def');
+
+		try {
+			await writeFile(rewriteDefPath, '# rewrite rules');
+			await writeFile(
+				configPath,
+				JSON.stringify({
+					inputTextPlugin: [
+						{
+							class: 'com.worksap.nlp.sudachi.DefaultInputTextPlugin',
+							rewriteDef: 'rewrite.def',
+						},
+					],
+				}),
+			);
+
+			const config = await loadConfig(configPath);
+			const plugins = config.getPlugins('inputTextPlugin');
+			const resolvedPath = await plugins?.[0]?.settings.getPath('rewriteDef');
+			expect(resolve(resolvedPath ?? '')).toBe(resolve(rewriteDefPath));
+		} finally {
+			await rm(tempDir, { recursive: true, force: true });
+		}
 	});
 });

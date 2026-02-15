@@ -547,7 +547,16 @@ const config = Config.empty();
 
 ## Path Resolution
 
-Sudachi-TS provides flexible path resolution using path anchors.
+Sudachi-TS resolves non-absolute file references in this order:
+
+1. Relative to the loaded config file directory.
+2. Relative to the current working directory.
+
+Absolute paths are used as-is.
+
+This applies to dictionary paths (`systemDict`, `userDict`) and file-based plugin
+references (for example plugin module paths and built-in plugin file settings such
+as `rewriteDef`, `charDef`, and `unkDef`).
 
 ### No Anchor
 
@@ -571,18 +580,6 @@ const config = Config.empty().setAnchor(
 );
 ```
 
-### Resource Anchor
-
-Paths are resolved as resource names.
-
-```typescript
-import { Config, PathAnchor } from 'sudachi-ts/config/config.js';
-
-const config = Config.empty().setAnchor(
-  PathAnchor.resource('sudachi-dictionaries')
-);
-```
-
 ### Chained Anchors
 
 Multiple anchors can be chained.
@@ -591,7 +588,7 @@ Multiple anchors can be chained.
 import { Config, PathAnchor } from 'sudachi-ts/config/config.js';
 
 const anchor = PathAnchor.filesystem('/path/to/dicts')
-  .andThen(PathAnchor.resource('fallback'));
+  .andThen(PathAnchor.none());
 
 const config = Config.empty().setAnchor(anchor);
 ```
