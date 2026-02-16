@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'bun:test';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Settings } from '../../../src/config/settings.js';
 import type { LatticeNodeImpl } from '../../../src/core/lattice.js';
 import { UTF8InputTextBuilder } from '../../../src/core/utf8InputText.js';

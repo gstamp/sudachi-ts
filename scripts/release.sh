@@ -219,13 +219,13 @@ main() {
     update_version "$NEW_VERSION" "$DRY_RUN"
 
     # Build the project
-    run_cmd "bun run build" "Build project" "$DRY_RUN"
+    run_cmd "npm run build" "Build project" "$DRY_RUN"
 
     # Run tests
-    run_cmd "bun test" "Run tests" "$DRY_RUN"
+    run_cmd "npm test" "Run tests" "$DRY_RUN"
 
     # Run type checking
-    run_cmd "bun x tsc --noEmit" "Run type checking" "$DRY_RUN"
+    run_cmd "npm run typecheck" "Run type checking" "$DRY_RUN"
 
     # Git operations
     if [[ "$SKIP_GIT" == false ]]; then
@@ -240,7 +240,7 @@ main() {
         if [[ "$DRY_RUN" == false ]]; then
             check_npm_auth
         fi
-        run_cmd "bun publish" "Publish to npm" "$DRY_RUN"
+        run_cmd "npm publish" "Publish to npm" "$DRY_RUN"
     fi
 
     # Push to git

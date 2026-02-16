@@ -87,7 +87,7 @@ When you run the release script, it performs the following steps:
    - Stages the updated package.json
    - Creates a commit with message "chore: release v{version}"
    - Creates an annotated tag "v{version}"
-7. **Publish** (unless `--skip-publish`): Publishes to npm using bun
+7. **Publish** (unless `--skip-publish`): Publishes to npm using npm
 8. **Git Push** (unless `--skip-git`): Pushes commit and tags to remote
 
 ## Prerequisites
@@ -159,7 +159,7 @@ git commit -m "WIP"
 Fix failing tests before releasing:
 
 ```bash
-bun test --bail=1
+npm test -- --bail=1
 ```
 
 ### "Failed: Run type checking"
@@ -167,7 +167,7 @@ bun test --bail=1
 Fix TypeScript errors:
 
 ```bash
-bun x tsc --noEmit
+npm run typecheck
 ```
 
 ### npm Publish Fails
@@ -234,6 +234,6 @@ The release script can be integrated into CI/CD pipelines:
 
 ## See Also
 
-- [Bun publish documentation](https://bun.sh/docs/cli/publish)
+- [npm publish documentation](https://docs.npmjs.com/cli/v11/commands/npm-publish)
 - [Semantic Versioning](https://semver.org/)
 - [Git tagging](https://git-scm.com/book/en/v2/Git-Basics-Tagging)

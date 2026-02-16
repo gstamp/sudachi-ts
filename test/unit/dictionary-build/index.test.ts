@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { Index } from '../../../src/dictionary-build/trieIndex.js';
 
 describe('Index', () => {

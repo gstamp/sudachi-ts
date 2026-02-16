@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { LatticeNodeImpl } from '../../../src/core/lattice.js';
 import { MorphemeImpl } from '../../../src/core/morpheme.js';
 import { MorphemeList } from '../../../src/core/morphemeList.js';

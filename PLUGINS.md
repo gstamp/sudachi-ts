@@ -670,7 +670,7 @@ Plugins are executed in the order they are registered:
 ## Testing Plugins
 
 ```typescript
-import { test, expect } from 'bun:test';
+import { test, expect } from 'vitest';
 import { MyPlugin } from './myPlugin.js';
 
 test('MyPlugin transforms input correctly', () => {

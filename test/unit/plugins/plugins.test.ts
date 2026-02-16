@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PathAnchor } from '../../../src/config/pathAnchor.js';
 import { Settings } from '../../../src/config/settings.js';
 import type { InputText } from '../../../src/core/inputText.js';
@@ -20,6 +22,8 @@ import { PluginLoader } from '../../../src/plugins/loader.js';
 import { OovProviderPlugin } from '../../../src/plugins/oov/base.js';
 import { PathRewritePlugin } from '../../../src/plugins/pathRewrite/base.js';
 import { TokenChunkerPlugin } from '../../../src/plugins/pathRewrite/tokenChunkerPlugin.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function createMockGrammar(): Grammar {
 	const matrix = new Int16Array([0]);
@@ -363,7 +367,7 @@ describe('PluginLoader', () => {
 	});
 
 	test('should resolve relative plugin modules with anchor', async () => {
-		const anchor = PathAnchor.filesystem(import.meta.dir).andThen(
+		const anchor = PathAnchor.filesystem(__dirname).andThen(
 			PathAnchor.none(),
 		);
 		const loader = new PluginLoader(anchor);

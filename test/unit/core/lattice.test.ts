@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { LatticeImpl, LatticeNodeImpl } from '../../../src/index.js';
 import { WordInfo } from '../../../src/dictionary/wordInfo.js';
 import { MockGrammar } from './mockGrammar.js';

@@ -231,9 +231,9 @@ function Main {
     Write-Host ""
 
     Update-Version -NewVersion $newVersion -IsDryRun $DryRun
-    Run-Cmd -Command "bun run build" -Description "Build project" -IsDryRun $DryRun
-    Run-Cmd -Command "bun test" -Description "Run tests" -IsDryRun $DryRun
-    Run-Cmd -Command "bun x tsc --noEmit" -Description "Run type checking" -IsDryRun $DryRun
+    Run-Cmd -Command "npm run build" -Description "Build project" -IsDryRun $DryRun
+    Run-Cmd -Command "npm test" -Description "Run tests" -IsDryRun $DryRun
+    Run-Cmd -Command "npm run typecheck" -Description "Run type checking" -IsDryRun $DryRun
 
     if (-not $SkipGit) {
         $commitMsg = "chore: release v$newVersion"
@@ -246,7 +246,7 @@ function Main {
         if (-not $DryRun) {
             Check-NpmAuth
         }
-        Run-Cmd -Command "bun publish" -Description "Publish to npm" -IsDryRun $DryRun
+        Run-Cmd -Command "npm publish" -Description "Publish to npm" -IsDryRun $DryRun
     }
 
     if (-not $SkipGit) {

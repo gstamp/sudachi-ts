@@ -1,10 +1,13 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SplitMode } from '../../src/core/tokenizer.js';
 import { DictionaryFactory } from '../../src/dictionary/dictionaryFactory.js';
 import { systemBuilder } from '../../src/dictionary-build/dicBuilder.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const TEST_LEXICON = `僕,0,0,5000,僕,代名詞,*,*,*,*,*,ボク,僕,*,A,*,*,*,*
 じゃ,0,0,5000,じゃ,助詞,係助詞,*,*,*,*,ジャ,じゃ,*,A,*,*,*,*
@@ -62,7 +65,7 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 	beforeAll(async () => {
 		tempDir = await mkdtemp(join(tmpdir(), 'sudachi-chunker-colloquial-'));
 		const matrix = await readFile(
-			`${import.meta.dir}/../fixtures/dict/matrix.def`,
+			join(__dirname, '..', 'fixtures', 'dict', 'matrix.def'),
 			'utf-8',
 		);
 

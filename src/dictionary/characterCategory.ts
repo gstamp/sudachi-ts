@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { CategoryType } from './categoryType.js';
 
 interface Range {
@@ -94,10 +95,10 @@ export class CharacterCategory {
 	static async loadDefault(): Promise<CharacterCategory> {
 		const charCategory = new CharacterCategory();
 		try {
-			const response = await fetch(
+			const content = await readFile(
 				new URL('../resources/char.def', import.meta.url),
+				'utf-8',
 			);
-			const content = await response.text();
 			charCategory.readCharacterDefinition(content);
 		} catch (e) {
 			throw new Error(

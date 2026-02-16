@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { Settings } from '../../../src/config/settings.js';
 import type { InputText } from '../../../src/core/inputText.js';
 import { type Lattice, LatticeNodeImpl } from '../../../src/core/lattice.js';

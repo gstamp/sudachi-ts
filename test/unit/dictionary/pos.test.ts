@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import {
 	DEPTH,
 	MAX_COMPONENT_LENGTH,

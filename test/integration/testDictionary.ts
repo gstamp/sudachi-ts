@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { Settings } from '../../src/config/settings.js';
 import { BinaryDictionary } from '../../src/dictionary/binaryDictionary.js';
 import type { Grammar } from '../../src/dictionary/grammar.js';
@@ -102,11 +104,11 @@ class UserDictionary {
 }
 
 async function loadFixture(path: string): Promise<string> {
-	const file = Bun.file(path);
-	if (!file.exists()) {
+	try {
+		return await readFile(path, 'utf8');
+	} catch {
 		throw new Error(`Fixture not found: ${path}`);
 	}
-	return await file.text();
 }
 
 let _systemDictionary: SystemDictionary | null = null;

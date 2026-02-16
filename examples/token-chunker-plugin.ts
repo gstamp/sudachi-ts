@@ -31,7 +31,7 @@ function parseArgs(argv: string[]): CliArgs {
 
 	if (!systemDictPath || !text) {
 		throw new Error(
-			'Usage: bun examples/token-chunker-plugin.ts <system.dic path> "<text>"',
+			'Usage: npm exec tsx examples/token-chunker-plugin.ts <system.dic path> "<text>"',
 		);
 	}
 

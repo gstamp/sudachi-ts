@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { Connection } from '../../../src/dictionary/connection.js';
 
 describe('Connection', () => {

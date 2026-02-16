@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect } from 'vitest';
 import { TextNormalizer } from '../../../src/utils/textNormalizer.js';
 import { GrammarImpl } from '../../../src/dictionary/grammarImpl.js';
 import { CharacterCategory } from '../../../src/dictionary/characterCategory.js';

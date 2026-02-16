@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { POS } from '../../../src/dictionary/pos.js';
 import { PartialPOS, PosMatcher } from '../../../src/dictionary/posMatcher.js';
 

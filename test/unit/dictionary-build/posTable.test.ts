@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { POS } from '../../../src/dictionary/pos.js';
 import { POSTable } from '../../../src/dictionary-build/posTable.js';
 

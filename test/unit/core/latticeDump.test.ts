@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { LatticeImpl } from '../../../src/core/lattice.js';
 import { dumpLattice } from '../../../src/core/latticeDump.js';
 import { UTF8InputTextBuilder } from '../../../src/core/utf8InputText.js';

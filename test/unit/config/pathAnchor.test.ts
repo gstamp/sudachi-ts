@@ -1,6 +1,9 @@
-import { describe, expect, test } from 'bun:test';
-import { join } from 'node:path';
+import { describe, expect, test } from 'vitest';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PathAnchor } from '../../../src/config/pathAnchor.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('PathAnchor', () => {
 	describe('None', () => {
@@ -35,14 +38,14 @@ describe('PathAnchor', () => {
 		});
 
 		test('should check file existence', async () => {
-			const anchor = PathAnchor.filesystem(import.meta.dir);
+			const anchor = PathAnchor.filesystem(__dirname);
 			const path = await anchor.resolve('pathAnchor.test.ts');
 			const exists = await anchor.exists(path);
 			expect(exists).toBe(true);
 		});
 
 		test('should return false for non-existent files', async () => {
-			const anchor = PathAnchor.filesystem(import.meta.dir);
+			const anchor = PathAnchor.filesystem(__dirname);
 			const path = await anchor.resolve('non-existent-file.ts');
 			const exists = await anchor.exists(path);
 			expect(exists).toBe(false);
@@ -60,7 +63,7 @@ describe('PathAnchor', () => {
 		});
 
 		test('should resolve first existing path', async () => {
-			const anchor1 = PathAnchor.filesystem(import.meta.dir);
+			const anchor1 = PathAnchor.filesystem(__dirname);
 			const anchor2 = PathAnchor.filesystem('/non/existent/path');
 			const chain = anchor1.andThen(anchor2);
 
@@ -69,7 +72,7 @@ describe('PathAnchor', () => {
 		});
 
 		test('should check existence across all anchors', async () => {
-			const anchor1 = PathAnchor.filesystem(import.meta.dir);
+			const anchor1 = PathAnchor.filesystem(__dirname);
 			const anchor2 = PathAnchor.filesystem('/non/existent/path');
 			const chain = anchor1.andThen(anchor2);
 

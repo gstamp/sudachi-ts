@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { UTF8InputTextBuilder } from '../../../src/core/utf8InputText.js';
 
 test('UTF8InputTextBuilder: should build input text', () => {

@@ -1,10 +1,13 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { SplitMode } from '../../src/core/tokenizer.js';
 import { DictionaryFactory } from '../../src/dictionary/dictionaryFactory.js';
 import { systemBuilder } from '../../src/dictionary-build/dicBuilder.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const TEST_LEXICON = `もう,0,0,5000,もう,副詞,*,*,*,*,*,モウ,もう,*,A,*,*,*,*
 死ぬ,0,0,5000,死ぬ,動詞,一般,*,*,*,*,シヌ,死ぬ,*,A,*,*,*,*
@@ -35,7 +38,7 @@ describe('Default compound particles in DictionaryFactory', () => {
 	beforeAll(async () => {
 		tempDir = await mkdtemp(join(tmpdir(), 'sudachi-compounds-'));
 		const matrix = await readFile(
-			`${import.meta.dir}/../fixtures/dict/matrix.def`,
+			join(__dirname, '..', 'fixtures', 'dict', 'matrix.def'),
 			'utf-8',
 		);
 

@@ -1,9 +1,12 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { mkdtemp, rm, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Config, loadConfig } from '../../../src/config/config.js';
 import { PathAnchor } from '../../../src/config/pathAnchor.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('Config', () => {
 	describe('empty', () => {
@@ -130,7 +133,7 @@ describe('Config', () => {
 
 describe('loadConfig', () => {
 	test('should load from file path', async () => {
-		const configPath = `${import.meta.dir}/../../fixtures/test-config.json`;
+		const configPath = join(__dirname, '..', '..', 'fixtures', 'test-config.json');
 		const config = await loadConfig(configPath);
 		expect(config.getString('testKey')).toBe('testValue');
 	});

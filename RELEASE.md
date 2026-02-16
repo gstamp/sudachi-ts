@@ -9,8 +9,8 @@ Before releasing, make sure you:
 1. ✅ Have a clean git working directory
 2. ✅ Are authenticated with npm (`npm login`)
 3. ✅ Have push access to the repository
-4. ✅ All tests pass (`bun test`)
-5. ✅ No TypeScript errors (`bun x tsc --noEmit`)
+4. ✅ All tests pass (`npm test`)
+5. ✅ No TypeScript errors (`npm run typecheck`)
 
 ## Quick Release
 
@@ -66,7 +66,7 @@ Before releasing, make sure you:
 
 ```bash
 # Check the published version
-bunx npm-view sudachi-ts
+npm view sudachi-ts
 
 # Verify the tag
 git tag -l
@@ -86,12 +86,12 @@ git commit -m "WIP"
 
 **Tests failing?**
 ```bash
-bun test --bail=1
+npm test -- --bail=1
 ```
 
 **TypeScript errors?**
 ```bash
-bun x tsc --noEmit
+npm run typecheck
 ```
 
 **npm authentication issues?**
@@ -108,7 +108,7 @@ git tag -d v1.2.3
 git push origin :refs/tags/v1.2.3
 
 # Unpublish from npm (within 72 hours)
-bun npm unpublish sudachi-ts@1.2.3
+npm unpublish sudachi-ts@1.2.3
 ```
 
 ## Full Documentation

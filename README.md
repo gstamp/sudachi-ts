@@ -273,7 +273,7 @@ See [PLUGINS.md](./PLUGINS.md) for detailed plugin development guide.
 Quick local comparison for the PoC token chunker plugin:
 
 ```bash
-bun examples/token-chunker-plugin.ts /path/to/system.dic "東京大学"
+npm exec tsx examples/token-chunker-plugin.ts /path/to/system.dic "東京大学"
 ```
 
 This example prints each token as `surface/reading` so the chunking impact on
@@ -338,16 +338,16 @@ git clone https://github.com/your-org/sudachi-ts.git
 cd sudachi-ts
 
 # Install dependencies
-bun install
+npm install
 
 # Type check
-bun x tsc --noEmit
+npm run typecheck
 
 # Run tests
-bun test
+npm test
 
 # Lint
-bun x @biomejs/biome lint --write .
+npm run check:fix
 ```
 
 ## Architecture

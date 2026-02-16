@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { DoubleArray } from '../../../src/dictionary-build/doubleArray.js';
 
 describe('DoubleArrayBuilder', () => {

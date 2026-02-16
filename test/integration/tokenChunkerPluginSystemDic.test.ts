@@ -1,13 +1,16 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Config } from '../../src/config/config.js';
 import type { Dictionary } from '../../src/core/dictionary.js';
 import { SplitMode } from '../../src/core/tokenizer.js';
 import { DictionaryFactory } from '../../src/dictionary/dictionaryFactory.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const SYSTEM_DIC_PATH = join(
-	import.meta.dir,
+	__dirname,
 	'..',
 	'..',
 	'resources',

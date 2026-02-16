@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'vitest';
 import type { Morpheme } from '../../src/core/morpheme.js';
 import { SplitMode } from '../../src/core/tokenizer.js';
 import {

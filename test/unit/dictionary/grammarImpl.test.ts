@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { Connection } from '../../../src/dictionary/connection.js';
 import { GrammarImpl } from '../../../src/dictionary/grammarImpl.js';
 import { POS } from '../../../src/dictionary/pos.js';

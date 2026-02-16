@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { SentenceSplittingAnalysis } from '../../../src/core/sentenceSplittingAnalysis.js';
 import { SplitMode } from '../../../src/core/tokenizer.js';
 import { getSystemDictionary } from '../../integration/testDictionary.js';

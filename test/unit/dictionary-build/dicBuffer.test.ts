@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { DicBuffer } from '../../../src/dictionary-build/dicBuffer.js';
 
 describe('DicBuffer', () => {
