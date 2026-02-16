@@ -44,14 +44,15 @@ Before releasing, make sure you:
 
 ## What the Script Does
 
-1. Bumps version in `package.json`
-2. Builds the project
-3. Runs tests
-4. Checks TypeScript types
-5. Commits changes to git
-6. Creates an annotated git tag
-7. Publishes to npm
-8. Pushes commits and tags to remote
+1. Validates npm authentication (unless `--skip-publish` or `--dry-run`)
+2. Bumps version in `package.json`
+3. Builds the project
+4. Runs tests
+5. Checks TypeScript types
+6. Commits changes to git
+7. Creates an annotated git tag
+8. Publishes to npm
+9. Pushes commits and tags to remote
 
 ## Common Commands
 

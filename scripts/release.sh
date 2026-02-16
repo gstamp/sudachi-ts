@@ -196,6 +196,11 @@ main() {
         check_git_status
     fi
 
+    # Validate npm authentication before performing release steps
+    if [[ "$SKIP_PUBLISH" == false && "$DRY_RUN" == false ]]; then
+        check_npm_auth
+    fi
+
     # Get current version
     CURRENT_VERSION=$(get_current_version)
     echo "Current version: $CURRENT_VERSION"
@@ -237,9 +242,6 @@ main() {
 
     # Publish to npm
     if [[ "$SKIP_PUBLISH" == false ]]; then
-        if [[ "$DRY_RUN" == false ]]; then
-            check_npm_auth
-        fi
         run_cmd "npm publish" "Publish to npm" "$DRY_RUN"
     fi
 

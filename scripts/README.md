@@ -78,17 +78,18 @@ Skip git operations or npm publishing:
 
 When you run the release script, it performs the following steps:
 
-1. **Version Calculation**: Determines the new version based on the selected option
-2. **Update package.json**: Bumps the version number in package.json
-3. **Build**: Compiles the TypeScript code
-4. **Test**: Runs the test suite
-5. **Type Check**: Validates TypeScript types
-6. **Git Commit** (unless `--skip-git`):
+1. **Npm Auth Check** (unless `--skip-publish` or `--dry-run`): Validates npm authentication before making release changes
+2. **Version Calculation**: Determines the new version based on the selected option
+3. **Update package.json**: Bumps the version number in package.json
+4. **Build**: Compiles the TypeScript code
+5. **Test**: Runs the test suite
+6. **Type Check**: Validates TypeScript types
+7. **Git Commit** (unless `--skip-git`):
    - Stages the updated package.json
    - Creates a commit with message "chore: release v{version}"
    - Creates an annotated tag "v{version}"
-7. **Publish** (unless `--skip-publish`): Publishes to npm using npm
-8. **Git Push** (unless `--skip-git`): Pushes commit and tags to remote
+8. **Publish** (unless `--skip-publish`): Publishes to npm using npm
+9. **Git Push** (unless `--skip-git`): Pushes commit and tags to remote
 
 ## Prerequisites
 
@@ -178,6 +179,8 @@ Check your npm authentication:
 npm whoami
 npm login
 ```
+
+If the script exits with `Error: Not authenticated to npm registry.`, authentication is now checked before version bump, commit, and tag creation.
 
 ### Git Push Fails
 

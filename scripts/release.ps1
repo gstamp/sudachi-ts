@@ -213,6 +213,10 @@ function Main {
         Check-GitStatus
     }
 
+    if (-not $SkipPublish -and -not $DryRun) {
+        Check-NpmAuth
+    }
+
     $currentVersion = Get-CurrentVersion
     Write-Host "Current version: $currentVersion"
 
@@ -243,9 +247,6 @@ function Main {
     }
 
     if (-not $SkipPublish) {
-        if (-not $DryRun) {
-            Check-NpmAuth
-        }
         Run-Cmd -Command "npm publish" -Description "Publish to npm" -IsDryRun $DryRun
     }
 
