@@ -210,6 +210,10 @@ export class JapaneseTokenizer implements Tokenizer {
 	}
 
 	private tokenizeSentence(mode: SplitMode, input: InputText): MorphemeList {
+		for (const plugin of this.pathRewritePlugins) {
+			plugin.validateSplitMode(mode);
+		}
+
 		this.buildLattice(input);
 		const path = this.lattice.getBestPath();
 

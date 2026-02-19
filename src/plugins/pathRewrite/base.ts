@@ -1,5 +1,6 @@
 import type { InputText } from '../../core/inputText.js';
 import type { Lattice, LatticeNode } from '../../core/lattice.js';
+import type { SplitMode } from '../../core/tokenizer.js';
 import type { CategoryType } from '../../dictionary/categoryType.js';
 import type { Grammar } from '../../dictionary/grammar.js';
 import { WordInfo } from '../../dictionary/wordInfo.js';
@@ -7,6 +8,8 @@ import { Plugin } from '../base.js';
 
 export abstract class PathRewritePlugin extends Plugin {
 	setUp(_grammar: Grammar): void {}
+
+	validateSplitMode(_mode: SplitMode): void {}
 
 	abstract rewrite(
 		text: InputText,

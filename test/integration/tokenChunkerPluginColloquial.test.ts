@@ -51,10 +51,11 @@ const TEST_LEXICON = `僕,0,0,5000,僕,代名詞,*,*,*,*,*,ボク,僕,*,A,*,*,*,
 async function tokenizeSurfaces(
 	configPath: string,
 	text: string,
+	mode: SplitMode = SplitMode.C,
 ): Promise<string[]> {
 	const dictionary = await new DictionaryFactory().create(configPath);
 	const tokenizer = dictionary.create();
-	return [...tokenizer.tokenize(SplitMode.C, text)].map((m) => m.surface());
+	return [...tokenizer.tokenize(mode, text)].map((m) => m.surface());
 }
 
 describe('TokenChunkerPlugin colloquial integration', () => {
@@ -221,6 +222,15 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 			expect(withoutChunker).toEqual(chunkCase.baseline);
 			expect(withChunker).toEqual(chunkCase.merged);
 		}
+	});
+
+	test('throws for non-C split modes with TokenChunkerPlugin', async () => {
+		await expect(
+			tokenizeSurfaces(configWithChunker, '僕じゃない', SplitMode.A),
+		).rejects.toThrow('TokenChunkerPlugin requires SplitMode.C');
+		await expect(
+			tokenizeSurfaces(configWithChunker, '僕じゃない', SplitMode.B),
+		).rejects.toThrow('TokenChunkerPlugin requires SplitMode.C');
 	});
 
 	test('keeps boundaries where colloquial rules should not apply', async () => {

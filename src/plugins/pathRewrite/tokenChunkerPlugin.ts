@@ -1,5 +1,6 @@
 import type { InputText } from '../../core/inputText.js';
 import type { Lattice, LatticeNode } from '../../core/lattice.js';
+import { SplitMode } from '../../core/tokenizer.js';
 import type { Grammar } from '../../dictionary/grammar.js';
 import { WordInfo } from '../../dictionary/wordInfo.js';
 import { PathRewritePlugin } from './base.js';
@@ -61,6 +62,14 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			true,
 		);
 		this.enableBroadRules = this.settings.getBoolean('enableBroadRules', false);
+	}
+
+	override validateSplitMode(mode: SplitMode): void {
+		if (mode !== SplitMode.C) {
+			throw new Error(
+				'TokenChunkerPlugin requires SplitMode.C. Use tokenizer.tokenize(text) or tokenizer.tokenize(SplitMode.C, text).',
+			);
+		}
 	}
 
 	rewrite(_text: InputText, path: LatticeNode[], lattice: Lattice): void {

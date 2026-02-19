@@ -392,6 +392,8 @@ Current proof-of-concept rule:
 Settings:
 - `enablePatternRules` (default: `true`)
 - `enableBroadRules` (default: `false`) for more aggressive phrase-merging rules
+- `TokenChunkerPlugin` requires `SplitMode.C` tokenization. Using `SplitMode.A`
+  or `SplitMode.B` throws an error.
 
 ```typescript
 import { TokenChunkerPlugin } from 'sudachi-ts/plugins/index.js';

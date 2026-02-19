@@ -281,6 +281,9 @@ readings is visible in the baseline vs plugin outputs.
 `TokenChunkerPlugin` is designed and validated against the full Sudachi system
 dictionary (`system_full.dic` / `system.dic`), so prefer full-dictionary checks
 when adding or tuning chunk rules.
+`TokenChunkerPlugin` is intended for `SplitMode.C` tokenization; calling
+`tokenize(SplitMode.A, ...)` or `tokenize(SplitMode.B, ...)` with this plugin
+enabled throws an error.
 
 ## Dictionary Building
 

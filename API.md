@@ -794,6 +794,9 @@ interface PathRewritePlugin extends Plugin {
 }
 ```
 
+`TokenChunkerPlugin` requires `SplitMode.C`. Using it with `SplitMode.A` or
+`SplitMode.B` throws an error at tokenization time.
+
 ### EditConnectionCostPlugin
 
 Interface for connection cost editing plugins.

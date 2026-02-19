@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { Settings } from '../../../src/config/settings.js';
 import type { InputText } from '../../../src/core/inputText.js';
 import { type Lattice, LatticeNodeImpl } from '../../../src/core/lattice.js';
+import { SplitMode } from '../../../src/core/tokenizer.js';
 import { Connection } from '../../../src/dictionary/connection.js';
 import type { Grammar } from '../../../src/dictionary/grammar.js';
 import { POS } from '../../../src/dictionary/pos.js';
@@ -158,6 +159,18 @@ function createPatternOnlyPlugin(): TokenChunkerPlugin {
 }
 
 describe('TokenChunkerPlugin', () => {
+	test('requires split mode C', () => {
+		const plugin = new TokenChunkerPlugin();
+
+		expect(() => plugin.validateSplitMode(SplitMode.C)).not.toThrow();
+		expect(() => plugin.validateSplitMode(SplitMode.A)).toThrow(
+			'TokenChunkerPlugin requires SplitMode.C',
+		);
+		expect(() => plugin.validateSplitMode(SplitMode.B)).toThrow(
+			'TokenChunkerPlugin requires SplitMode.C',
+		);
+	});
+
 	test('does not merge consecutive nouns', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(new Settings({}));
