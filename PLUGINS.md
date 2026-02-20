@@ -357,6 +357,7 @@ Design note:
   Sudachi system dictionary (`system_full.dic` / `system.dic` in this repo).
   Rule additions should be checked against full-dictionary tokenization, not
   only mock grammars.
+- Use the token chunker with mode for best results.
 - Learner-facing goal: prefer grammar-unit chunks that are easier to study
   (for example, `かもしれない`, `〜なくなってしまう`, `〜てない`) rather than
   raw dictionary-level token fragments.
