@@ -360,6 +360,13 @@ describe('JapaneseTokenizer - Empty and Edge Cases', () => {
 		expect(m!.getWordId()).toBe(-1);
 	});
 
+	test('newline between OOV runs keeps lattice connected', () => {
+		const result = tokenizer.tokenize(SplitMode.C, 'です\nです');
+		const surfaces = [...result].map((m) => m.surface());
+
+		expect(surfaces).toEqual(['で', 'す', '\n', 'で', 'す']);
+	});
+
 	test('zero length morpheme from special processing', () => {
 		const result = tokenizer.tokenize(SplitMode.C, 'な。な');
 		expect(result.size()).toBeGreaterThanOrEqual(1);

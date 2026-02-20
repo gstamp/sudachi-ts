@@ -30,15 +30,15 @@ export class SimpleOovProviderPlugin extends OovProviderPlugin {
 
 	provideOOV(
 		inputText: InputText,
-		_offset: number,
+		offset: number,
 		otherWords: number,
 		result: LatticeNodeImpl[],
 	): number {
 		if (otherWords === 0) {
 			const node = this.createNode();
 			node.setParameter(this.leftId, this.rightId, this.cost);
-			const length = inputText.getWordCandidateLength(0);
-			const s = inputText.getSubstring(0, length);
+			const length = inputText.getWordCandidateLength(offset);
+			const s = inputText.getSubstring(offset, offset + length);
 			const info = new WordInfo(s, length, this.oovPOSId, s, s, '');
 			node.setWordInfo(info);
 			result.push(node);

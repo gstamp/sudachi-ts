@@ -355,7 +355,11 @@ MeCab-compatible OOV handling.
 
 ### Simple OOV Provider Plugin
 
-Simple single-character OOV handling.
+Simple fallback OOV handling.
+
+In plain terms: if Sudachi cannot find any word candidate at the current
+position, this plugin creates one OOV token at that position so tokenization can
+continue. It can also trigger at whitespace/newline boundaries.
 
 ```json
 {
@@ -363,8 +367,9 @@ Simple single-character OOV handling.
     {
       "className": "sudachi-ts/plugins/oov/simpleOovProviderPlugin.js",
       "settings": {
-        "minLength": 1,
-        "maxLength": 2,
+        "oovPOS": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+        "leftId": 0,
+        "rightId": 0,
         "cost": 30000
       }
     }
@@ -373,8 +378,9 @@ Simple single-character OOV handling.
 ```
 
 **Settings**:
-- `minLength` (number): Minimum word length (default: `1`)
-- `maxLength` (number): Maximum word length (default: `2`)
+- `oovPOS` (`string[]`): POS for generated OOV tokens (6 elements)
+- `leftId` (number): Left connection ID
+- `rightId` (number): Right connection ID
 - `cost` (number): Cost for OOV words (default: `30000`)
 
 ### Join Numeric Plugin
