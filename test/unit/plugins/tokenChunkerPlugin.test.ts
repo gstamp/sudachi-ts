@@ -661,6 +661,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'na-adjective attributive (静かな)',
+				expected: '静かな',
+				specs: [
+					{ surface: '静か', posId: 16 },
+					{ surface: 'な', posId: 7, dictionaryForm: 'だ', reading: 'ナ' },
+				],
+			},
+			{
 				name: '方がいい',
 				expected: '方がいい',
 				specs: [

@@ -2186,6 +2186,15 @@ const VERB_SEQUENCE_RULES: SequenceRule[] = [
 
 const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 	{
+		name: 'na_adjective_attributive',
+		priority: 75,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '形状詞' },
+			{ surface: 'な', dictionaryForm: 'だ', pos0: '助動詞' },
+		],
+	},
+	{
 		name: 'noun_teki_suffix',
 		priority: 75,
 		resultType: 'phrase',

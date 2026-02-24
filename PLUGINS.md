@@ -376,7 +376,8 @@ Current proof-of-concept rule:
   contractions like `どうしよ` (`どうしよう`),
   colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`,
   `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
-- Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`.
+- Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`,
+  and na-adjective attributive forms like `静かな`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`, `進めなくなってしまう`.
 - Additional fixed-expression merges include patterns like `かもしれない`.
 - Additional learner-oriented merges include obligation/constraint forms (`〜なくてはいけない`,
