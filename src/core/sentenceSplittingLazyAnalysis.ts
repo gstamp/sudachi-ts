@@ -11,6 +11,7 @@ import type { SplitMode } from './tokenizer.js';
 import { UTF8InputTextBuilder } from './utf8InputText.js';
 
 const BUFFER_SIZE = 4096; // SentenceDetector.DEFAULT_LIMIT
+const LEADING_WHITESPACE_PATTERN = /^\s+/u;
 
 export class SentenceSplittingLazyAnalysis
 	implements NonBreakChecker, AsyncIterable<Morpheme[]>
@@ -102,6 +103,16 @@ export class SentenceSplittingLazyAnalysis
 	}
 
 	private processNextSentence(): MorphemeList | null {
+		const leadingWhitespace = this.normalized.match(LEADING_WHITESPACE_PATTERN);
+		if (leadingWhitespace) {
+			const skipped = leadingWhitespace[0].length;
+			this.bos += skipped;
+			this.normalized = this.normalized.slice(skipped);
+			if (this.normalized.length === 0) {
+				return null;
+			}
+		}
+
 		const detector = new SentenceDetector();
 		const eosLength = detector.getEos(this.normalized, this);
 

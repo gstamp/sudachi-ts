@@ -53,26 +53,27 @@ export class SentenceDetector {
 		let match: RegExpExecArray | null = SENTENCE_BREAKER_PATTERN.exec(s);
 		while (match !== null) {
 			const eos = match.index + match[0].length;
-			if (this.parenthesisLevel(s.slice(0, eos)) === 0) {
-				let adjustedEos = eos;
-				if (eos < s.length) {
-					adjustedEos += this.prohibitedBOS(s.slice(eos));
-				}
-				if (ITEMIZE_HEADER_PATTERN.test(s.slice(0, eos))) {
-					match = SENTENCE_BREAKER_PATTERN.exec(s);
-					continue;
-				}
-				if (eos < s.length && this.isContinuousPhrase(s, eos)) {
-					match = SENTENCE_BREAKER_PATTERN.exec(s);
-					continue;
-				}
-				if (checker?.hasNonBreakWord(eos)) {
-					match = SENTENCE_BREAKER_PATTERN.exec(s);
-					continue;
-				}
-				return adjustedEos;
+			let adjustedEos = eos;
+			if (eos < s.length) {
+				adjustedEos += this.prohibitedBOS(s.slice(eos));
 			}
-			match = SENTENCE_BREAKER_PATTERN.exec(s);
+			if (this.parenthesisLevel(s.slice(0, adjustedEos)) !== 0) {
+				match = SENTENCE_BREAKER_PATTERN.exec(s);
+				continue;
+			}
+			if (ITEMIZE_HEADER_PATTERN.test(s.slice(0, eos))) {
+				match = SENTENCE_BREAKER_PATTERN.exec(s);
+				continue;
+			}
+			if (eos < s.length && this.isContinuousPhrase(s, eos)) {
+				match = SENTENCE_BREAKER_PATTERN.exec(s);
+				continue;
+			}
+			if (checker?.hasNonBreakWord(adjustedEos)) {
+				match = SENTENCE_BREAKER_PATTERN.exec(s);
+				continue;
+			}
+			return adjustedEos;
 		}
 
 		if (input.length > this.limit) {

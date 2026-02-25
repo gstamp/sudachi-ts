@@ -19,6 +19,8 @@ import type { Tokenizer } from './tokenizer.js';
 import { SplitMode } from './tokenizer.js';
 import { UTF8InputTextBuilder } from './utf8InputText.js';
 
+const LEADING_WHITESPACE_PATTERN = /^\s+/u;
+
 export class JapaneseTokenizer implements Tokenizer {
 	private readonly grammar: Grammar;
 	private readonly lexicon: Lexicon;
@@ -94,6 +96,14 @@ export class JapaneseTokenizer implements Tokenizer {
 		let remaining = inputText;
 
 		while (remaining.length > 0) {
+			const leadingWhitespace = remaining.match(LEADING_WHITESPACE_PATTERN);
+			if (leadingWhitespace) {
+				remaining = remaining.slice(leadingWhitespace[0].length);
+				if (remaining.length === 0) {
+					break;
+				}
+			}
+
 			const checker: NonBreakChecker = {
 				hasNonBreakWord: (eos: number): boolean => {
 					const bytes = this.buildInputText(

@@ -46,6 +46,13 @@ describe('SentenceDetector', () => {
 		expect(detector.getEos('あ（いう）。えお', null)).toBe(6);
 	});
 
+	test('getEosWithQuotedDialogue', () => {
+		expect(detector.getEos('「ニャ！」タマ', null)).toBe('「ニャ！」'.length);
+		expect(detector.getEos('「そうだ。」\n次の文。', null)).toBe(
+			'「そうだ。」'.length,
+		);
+	});
+
 	test('getEosWithProhibitedBOS', () => {
 		expect(detector.getEos('あいう?えお', null)).toBe(4);
 		expect(detector.getEos('あいう?)えお', null)).toBe(5);

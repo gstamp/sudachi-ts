@@ -125,6 +125,27 @@ describe('JapaneseTokenizer - Sentence Tokenization', () => {
 		const result = tokenizer.tokenize(SplitMode.C, '😀');
 		expect(result.size()).toBeGreaterThanOrEqual(1);
 	});
+
+	test('tokenizeSentences - skips leading newline tokens between sentences', () => {
+		const text = '京都に行った。\n東京に行った。';
+		const list = [...tokenizer.tokenizeSentences(SplitMode.C, text)];
+
+		expect(list.length).toBe(2);
+		const secondSurfaces = [...list[1]!].map((m) => m.surface());
+		expect(secondSurfaces[0]).toBe('東京');
+		expect(secondSurfaces).not.toContain('\n');
+	});
+
+	test('tokenizeSentences - splits quoted dialogue before following narration', () => {
+		const text = '「ニャ！」\nタマは食べた。';
+		const list = [...tokenizer.tokenizeSentences(SplitMode.C, text)];
+
+		expect(list.length).toBe(2);
+		expect(list[0]?.get(0)?.surface()).toBe('「');
+		const secondSurfaces = [...list[1]!].map((m) => m.surface());
+		expect(secondSurfaces.slice(0, 2).join('')).toBe('タマ');
+		expect(secondSurfaces).not.toContain('\n');
+	});
 });
 
 describe('JapaneseTokenizer - Lazy Tokenization', () => {
@@ -175,6 +196,22 @@ describe('JapaneseTokenizer - Lazy Tokenization', () => {
 
 		expect(chunks.length).toBeGreaterThanOrEqual(1);
 		expect(chunks[0]?.length).toBeGreaterThan(0);
+	});
+
+	test('lazyTokenizeSentences - skips leading newline tokens between sentences', async () => {
+		const chunks: Morpheme[][] = [];
+
+		for await (const sentence of tokenizer.lazyTokenizeSentences(
+			SplitMode.C,
+			toAsyncIterable('京都に行った。\n東京に行った。'),
+		)) {
+			chunks.push([...sentence]);
+		}
+
+		expect(chunks.length).toBe(2);
+		const secondSurfaces = chunks[1]?.map((m) => m.surface()) ?? [];
+		expect(secondSurfaces[0]).toBe('東京');
+		expect(secondSurfaces).not.toContain('\n');
 	});
 });
 

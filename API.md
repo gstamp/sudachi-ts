@@ -99,6 +99,9 @@ const result = tokenizer.tokenize('東京都に行きました');
 
 **`tokenizeSentences(mode, text)`**
 Tokenizes multiple sentences.
+Quoted dialogue endings (for example `「...！」`) are treated as sentence
+boundaries, and leading inter-sentence whitespace/newlines are skipped before
+tokenization.
 
 ```typescript
 for (const sentence of tokenizer.tokenizeSentences(SplitMode.A, text)) {

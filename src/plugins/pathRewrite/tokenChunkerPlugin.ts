@@ -446,6 +446,11 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 				i++;
 				continue;
 			}
+			if (this.shouldMergeSmallKana(current, next)) {
+				const merged = this.mergeChunks([current, next], 'fixed_expression');
+				chunks.splice(i, 2, merged);
+				continue;
+			}
 			if (this.shouldMergeAttributiveKana(current, next, following)) {
 				const merged = this.mergeChunks([current, next], 'phrase');
 				chunks.splice(i, 2, merged);
@@ -470,7 +475,10 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			}
 			if (
 				current.surface.endsWith('んだ') &&
-				(next.surface === 'よ' || next.surface === 'よっ')
+				(next.surface === 'よ' ||
+					next.surface === 'よっ' ||
+					next.surface === 'ね' ||
+					next.surface === 'ねっ')
 			) {
 				const merged = this.mergeChunks([current, next], 'fixed_expression');
 				chunks.splice(i, 2, merged);
@@ -505,6 +513,19 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 
 		const followingPos0 = this.getPosById(following.posId)?.[0] ?? '';
 		return ['名詞', '代名詞'].includes(followingPos0);
+	}
+
+	private shouldMergeSmallKana(current: ChunkToken, next: ChunkToken): boolean {
+		if (
+			current.chunkType !== 'single_token' ||
+			next.chunkType !== 'single_token'
+		) {
+			return false;
+		}
+		return (
+			SINGLE_KANA_PATTERN.test(current.surface) &&
+			SMALL_KANA_SUFFIXES.has(next.surface)
+		);
 	}
 
 	private applyInlineRubyExactStage(source: ChunkToken[]): ChunkToken[] {
@@ -721,6 +742,8 @@ const KANJI_PATTERN = /\p{Script=Han}/u;
 const KANJI_ONLY_PATTERN = /^[\p{Script=Han}々〆ヵヶ]+$/u;
 const KANA_PATTERN = /^[ぁ-ゖァ-ヺー]+$/u;
 const HIRAGANA_PATTERN = /^[ぁ-ゖー]+$/u;
+const SINGLE_KANA_PATTERN = /^[ぁ-ゖァ-ヺー]$/u;
+const SMALL_KANA_SUFFIXES = new Set(['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ']);
 
 const COUNTER_WORDS = new Set([
 	'本',
@@ -921,6 +944,25 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ pos0: '動詞' },
 			{ surface: 'まし', dictionaryForm: 'ます', pos0: '助動詞' },
 			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'copula_desu_past_split',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'でし', dictionaryForm: 'です', pos0: '助動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_masen',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'ませ', dictionaryForm: 'ます', pos0: '助動詞' },
+			{ surface: 'ん', pos0: '助動詞' },
 		],
 	},
 	{
@@ -1579,6 +1621,12 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'nakereba',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [{ surface: 'なけれ' }, { surface: 'ば', pos0: '助詞' }],
+	},
+	{
 		name: 'ja_ire_nai',
 		priority: 95,
 		resultType: 'phrase',
@@ -1611,6 +1659,28 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: 'た', pos0: '助動詞' }],
+	},
+	{
+		name: 'verb_chatta_past',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['ちゃっ', 'じゃっ'] },
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_past_n_da',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'ん' }, { surface: 'だ' }],
+	},
+	{
+		name: 'verb_past_n_da_compact',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [{ pos0: '動詞' }, { surface: 'んだ' }],
 	},
 	{
 		name: 'verb_tara_compact',
@@ -2115,6 +2185,18 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'んだ' }, { surface: 'よ' }],
+	},
+	{
+		name: 'fixed_n_da_ne',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'ん' }, { surface: 'だ' }, { surface: 'ね' }],
+	},
+	{
+		name: 'fixed_nda_ne',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'んだ' }, { surface: 'ね' }],
 	},
 	{
 		name: 'fixed_de_su_yo',

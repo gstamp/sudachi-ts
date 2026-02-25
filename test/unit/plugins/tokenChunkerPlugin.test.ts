@@ -1643,6 +1643,28 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'でし + た',
+				expected: 'でした',
+				specs: [
+					{ surface: 'でし', posId: 7, dictionaryForm: 'です', reading: 'デシ' },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: 'あり + ませ + ん',
+				expected: 'ありません',
+				specs: [
+					{
+						surface: 'あり',
+						posId: 5,
+						dictionaryForm: 'ある',
+						reading: 'アリ',
+					},
+					{ surface: 'ませ', posId: 7, dictionaryForm: 'ます', reading: 'マセ' },
+					{ surface: 'ん', posId: 7 },
+				],
+			},
+			{
 				name: 'んだよ',
 				expected: 'んだよ',
 				specs: [
@@ -1684,6 +1706,31 @@ describe('TokenChunkerPlugin', () => {
 						reading: 'カッタンダ',
 					},
 					{ surface: 'よ', posId: 2 },
+				],
+			},
+			{
+				name: '倒し + ちゃっ + た + ん + だ + ね',
+				expected: '倒しちゃったんだね',
+				specs: [
+					{
+						surface: '倒し',
+						posId: 5,
+						dictionaryForm: '倒す',
+						reading: 'タオシ',
+					},
+					{ surface: 'ちゃっ', posId: 2 },
+					{ surface: 'た', posId: 7 },
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'ね', posId: 2 },
+				],
+			},
+			{
+				name: 'ニ + ャ',
+				expected: 'ニャ',
+				specs: [
+					{ surface: 'ニ', posId: 1 },
+					{ surface: 'ャ', posId: 1 },
 				],
 			},
 			{
@@ -1729,6 +1776,14 @@ describe('TokenChunkerPlugin', () => {
 					{ surface: '魅力的', posId: 1 },
 					{ surface: 'だっ', posId: 7 },
 					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
+				name: 'なけれ + ば',
+				expected: 'なければ',
+				specs: [
+					{ surface: 'なけれ', posId: 7 },
+					{ surface: 'ば', posId: 2 },
 				],
 			},
 			{

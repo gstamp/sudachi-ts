@@ -199,6 +199,10 @@ for (const sentence of sentences) {
 }
 ```
 
+`tokenizeSentences(...)` treats quoted dialogue endings (for example `「...！」` and
+`「...。」`) as sentence boundaries and skips leading inter-sentence whitespace such
+as newlines before tokenization.
+
 Lazy sentence processing for streaming:
 
 ```typescript
