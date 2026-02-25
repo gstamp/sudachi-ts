@@ -796,6 +796,9 @@ interface PathRewritePlugin extends Plugin {
 
 `TokenChunkerPlugin` requires `SplitMode.C`. Using it with `SplitMode.A` or
 `SplitMode.B` throws an error at tokenization time.
+`TokenChunkerPlugin` also requires `enableDefaultCompoundParticles: true`;
+dictionary creation throws when this plugin is enabled while default compound
+particles are disabled.
 
 ### EditConnectionCostPlugin
 

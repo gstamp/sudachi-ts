@@ -62,6 +62,7 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 	let tempDir = '';
 	let configWithChunker = '';
 	let configWithoutChunker = '';
+	let configIncompatibleChunker = '';
 
 	beforeAll(async () => {
 		tempDir = await mkdtemp(join(tmpdir(), 'sudachi-chunker-colloquial-'));
@@ -78,10 +79,11 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 
 		configWithChunker = join(tempDir, 'sudachi-with-chunker.json');
 		configWithoutChunker = join(tempDir, 'sudachi-no-chunker.json');
+		configIncompatibleChunker = join(tempDir, 'sudachi-incompatible-chunker.json');
 
 		const baseConfig = {
 			systemDict: 'system.dic',
-			enableDefaultCompoundParticles: false,
+			enableDefaultCompoundParticles: true,
 			oovProviderPlugin: [
 				{
 					class: 'com.worksap.nlp.sudachi.SimpleOovProviderPlugin',
@@ -115,6 +117,23 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 				{
 					...baseConfig,
 					pathRewritePlugin: [],
+				},
+				null,
+				2,
+			),
+		);
+		await writeFile(
+			configIncompatibleChunker,
+			JSON.stringify(
+				{
+					...baseConfig,
+					enableDefaultCompoundParticles: false,
+					pathRewritePlugin: [
+						{
+							class: 'com.worksap.nlp.sudachi.TokenChunkerPlugin',
+							enablePatternRules: true,
+						},
+					],
 				},
 				null,
 				2,
@@ -184,7 +203,7 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 			},
 			{
 				text: 'いいかな',
-				baseline: ['いい', 'か', 'な'],
+				baseline: ['いい', 'かな'],
 				merged: ['いい', 'かな'],
 			},
 			{ text: 'でしょ', baseline: ['で', 'しょ'], merged: ['でしょ'] },
@@ -231,6 +250,14 @@ describe('TokenChunkerPlugin colloquial integration', () => {
 		await expect(
 			tokenizeSurfaces(configWithChunker, '僕じゃない', SplitMode.B),
 		).rejects.toThrow('TokenChunkerPlugin requires SplitMode.C');
+	});
+
+	test('throws when TokenChunkerPlugin is used with default compounds disabled', async () => {
+		await expect(
+			tokenizeSurfaces(configIncompatibleChunker, '僕じゃない'),
+		).rejects.toThrow(
+			'TokenChunkerPlugin is only compatible when enableDefaultCompoundParticles is true.',
+		);
 	});
 
 	test('keeps boundaries where colloquial rules should not apply', async () => {

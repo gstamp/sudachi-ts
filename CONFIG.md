@@ -111,6 +111,10 @@ and conjunction-like forms (for example: `かも`, `のか`, `だから`).
 
 **Default**: `true`
 
+When using `TokenChunkerPlugin`, this setting must remain `true`. Dictionary
+creation throws an error if `TokenChunkerPlugin` is configured while
+`enableDefaultCompoundParticles` is `false`.
+
 #### characterDefinitionFile (optional)
 
 Path to character definition file for OOV handling.

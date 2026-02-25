@@ -396,6 +396,9 @@ Settings:
 - `enableBroadRules` (default: `false`) for more aggressive phrase-merging rules
 - `TokenChunkerPlugin` requires `SplitMode.C` tokenization. Using `SplitMode.A`
   or `SplitMode.B` throws an error.
+- `TokenChunkerPlugin` is only compatible with
+  `enableDefaultCompoundParticles: true`. Dictionary creation throws an error if
+  this plugin is enabled while default compound particles are disabled.
 
 ```typescript
 import { TokenChunkerPlugin } from 'sudachi-ts/plugins/index.js';

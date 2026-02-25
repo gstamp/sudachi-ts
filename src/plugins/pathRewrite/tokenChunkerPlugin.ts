@@ -441,8 +441,14 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 		while (i < chunks.length - 1) {
 			const current = chunks[i];
 			const next = chunks[i + 1];
+			const following = chunks[i + 2];
 			if (!current || !next) {
 				i++;
+				continue;
+			}
+			if (this.shouldMergeAttributiveKana(current, next, following)) {
+				const merged = this.mergeChunks([current, next], 'phrase');
+				chunks.splice(i, 2, merged);
 				continue;
 			}
 
@@ -474,6 +480,31 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			i++;
 		}
 		return chunks;
+	}
+
+	private shouldMergeAttributiveKana(
+		current: ChunkToken,
+		next: ChunkToken,
+		following: ChunkToken | undefined,
+	): boolean {
+		if (next.surface !== 'かな') {
+			return false;
+		}
+		const nextPos = this.getPosById(next.posId);
+		if (!nextPos || nextPos[0] !== '助詞' || nextPos[1] !== '終助詞') {
+			return false;
+		}
+
+		const currentPos0 = this.getPosById(current.posId)?.[0] ?? '';
+		if (!['名詞', '形状詞'].includes(currentPos0)) {
+			return false;
+		}
+		if (!following) {
+			return false;
+		}
+
+		const followingPos0 = this.getPosById(following.posId)?.[0] ?? '';
+		return ['名詞', '代名詞'].includes(followingPos0);
 	}
 
 	private applyInlineRubyExactStage(source: ChunkToken[]): ChunkToken[] {

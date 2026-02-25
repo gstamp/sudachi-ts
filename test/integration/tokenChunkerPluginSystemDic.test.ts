@@ -24,7 +24,7 @@ const describeIfSystemDic = existsSync(SYSTEM_DIC_PATH)
 function createBaseConfig() {
 	return {
 		systemDict: SYSTEM_DIC_PATH,
-		enableDefaultCompoundParticles: false,
+		enableDefaultCompoundParticles: true,
 		oovProviderPlugin: [
 			{
 				class: 'com.worksap.nlp.sudachi.SimpleOovProviderPlugin',
@@ -41,6 +41,21 @@ function createWithChunkerConfig() {
 	return Config.parse(
 		JSON.stringify({
 			...createBaseConfig(),
+			pathRewritePlugin: [
+				{
+					class: 'com.worksap.nlp.sudachi.TokenChunkerPlugin',
+					enablePatternRules: true,
+				},
+			],
+		}),
+	);
+}
+
+function createIncompatibleChunkerConfig() {
+	return Config.parse(
+		JSON.stringify({
+			...createBaseConfig(),
+			enableDefaultCompoundParticles: false,
 			pathRewritePlugin: [
 				{
 					class: 'com.worksap.nlp.sudachi.TokenChunkerPlugin',
@@ -459,6 +474,37 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				with: ['優太だった'],
 			},
 			{
+				text: '静かな町のはずれに、小さな古本屋があった。',
+				without: [
+					'静',
+					'かな',
+					'町',
+					'の',
+					'はずれ',
+					'に',
+					'、',
+					'小さな',
+					'古本屋',
+					'が',
+					'あっ',
+					'た',
+					'。',
+				],
+				with: [
+					'静かな',
+					'町',
+					'の',
+					'はずれ',
+					'に',
+					'、',
+					'小さな',
+					'古本屋',
+					'が',
+					'あった',
+					'。',
+				],
+			},
+			{
 				text: '一番魅力的だったのは誰？',
 				without: ['一番', '魅力的', 'だっ', 'た', 'の', 'は', '誰', '?'],
 				with: ['一番', '魅力的だった', 'のは', '誰', '?'],
@@ -573,7 +619,7 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{
 				text: '半分自伝的映画だから',
-				without: ['半分', '自伝', '的', '映画', 'だ', 'から'],
+				without: ['半分', '自伝', '的', '映画', 'だから'],
 				with: ['半分', '自伝的', '映画', 'だから'],
 			},
 			{
@@ -680,7 +726,7 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			},
 			{
 				text: 'かもしれない',
-				without: ['か', 'も', 'しれ', 'ない'],
+				without: ['かも', 'しれ', 'ない'],
 				with: ['かもしれない'],
 			},
 			{
@@ -967,6 +1013,15 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			expect(withChunkerResult).toEqual(chunkCase.expectedWithChunker);
 			expect(withChunkerResult.length).toBeLessThan(without.length);
 		}
+	});
+
+	test('throws when TokenChunkerPlugin is used with default compounds disabled', async () => {
+		const factory = new DictionaryFactory();
+		await expect(
+			factory.create(undefined, createIncompatibleChunkerConfig()),
+		).rejects.toThrow(
+			'TokenChunkerPlugin is only compatible when enableDefaultCompoundParticles is true.',
+		);
 	});
 
 	test('handles 2000 adversarial obligation/chunking sentences with system.dic', () => {

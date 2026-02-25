@@ -1953,6 +1953,39 @@ describe('TokenChunkerPlugin', () => {
 		}
 	});
 
+	test('merges attributive na-adjective when input is split as X + かな + noun', () => {
+		const plugin = createPatternOnlyPlugin();
+		const path = createPath([
+			{ surface: '静', posId: 1 },
+			{ surface: 'かな', posId: 14 },
+			{ surface: '町', posId: 1 },
+		]);
+
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
+			'静かな',
+			'町',
+		]);
+	});
+
+	test('does not merge sentence-final かな as attributive na-adjective', () => {
+		const plugin = createPatternOnlyPlugin();
+		const path = createPath([
+			{ surface: '東京', posId: 1 },
+			{ surface: 'かな', posId: 14 },
+			{ surface: '。', posId: 13 },
+		]);
+
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
+			'東京',
+			'かな',
+			'。',
+		]);
+	});
+
 	test('does not over-merge colloquial rules in unrelated contexts', () => {
 		const cases: Array<{
 			name: string;
