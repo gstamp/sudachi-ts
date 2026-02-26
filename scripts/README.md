@@ -5,6 +5,7 @@ Automated release script for sudachi-ts that handles version bumping, building, 
 ## Features
 
 - **Version Bumping**: Automatically bump major, minor, or patch versions
+- **Beta Prereleases**: Create/increment `beta` prerelease versions and publish with npm `beta` dist-tag
 - **Custom Versions**: Specify an exact version number if needed
 - **Pre-release Validation**: Runs build, tests, and type checking before releasing
 - **Git Integration**: Commits version changes and creates annotated tags
@@ -24,6 +25,12 @@ Automated release script for sudachi-ts that handles version bumping, building, 
 
 # Perform a major release
 ./scripts/release.sh --major
+
+# Perform a beta prerelease (x.y.z -> x.y.(z+1)-beta.0)
+./scripts/release.sh --beta
+
+# Perform a minor beta prerelease (x.y.z -> x.(y+1).0-beta.0)
+./scripts/release.sh --beta --minor
 ```
 
 ### With Dry Run
@@ -68,6 +75,7 @@ Skip git operations or npm publishing:
 | `--major` | Bump major version (e.g., 1.0.0 → 2.0.0) |
 | `--minor` | Bump minor version (e.g., 1.0.0 → 1.1.0) |
 | `--patch` | Bump patch version (e.g., 1.0.0 → 1.0.1) [default] |
+| `--beta` | Create/increment prerelease versions and publish to npm `beta` dist-tag |
 | `--version <ver>` | Set specific version (e.g., 1.2.3) |
 | `--dry-run` | Show what would be done without executing |
 | `--skip-git` | Skip git commit and tag |
@@ -80,6 +88,10 @@ When you run the release script, it performs the following steps:
 
 1. **Npm Auth Check** (unless `--skip-publish` or `--dry-run`): Validates npm authentication before making release changes
 2. **Version Calculation**: Determines the new version based on the selected option
+   - Stable mode default: patch bump (e.g., `1.2.3` → `1.2.4`)
+   - Beta mode default from stable: next patch beta (e.g., `1.2.3` → `1.2.4-beta.0`)
+   - Beta mode default from beta: increment beta counter (e.g., `1.2.4-beta.2` → `1.2.4-beta.3`)
+   - Beta mode with explicit bump: bump base and reset beta counter (e.g., `--beta --minor` → `1.3.0-beta.0`)
 3. **Update package.json**: Bumps the version number in package.json
 4. **Build**: Compiles the TypeScript code
 5. **Test**: Runs the test suite
@@ -89,6 +101,8 @@ When you run the release script, it performs the following steps:
    - Creates a commit with message "chore: release v{version}"
    - Creates an annotated tag "v{version}"
 8. **Publish** (unless `--skip-publish`): Publishes to npm using npm
+   - Stable release: `npm publish` (`latest` dist-tag)
+   - Beta release: `npm publish --tag beta` (`beta` dist-tag)
 9. **Git Push** (unless `--skip-git`): Pushes commit and tags to remote
 
 ## Prerequisites
@@ -141,6 +155,19 @@ git commit -m "docs: document breaking changes for v2.0.0"
 
 # 3. Perform the release
 ./scripts/release.sh --major
+```
+
+### Beta Prerelease
+
+```bash
+# 1. Ensure working directory is clean
+git status
+
+# 2. Preview beta release
+./scripts/release.sh --beta --dry-run
+
+# 3. Publish beta release to npm beta dist-tag
+./scripts/release.sh --beta
 ```
 
 ## Troubleshooting

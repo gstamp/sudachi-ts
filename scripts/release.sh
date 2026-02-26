@@ -11,9 +11,12 @@ NC='\033[0m' # No Color
 # Default options
 VERSION_TYPE="patch"
 CUSTOM_VERSION=""
+CUSTOM_VERSION_SET=false
 DRY_RUN=false
 SKIP_GIT=false
 SKIP_PUBLISH=false
+BETA_RELEASE=false
+EXPLICIT_BUMP=false
 
 # Display help
 print_help() {
@@ -23,6 +26,7 @@ print_help() {
     echo "  --major          Bump major version (1.0.0 -> 2.0.0)"
     echo "  --minor          Bump minor version (1.0.0 -> 1.1.0)"
     echo "  --patch          Bump patch version (1.0.0 -> 1.0.1) [default]"
+    echo "  --beta           Create or increment beta prerelease versions (x.y.z-beta.n)"
     echo "  --version <ver>  Set specific version"
     echo "  --dry-run        Show what would be done without executing"
     echo "  --skip-git       Skip git commit and tag"
@@ -32,6 +36,8 @@ print_help() {
     echo "Examples:"
     echo "  ./scripts/release.sh              # Patch bump, commit, tag, and publish"
     echo "  ./scripts/release.sh --minor      # Minor bump, commit, tag, and publish"
+    echo "  ./scripts/release.sh --beta       # Beta prerelease publish to npm beta dist-tag"
+    echo "  ./scripts/release.sh --beta --minor # Minor bump prerelease as x.y.z-beta.0"
     echo "  ./scripts/release.sh --dry-run    # Preview without making changes"
     echo "  ./scripts/release.sh --skip-git   # Bump and publish without git operations"
 }
@@ -42,19 +48,30 @@ parse_args() {
         case $1 in
             --major)
                 VERSION_TYPE="major"
+                EXPLICIT_BUMP=true
                 shift
                 ;;
             --minor)
                 VERSION_TYPE="minor"
+                EXPLICIT_BUMP=true
                 shift
                 ;;
             --patch)
                 VERSION_TYPE="patch"
+                EXPLICIT_BUMP=true
+                shift
+                ;;
+            --beta)
+                BETA_RELEASE=true
                 shift
                 ;;
             --version)
-                VERSION_TYPE="custom"
+                if [[ $# -lt 2 || "$2" == --* ]]; then
+                    echo -e "${RED}Error: --version requires a value${NC}"
+                    exit 1
+                fi
                 CUSTOM_VERSION="$2"
+                CUSTOM_VERSION_SET=true
                 shift 2
                 ;;
             --dry-run)
@@ -82,13 +99,53 @@ parse_args() {
     done
 }
 
-# Validate semver format
-validate_version() {
+# Validate stable semver format
+validate_stable_version() {
     local version="$1"
     if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         echo -e "${RED}Invalid version format: $version${NC}"
         exit 1
     fi
+}
+
+# Validate supported project version format (stable or beta prerelease)
+validate_supported_version() {
+    local version="$1"
+    if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?$ ]]; then
+        echo -e "${RED}Unsupported package.json version format: $version${NC}"
+        echo -e "${YELLOW}Supported formats: x.y.z or x.y.z-beta.n${NC}"
+        exit 1
+    fi
+}
+
+# Extract base version from stable/beta version
+extract_base_version() {
+    local version="$1"
+    if [[ "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)(-beta\.[0-9]+)?$ ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return
+    fi
+
+    echo -e "${RED}Failed to extract base version from: $version${NC}"
+    exit 1
+}
+
+# Check if version is a beta prerelease
+is_beta_version() {
+    local version="$1"
+    [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]
+}
+
+# Extract numeric beta counter from version
+extract_beta_number() {
+    local version="$1"
+    if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.([0-9]+)$ ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return
+    fi
+
+    echo -e "${RED}Failed to extract beta number from: $version${NC}"
+    exit 1
 }
 
 # Bump version
@@ -188,6 +245,16 @@ check_npm_auth() {
 main() {
     parse_args "$@"
 
+    if [[ "$BETA_RELEASE" == true && "$CUSTOM_VERSION_SET" == true ]]; then
+        echo -e "${RED}Error: --beta cannot be combined with --version.${NC}"
+        exit 1
+    fi
+
+    if [[ "$CUSTOM_VERSION_SET" == true && "$EXPLICIT_BUMP" == true ]]; then
+        echo -e "${RED}Error: --version cannot be combined with --major, --minor, or --patch.${NC}"
+        exit 1
+    fi
+
     echo -e "${GREEN}🚀 Starting release process...${NC}"
     echo ""
 
@@ -203,18 +270,34 @@ main() {
 
     # Get current version
     CURRENT_VERSION=$(get_current_version)
+    validate_supported_version "$CURRENT_VERSION"
     echo "Current version: $CURRENT_VERSION"
 
     # Calculate new version
-    if [[ "$VERSION_TYPE" == "custom" ]]; then
-        if [[ -z "$CUSTOM_VERSION" ]]; then
-            echo -e "${RED}Error: Custom version requires --version <ver> argument${NC}"
-            exit 1
-        fi
-        validate_version "$CUSTOM_VERSION"
+    if [[ "$CUSTOM_VERSION_SET" == true ]]; then
+        validate_stable_version "$CUSTOM_VERSION"
         NEW_VERSION="$CUSTOM_VERSION"
+    elif [[ "$BETA_RELEASE" == true ]]; then
+        BASE_VERSION=$(extract_base_version "$CURRENT_VERSION")
+
+        if [[ "$EXPLICIT_BUMP" == true ]]; then
+            BUMPED_BASE_VERSION=$(bump_version "$BASE_VERSION" "$VERSION_TYPE")
+            NEW_VERSION="${BUMPED_BASE_VERSION}-beta.0"
+        elif is_beta_version "$CURRENT_VERSION"; then
+            CURRENT_BETA_NUMBER=$(extract_beta_number "$CURRENT_VERSION")
+            NEXT_BETA_NUMBER=$((CURRENT_BETA_NUMBER + 1))
+            NEW_VERSION="${BASE_VERSION}-beta.${NEXT_BETA_NUMBER}"
+        else
+            BUMPED_BASE_VERSION=$(bump_version "$BASE_VERSION" "patch")
+            NEW_VERSION="${BUMPED_BASE_VERSION}-beta.0"
+        fi
     else
-        NEW_VERSION=$(bump_version "$CURRENT_VERSION" "$VERSION_TYPE")
+        BASE_VERSION=$(extract_base_version "$CURRENT_VERSION")
+        if [[ "$EXPLICIT_BUMP" == true ]]; then
+            NEW_VERSION=$(bump_version "$BASE_VERSION" "$VERSION_TYPE")
+        else
+            NEW_VERSION=$(bump_version "$BASE_VERSION" "patch")
+        fi
     fi
 
     echo "New version: $NEW_VERSION"
@@ -242,7 +325,11 @@ main() {
 
     # Publish to npm
     if [[ "$SKIP_PUBLISH" == false ]]; then
-        run_cmd "npm publish" "Publish to npm" "$DRY_RUN"
+        if [[ "$BETA_RELEASE" == true ]]; then
+            run_cmd "npm publish --tag beta" "Publish beta to npm" "$DRY_RUN"
+        else
+            run_cmd "npm publish" "Publish to npm" "$DRY_RUN"
+        fi
     fi
 
     # Push to git

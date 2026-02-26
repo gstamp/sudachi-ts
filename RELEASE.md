@@ -36,6 +36,19 @@ Before releasing, make sure you:
 ./scripts/release.sh --major
 ```
 
+### Beta Release (npm `beta` dist-tag)
+
+```bash
+# From stable x.y.z, produces x.y.(z+1)-beta.0
+./scripts/release.sh --beta
+
+# From x.y.z-beta.n, produces x.y.z-beta.(n+1)
+./scripts/release.sh --beta
+
+# Force prerelease base bump and reset prerelease counter
+./scripts/release.sh --beta --minor
+```
+
 ## Custom Version
 
 ```bash
@@ -45,13 +58,13 @@ Before releasing, make sure you:
 ## What the Script Does
 
 1. Validates npm authentication (unless `--skip-publish` or `--dry-run`)
-2. Bumps version in `package.json`
+2. Bumps version in `package.json` (stable or beta prerelease)
 3. Builds the project
 4. Runs tests
 5. Checks TypeScript types
 6. Commits changes to git
 7. Creates an annotated git tag
-8. Publishes to npm
+8. Publishes to npm (`latest` for stable, `beta` dist-tag for beta releases)
 9. Pushes commits and tags to remote
 
 ## Common Commands
@@ -59,6 +72,7 @@ Before releasing, make sure you:
 | Action | Command |
 |--------|---------|
 | Preview release | `./scripts/release.sh --dry-run` |
+| Preview beta release | `./scripts/release.sh --beta --dry-run` |
 | Skip git operations | `./scripts/release.sh --skip-git` |
 | Skip npm publish | `./scripts/release.sh --skip-publish` |
 | Help | `./scripts/release.sh --help` |

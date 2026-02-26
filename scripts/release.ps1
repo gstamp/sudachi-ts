@@ -10,9 +10,12 @@ $RED = "Red"
 # Default options
 $VersionType = "patch"
 $CustomVersion = ""
+$CustomVersionSet = $false
 $DryRun = $false
 $SkipGit = $false
 $SkipPublish = $false
+$BetaRelease = $false
+$ExplicitBump = $false
 
 function Write-Color {
     param(
@@ -29,6 +32,7 @@ function Print-Help {
     Write-Host "  --major          Bump major version (1.0.0 -> 2.0.0)"
     Write-Host "  --minor          Bump minor version (1.0.0 -> 1.1.0)"
     Write-Host "  --patch          Bump patch version (1.0.0 -> 1.0.1) [default]"
+    Write-Host "  --beta           Create or increment beta prerelease versions (x.y.z-beta.n)"
     Write-Host "  --version <ver>  Set specific version"
     Write-Host "  --dry-run        Show what would be done without executing"
     Write-Host "  --skip-git       Skip git commit and tag"
@@ -38,6 +42,8 @@ function Print-Help {
     Write-Host "Examples:"
     Write-Host "  ./scripts/release.ps1              # Patch bump, commit, tag, and publish"
     Write-Host "  ./scripts/release.ps1 --minor      # Minor bump, commit, tag, and publish"
+    Write-Host "  ./scripts/release.ps1 --beta       # Beta prerelease publish to npm beta dist-tag"
+    Write-Host "  ./scripts/release.ps1 --beta --minor # Minor bump prerelease as x.y.z-beta.0"
     Write-Host "  ./scripts/release.ps1 --dry-run    # Preview without making changes"
     Write-Host "  ./scripts/release.ps1 --skip-git   # Bump and publish without git operations"
 }
@@ -50,14 +56,21 @@ function Parse-Args {
         switch ($ArgsList[$i]) {
             "--major" {
                 $script:VersionType = "major"
+                $script:ExplicitBump = $true
                 $i++
             }
             "--minor" {
                 $script:VersionType = "minor"
+                $script:ExplicitBump = $true
                 $i++
             }
             "--patch" {
                 $script:VersionType = "patch"
+                $script:ExplicitBump = $true
+                $i++
+            }
+            "--beta" {
+                $script:BetaRelease = $true
                 $i++
             }
             "--version" {
@@ -65,8 +78,8 @@ function Parse-Args {
                     Write-Color "Error: --version requires a value" $RED
                     exit 1
                 }
-                $script:VersionType = "custom"
                 $script:CustomVersion = $ArgsList[$i + 1]
+                $script:CustomVersionSet = $true
                 $i += 2
             }
             "--dry-run" {
@@ -98,12 +111,46 @@ function Parse-Args {
     }
 }
 
-function Validate-Version {
+function Validate-StableVersion {
     param([Parameter(Mandatory = $true)][string]$Version)
     if ($Version -notmatch '^\d+\.\d+\.\d+$') {
         Write-Color "Invalid version format: $Version" $RED
         exit 1
     }
+}
+
+function Validate-SupportedVersion {
+    param([Parameter(Mandatory = $true)][string]$Version)
+    if ($Version -notmatch '^\d+\.\d+\.\d+(-beta\.\d+)?$') {
+        Write-Color "Unsupported package.json version format: $Version" $RED
+        Write-Color "Supported formats: x.y.z or x.y.z-beta.n" $YELLOW
+        exit 1
+    }
+}
+
+function Extract-BaseVersion {
+    param([Parameter(Mandatory = $true)][string]$Version)
+    if ($Version -match '^(?<base>\d+\.\d+\.\d+)(-beta\.(?<beta>\d+))?$') {
+        return $Matches.base
+    }
+
+    Write-Color "Failed to extract base version from: $Version" $RED
+    exit 1
+}
+
+function Is-BetaVersion {
+    param([Parameter(Mandatory = $true)][string]$Version)
+    return $Version -match '^\d+\.\d+\.\d+-beta\.\d+$'
+}
+
+function Extract-BetaNumber {
+    param([Parameter(Mandatory = $true)][string]$Version)
+    if ($Version -match '^\d+\.\d+\.\d+-beta\.(?<beta>\d+)$') {
+        return [int]$Matches.beta
+    }
+
+    Write-Color "Failed to extract beta number from: $Version" $RED
+    exit 1
 }
 
 function Bump-Version {
@@ -206,6 +253,16 @@ function Main {
 
     Parse-Args -ArgsList $CliArgs
 
+    if ($BetaRelease -and $CustomVersionSet) {
+        Write-Color "Error: --beta cannot be combined with --version." $RED
+        exit 1
+    }
+
+    if ($CustomVersionSet -and $ExplicitBump) {
+        Write-Color "Error: --version cannot be combined with --major, --minor, or --patch." $RED
+        exit 1
+    }
+
     Write-Color "Starting release process..." $GREEN
     Write-Host ""
 
@@ -218,17 +275,33 @@ function Main {
     }
 
     $currentVersion = Get-CurrentVersion
+    Validate-SupportedVersion -Version $currentVersion
     Write-Host "Current version: $currentVersion"
 
-    if ($VersionType -eq "custom") {
-        if ([string]::IsNullOrWhiteSpace($CustomVersion)) {
-            Write-Color "Error: Custom version requires --version <ver> argument" $RED
-            exit 1
-        }
-        Validate-Version -Version $CustomVersion
+    if ($CustomVersionSet) {
+        Validate-StableVersion -Version $CustomVersion
         $newVersion = $CustomVersion
+    } elseif ($BetaRelease) {
+        $baseVersion = Extract-BaseVersion -Version $currentVersion
+
+        if ($ExplicitBump) {
+            $bumpedBaseVersion = Bump-Version -Current $baseVersion -Type $VersionType
+            $newVersion = "$bumpedBaseVersion-beta.0"
+        } elseif (Is-BetaVersion -Version $currentVersion) {
+            $currentBetaNumber = Extract-BetaNumber -Version $currentVersion
+            $nextBetaNumber = $currentBetaNumber + 1
+            $newVersion = "$baseVersion-beta.$nextBetaNumber"
+        } else {
+            $bumpedBaseVersion = Bump-Version -Current $baseVersion -Type "patch"
+            $newVersion = "$bumpedBaseVersion-beta.0"
+        }
     } else {
-        $newVersion = Bump-Version -Current $currentVersion -Type $VersionType
+        $baseVersion = Extract-BaseVersion -Version $currentVersion
+        if ($ExplicitBump) {
+            $newVersion = Bump-Version -Current $baseVersion -Type $VersionType
+        } else {
+            $newVersion = Bump-Version -Current $baseVersion -Type "patch"
+        }
     }
 
     Write-Host "New version: $newVersion"
@@ -247,7 +320,11 @@ function Main {
     }
 
     if (-not $SkipPublish) {
-        Run-Cmd -Command "npm publish" -Description "Publish to npm" -IsDryRun $DryRun
+        if ($BetaRelease) {
+            Run-Cmd -Command "npm publish --tag beta" -Description "Publish beta to npm" -IsDryRun $DryRun
+        } else {
+            Run-Cmd -Command "npm publish" -Description "Publish to npm" -IsDryRun $DryRun
+        }
     }
 
     if (-not $SkipGit) {
