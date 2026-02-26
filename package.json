@@ -1,6 +1,6 @@
 {
   "name": "sudachi-ts",
-  "version": "0.1.19",
+  "version": "0.1.20-beta.0",
   "description": "TypeScript port of Sudachi morphological analyzer for Japanese text",
   "keywords": [
     "morphological-analyzer",
