@@ -740,6 +740,16 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				with: ['なんか', 'お礼', 'したい', 'な'],
 			},
 			{
+				text: '誰か',
+				without: ['誰', 'か'],
+				with: ['誰か'],
+			},
+			{
+				text: 'だれか',
+				without: ['だれ', 'か'],
+				with: ['だれか'],
+			},
+			{
 				text: 'わかってた事なんだけどね',
 				without: ['わかっ', 'て', 'た', '事', 'な', 'ん', 'だ', 'けど', 'ね'],
 				with: ['わかってた', '事', 'なんだけど', 'ね'],
@@ -867,6 +877,10 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			{
 				text: '問題がある',
 				expected: ['問題', 'が', 'ある'],
+			},
+			{
+				text: 'これか',
+				expected: ['これ', 'か'],
 			},
 		];
 

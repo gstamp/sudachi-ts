@@ -1046,6 +1046,35 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_te_ru_aux_masu',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['て', 'で'],
+				dictionaryForm: ['てる', 'でる'],
+				pos0: '助動詞',
+			},
+			{ surface: 'ます', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_te_ru_aux_masu_yo',
+		priority: 102,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['て', 'で'],
+				dictionaryForm: ['てる', 'でる'],
+				pos0: '助動詞',
+			},
+			{ surface: 'ます', pos0: '助動詞' },
+			{ surface: ['よ', 'よっ'], pos0: '助詞' },
+		],
+	},
+	{
 		name: 'emphatic_tto_shita',
 		priority: 101,
 		resultType: 'phrase',
@@ -1408,6 +1437,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: 'なかった' }],
+	},
+	{
+		name: 'negative_past_standalone',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: 'なかっ', pos0: '助動詞' },
+			{ surface: 'た', pos0: '助動詞' },
+		],
 	},
 	{
 		name: 'verb_naku_natte_shimau',
@@ -1978,6 +2016,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: ['なん', '何'] }, { surface: 'か', pos0: '助詞' }],
 	},
 	{
+		name: 'fixed_dareka',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: ['誰', 'だれ'], pos0: '代名詞' },
+			{ surface: 'か', pos0: '助詞' },
+		],
+	},
+	{
 		name: 'fixed_datte',
 		priority: 94,
 		resultType: 'fixed_expression',
@@ -2221,6 +2268,28 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'どう' }, { surface: ['しよ', 'しよう'] }],
+	},
+	{
+		name: 'fixed_douyara',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'どう' }, { surface: 'やら' }],
+	},
+	{
+		name: 'fixed_souyatte',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'そう' }, { surface: 'やって' }],
+	},
+	{
+		name: 'fixed_souyatte_split',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'そう' },
+			{ surface: 'やっ', dictionaryForm: 'やる', pos0: '動詞' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
+		],
 	},
 	{
 		name: 'fixed_sentence_ending_kana',
@@ -2508,6 +2577,29 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: 'そう' },
 			{ surface: ['いえ', '言え'] },
 			{ surface: 'ば' },
+		],
+	},
+	{
+		name: 'fixed_koushite',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'こう', pos0: '副詞' },
+			{
+				surface: 'して',
+				dictionaryForm: ['する', '為る'],
+				pos0: '動詞',
+			},
+		],
+	},
+	{
+		name: 'fixed_koushite_split',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'こう', pos0: '副詞' },
+			{ surface: 'し', dictionaryForm: ['する', '為る'], pos0: '動詞' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
 		],
 	},
 	{

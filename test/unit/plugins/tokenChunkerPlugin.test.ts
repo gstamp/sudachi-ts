@@ -744,6 +744,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '誰か',
+				expected: '誰か',
+				specs: [
+					{ surface: '誰', posId: 8 },
+					{ surface: 'か', posId: 2 },
+				],
+			},
+			{
 				name: '見たい',
 				expected: '見たい',
 				specs: [
@@ -1128,6 +1136,16 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '残ってますよ (te analyzed as auxiliary)',
+				expected: '残ってますよ',
+				specs: [
+					{ surface: '残っ', posId: 5, dictionaryForm: '残る', reading: 'ノコッ' },
+					{ surface: 'て', posId: 7, dictionaryForm: 'てる', reading: 'テ' },
+					{ surface: 'ます', posId: 7 },
+					{ surface: 'よ', posId: 14 },
+				],
+			},
+			{
 				name: '撮らせてた',
 				expected: '撮らせてた',
 				specs: [
@@ -1475,6 +1493,58 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'どうやら',
+				expected: 'どうやら',
+				specs: [
+					{ surface: 'どう', posId: 9 },
+					{ surface: 'やら', posId: 2 },
+				],
+			},
+			{
+				name: 'そうやって (そう + やって)',
+				expected: 'そうやって',
+				specs: [
+					{ surface: 'そう', posId: 9 },
+					{
+						surface: 'やって',
+						posId: 5,
+						dictionaryForm: 'やる',
+						reading: 'ヤッテ',
+					},
+				],
+			},
+			{
+				name: 'そうやって (そう + やっ + て)',
+				expected: 'そうやって',
+				specs: [
+					{ surface: 'そう', posId: 9 },
+					{ surface: 'やっ', posId: 5, dictionaryForm: 'やる', reading: 'ヤッ' },
+					{ surface: 'て', posId: 4 },
+				],
+			},
+			{
+				name: 'こうして (こう + して)',
+				expected: 'こうして',
+				specs: [
+					{ surface: 'こう', posId: 9 },
+					{
+						surface: 'して',
+						posId: 5,
+						dictionaryForm: 'する',
+						reading: 'シテ',
+					},
+				],
+			},
+			{
+				name: 'こうして (こう + し + て)',
+				expected: 'こうして',
+				specs: [
+					{ surface: 'こう', posId: 9 },
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'て', posId: 4 },
+				],
+			},
+			{
 				name: 'やだ',
 				expected: 'やだ',
 				specs: [
@@ -1806,6 +1876,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'なかった',
+				expected: 'なかった',
+				specs: [
+					{ surface: 'なかっ', posId: 7 },
+					{ surface: 'た', posId: 7 },
+				],
+			},
+			{
 				name: '撮れなかった',
 				expected: '撮れなかった',
 				specs: [
@@ -2103,6 +2181,14 @@ describe('TokenChunkerPlugin', () => {
 					{ surface: 'な', posId: 14 },
 				],
 				expected: ['か', 'な'],
+			},
+			{
+				name: 'pronoun + か should stay split when pronoun is not 誰/だれ',
+				specs: [
+					{ surface: 'これ', posId: 8 },
+					{ surface: 'か', posId: 2 },
+				],
+				expected: ['これ', 'か'],
 			},
 			{
 				name: 'te-form chain should not merge when second verb is not いく/いる',

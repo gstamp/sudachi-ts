@@ -291,6 +291,8 @@ particles disabled.
 `TokenChunkerPlugin` is intended for `SplitMode.C` tokenization; calling
 `tokenize(SplitMode.A, ...)` or `tokenize(SplitMode.B, ...)` with this plugin
 enabled throws an error.
+The chunker also handles polite progressive colloquial forms where `て/で` is
+an auxiliary (`てる/でる`) such as `残ってます` and `残ってますよ`.
 
 ## Dictionary Building
 

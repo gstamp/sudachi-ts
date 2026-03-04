@@ -370,15 +370,18 @@ Current proof-of-concept rule:
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
   `爆発した`, `感動した`, `感動してた`, `スカっとした`, `欲しかったんだ`, `貰えた`, `貰えない`,
   `言われた`, `ですよ`, `では`), plus variants such as
-  `何で`, `なんか`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
+  `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
-  contractions like `どうしよ` (`どうしよう`),
-  colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`,
-  `じゃなくて`, and grammar chunks like `のは`, `それで`, `なんと`, `と言ったら`.
+  contractions like `どうしよ` (`どうしよう`), lexicalized adverbials like `どうやら`, `そうやって`,
+  colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`, `なかった`,
+  `じゃなくて`, and grammar chunks like `のは`, `それで`, `こうして`, `なんと`, `と言ったら`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`,
   and na-adjective attributive forms like `静かな`.
 - Additional phrase merges include patterns like `感謝しても`, `しきれない`, `傷ついたら`, `進めなくなってしまう`.
+- Additional polite-progressive merges cover `動詞 + て/で + ます (+よ)` when
+  `て/で` is analyzed as an auxiliary (`てる/でる`), for example
+  `残ってます`, `残ってますよ`.
 - Additional fixed-expression merges include patterns like `かもしれない`.
 - Additional learner-oriented merges include obligation/constraint forms (`〜なくてはいけない`,
   `〜なくてはならない`, `〜なければならない`, `〜ないといけない`, `〜ないとならない`,
