@@ -292,7 +292,13 @@ particles disabled.
 `tokenize(SplitMode.A, ...)` or `tokenize(SplitMode.B, ...)` with this plugin
 enabled throws an error.
 The chunker also handles polite progressive colloquial forms where `て/で` is
-an auxiliary (`てる/でる`) such as `残ってます` and `残ってますよ`.
+an auxiliary (`てる/でる`) such as `残ってます` and `残ってますよ`, plus
+polite colloquial contraction forms like `太っちゃいます` and
+`太っちゃいますよ`, and colloquial `〜てく` past contractions like
+`持ってった`, plus discourse chunks like `だなって` and contractions like
+`してんだ`, `あっけど`.
+The core tokenizer also rewrites sentence-ending ambiguities such as
+`ね | こと | ね` into `ねこ | と | ね` when the lattice supports that path.
 
 ## Dictionary Building
 

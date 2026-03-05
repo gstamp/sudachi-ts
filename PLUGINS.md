@@ -370,7 +370,7 @@ Current proof-of-concept rule:
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
   `爆発した`, `感動した`, `感動してた`, `スカっとした`, `欲しかったんだ`, `貰えた`, `貰えない`,
   `言われた`, `ですよ`, `では`), plus variants such as
-  `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
+  `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
   contractions like `どうしよ` (`どうしよう`), lexicalized adverbials like `どうやら`, `そうやって`,
@@ -382,6 +382,13 @@ Current proof-of-concept rule:
 - Additional polite-progressive merges cover `動詞 + て/で + ます (+よ)` when
   `て/で` is analyzed as an auxiliary (`てる/でる`), for example
   `残ってます`, `残ってますよ`.
+- Additional polite colloquial-contraction merges cover
+  `動詞 + ちゃい/じゃい + ます (+よ)`, for example
+  `太っちゃいます`, `太っちゃいますよ`.
+- Additional colloquial `〜てく` past contractions cover
+  `動詞 + てっ/でっ(=てく/でく) + た`, for example `持ってった`.
+- Additional colloquial `〜てんだ` contractions cover
+  `動詞 + て/で(=てる/でる) + ん + だ`, for example `してんだ`.
 - Additional fixed-expression merges include patterns like `かもしれない`.
 - Additional learner-oriented merges include obligation/constraint forms (`〜なくてはいけない`,
   `〜なくてはならない`, `〜なければならない`, `〜ないといけない`, `〜ないとならない`,

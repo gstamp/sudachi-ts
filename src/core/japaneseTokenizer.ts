@@ -226,6 +226,7 @@ export class JapaneseTokenizer implements Tokenizer {
 
 		this.buildLattice(input);
 		const path = this.lattice.getBestPath();
+		this.rewriteNekoToneDisambiguation(path, input);
 
 		for (const plugin of this.pathRewritePlugins) {
 			plugin.rewrite(input, path, this.lattice);
@@ -251,6 +252,102 @@ export class JapaneseTokenizer implements Tokenizer {
 			this.allowEmptyMorpheme,
 			this.grammar,
 		);
+	}
+
+	private rewriteNekoToneDisambiguation(
+		path: LatticeNode[],
+		input: InputText,
+	): void {
+		for (let i = 0; i <= path.length - 3; i++) {
+			const first = path[i];
+			const second = path[i + 1];
+			const third = path[i + 2];
+			if (!first || !second || !third) {
+				continue;
+			}
+			if (
+				first.getWordInfo().getSurface() !== 'ね' ||
+				second.getWordInfo().getSurface() !== 'こと' ||
+				third.getWordInfo().getSurface() !== 'ね'
+			) {
+				continue;
+			}
+			if (
+				!this.isFinalParticleNe(first) ||
+				!this.isFinalParticleNe(third) ||
+				second.getBegin() !== first.getEnd()
+			) {
+				continue;
+			}
+
+			const splitBoundary =
+				second.getBegin() +
+				input.getCodePointsOffsetLength(second.getBegin(), 1);
+			if (
+				splitBoundary <= second.getBegin() ||
+				splitBoundary >= second.getEnd()
+			) {
+				continue;
+			}
+
+			const mergedSurface = input.getSubstring(first.getBegin(), splitBoundary);
+			const tailSurface = input.getSubstring(splitBoundary, second.getEnd());
+			if (mergedSurface !== 'ねこ' || tailSurface !== 'と') {
+				continue;
+			}
+
+			const mergedNode = this.selectNode(
+				this.lattice.getNodes(first.getBegin(), splitBoundary),
+				(node) => {
+					const wi = node.getWordInfo();
+					const pos = this.grammar
+						.getPartOfSpeechString(wi.getPOSId())
+						.toList();
+					return wi.getSurface() === mergedSurface && pos[0] === '名詞';
+				},
+			);
+			const tailNode = this.selectNode(
+				this.lattice.getNodes(splitBoundary, second.getEnd()),
+				(node) => {
+					const wi = node.getWordInfo();
+					const pos = this.grammar
+						.getPartOfSpeechString(wi.getPOSId())
+						.toList();
+					return wi.getSurface() === tailSurface && pos[0] === '助詞';
+				},
+			);
+			if (!mergedNode || !tailNode) {
+				continue;
+			}
+
+			path.splice(i, 2, mergedNode, tailNode);
+			i = Math.max(i - 1, 0);
+		}
+	}
+
+	private selectNode(
+		nodes: LatticeNode[],
+		predicate: (node: LatticeNode) => boolean,
+	): LatticeNode | null {
+		let selected: LatticeNode | null = null;
+		for (const node of nodes) {
+			if (!predicate(node)) {
+				continue;
+			}
+			if (!selected || node.getTotalCost() < selected.getTotalCost()) {
+				selected = node;
+			}
+		}
+		return selected;
+	}
+
+	private isFinalParticleNe(node: LatticeNode): boolean {
+		const wi = node.getWordInfo();
+		if (wi.getSurface() !== 'ね') {
+			return false;
+		}
+		const pos = this.grammar.getPartOfSpeechString(wi.getPOSId()).toList();
+		return pos[0] === '助詞' && pos[1] === '終助詞';
 	}
 
 	private buildLattice(input: InputText): void {

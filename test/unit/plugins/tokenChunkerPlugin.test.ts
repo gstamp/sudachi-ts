@@ -844,6 +844,15 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'だなって',
+				expected: 'だなって',
+				specs: [
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'な', posId: 14 },
+					{ surface: 'って', posId: 2 },
+				],
+			},
+			{
 				name: '惚れてる',
 				expected: '惚れてる',
 				specs: [
@@ -1276,6 +1285,16 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'してんだ (te analyzed as auxiliary)',
+				expected: 'してんだ',
+				specs: [
+					{ surface: 'し', posId: 5, dictionaryForm: 'する', reading: 'シ' },
+					{ surface: 'て', posId: 7, dictionaryForm: 'てる', reading: 'テ' },
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'だ', posId: 7 },
+				],
+			},
+			{
 				name: '言っちゃう',
 				expected: '言っちゃう',
 				specs: [
@@ -1286,6 +1305,26 @@ describe('TokenChunkerPlugin', () => {
 						reading: 'イッ',
 					},
 					{ surface: 'ちゃう', posId: 7 },
+				],
+			},
+			{
+				name: '太っちゃいますよ',
+				expected: '太っちゃいますよ',
+				specs: [
+					{
+						surface: '太っ',
+						posId: 5,
+						dictionaryForm: '太る',
+						reading: 'フトッ',
+					},
+					{
+						surface: 'ちゃい',
+						posId: 7,
+						dictionaryForm: 'ちゃう',
+						reading: 'チャイ',
+					},
+					{ surface: 'ます', posId: 7, dictionaryForm: 'ます', reading: 'マス' },
+					{ surface: 'よ', posId: 14 },
 				],
 			},
 			{
@@ -1557,6 +1596,19 @@ describe('TokenChunkerPlugin', () => {
 				expected: 'だけど',
 				specs: [
 					{ surface: 'だ', posId: 7 },
+					{ surface: 'けど', posId: 2 },
+				],
+			},
+			{
+				name: 'あっけど',
+				expected: 'あっけど',
+				specs: [
+					{
+						surface: 'あっ',
+						posId: 6,
+						dictionaryForm: 'ある',
+						reading: 'アッ',
+					},
 					{ surface: 'けど', posId: 2 },
 				],
 			},
@@ -2084,6 +2136,33 @@ describe('TokenChunkerPlugin', () => {
 			expect(path.length).toBe(1);
 			expect(path[0]?.getWordInfo().getSurface()).toBe(chunkCase.expected);
 		}
+	});
+
+	test('merges colloquial 〜てく past contraction (持ってった)', () => {
+		const plugin = createPatternOnlyPlugin();
+		const path = createPath([
+			{ surface: '布団', posId: 1 },
+			{
+				surface: '持っ',
+				posId: 5,
+				dictionaryForm: '持つ',
+				reading: 'モッ',
+			},
+			{
+				surface: 'てっ',
+				posId: 7,
+				dictionaryForm: 'てく',
+				reading: 'テッ',
+			},
+			{ surface: 'た', posId: 7 },
+		]);
+
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
+			'布団',
+			'持ってった',
+		]);
 	});
 
 	test('merges attributive na-adjective when input is split as X + かな + noun', () => {

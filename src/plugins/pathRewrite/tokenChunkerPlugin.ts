@@ -1202,6 +1202,20 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'colloquial_te_ku_ta',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['てっ', 'でっ'],
+				dictionaryForm: ['てく', 'でく'],
+				pos0: '助動詞',
+			},
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
 		name: 'colloquial_te_ta_compact',
 		priority: 97,
 		resultType: 'progressive_form',
@@ -1243,6 +1257,21 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ pos0: '動詞' },
 			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
 			{ surface: 'ん' },
+		],
+	},
+	{
+		name: 'verb_te_n_da_aux_teru',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['て', 'で'],
+				dictionaryForm: ['てる', 'でる'],
+				pos0: '助動詞',
+			},
+			{ surface: 'ん', pos0: '助詞' },
+			{ surface: 'だ', pos0: '助動詞' },
 		],
 	},
 	{
@@ -1328,6 +1357,35 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 96,
 		resultType: 'phrase',
 		pattern: [{ pos0: '動詞' }, { surface: ['ちゃう', 'じゃう'] }],
+	},
+	{
+		name: 'verb_chai_masu_yo',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['ちゃい', 'じゃい'],
+				dictionaryForm: ['ちゃう', 'じゃう'],
+				pos0: '助動詞',
+			},
+			{ surface: 'ます', dictionaryForm: 'ます', pos0: '助動詞' },
+			{ surface: ['よ', 'よっ'], pos0: '助詞' },
+		],
+	},
+	{
+		name: 'verb_chai_masu',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['ちゃい', 'じゃい'],
+				dictionaryForm: ['ちゃう', 'じゃう'],
+				pos0: '助動詞',
+			},
+			{ surface: 'ます', dictionaryForm: 'ます', pos0: '助動詞' },
+		],
 	},
 	{
 		name: 'suru_cha',
@@ -2031,6 +2089,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [{ surface: 'だ' }, { surface: 'って' }],
 	},
 	{
+		name: 'fixed_da_na_tte',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'だ', pos0: '助動詞' },
+			{ surface: 'な', pos0: '助詞' },
+			{ surface: 'って', pos0: '助詞' },
+		],
+	},
+	{
 		name: 'fixed_dakara',
 		priority: 94,
 		resultType: 'fixed_expression',
@@ -2068,6 +2136,19 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'だ' }, { surface: 'けど' }],
+	},
+	{
+		name: 'fixed_akkedo',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{
+				surface: 'あっ',
+				dictionaryForm: 'ある',
+				pos0: '動詞',
+			},
+			{ surface: 'けど', pos0: '助詞' },
+		],
 	},
 	{
 		name: 'fixed_sore_ni',
