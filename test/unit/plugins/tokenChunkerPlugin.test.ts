@@ -844,6 +844,15 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'ヒマだって',
+				expected: 'ヒマだって',
+				specs: [
+					{ surface: 'ヒマ', posId: 16, dictionaryForm: '暇', reading: 'ヒマ' },
+					{ surface: 'だ', posId: 7 },
+					{ surface: 'って', posId: 2 },
+				],
+			},
+			{
 				name: 'だなって',
 				expected: 'だなって',
 				specs: [
@@ -2010,6 +2019,33 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: '打た + せる',
+				expected: '打たせる',
+				specs: [
+					{
+						surface: '打た',
+						posId: 5,
+						dictionaryForm: '打つ',
+						reading: 'ウタ',
+					},
+					{ surface: 'せる', posId: 7, dictionaryForm: 'せる', reading: 'セル' },
+				],
+			},
+			{
+				name: '内 + させ + る',
+				expected: '内させる',
+				specs: [
+					{
+						surface: '内',
+						posId: 5,
+						dictionaryForm: '内る',
+						reading: 'ウチ',
+					},
+					{ surface: 'させ', posId: 7, dictionaryForm: 'させる', reading: 'サセ' },
+					{ surface: 'る', posId: 7, dictionaryForm: 'させる', reading: 'ル' },
+				],
+			},
+			{
 				name: 'それで',
 				expected: 'それで',
 				specs: [
@@ -2298,6 +2334,14 @@ describe('TokenChunkerPlugin', () => {
 				expected: ['かなり', '的'],
 			},
 			{
+				name: 'noun + させる should stay split',
+				specs: [
+					{ surface: '案内', posId: 1 },
+					{ surface: 'させる', posId: 7, dictionaryForm: 'させる' },
+				],
+				expected: ['案内', 'させる'],
+			},
+			{
 				name: '日中 + いない should not be merged by inline ruby fallback',
 				specs: [
 					{ surface: '日', posId: 15 },
@@ -2318,6 +2362,39 @@ describe('TokenChunkerPlugin', () => {
 				chunkCase.expected,
 			);
 		}
+	});
+
+	test('chunks いいよな？今日ヒマだって言ってたし into learner-facing units', () => {
+		const plugin = createPatternOnlyPlugin();
+		const path = createPath([
+			{
+				surface: 'いい',
+				posId: 12,
+				dictionaryForm: '良い',
+				reading: 'イイ',
+			},
+			{ surface: 'よ', posId: 14 },
+			{ surface: 'な', posId: 14 },
+			{ surface: '？', posId: 13 },
+			{ surface: '今日', posId: 1 },
+			{ surface: 'ヒマ', posId: 16, dictionaryForm: '暇', reading: 'ヒマ' },
+			{ surface: 'だ', posId: 7, dictionaryForm: 'だ', reading: 'ダ' },
+			{ surface: 'って', posId: 2 },
+			{ surface: '言っ', posId: 5, dictionaryForm: '言う', reading: 'イッ' },
+			{ surface: 'て', posId: 4 },
+			{ surface: 'た', posId: 7 },
+			{ surface: 'し', posId: 2 },
+		]);
+
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
+			'いいよな',
+			'？',
+			'今日',
+			'ヒマだって',
+			'言ってたし',
+		]);
 	});
 
 	test('uses surface as fallback when merged reading part is placeholder', () => {

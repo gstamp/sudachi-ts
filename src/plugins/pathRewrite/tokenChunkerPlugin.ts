@@ -928,6 +928,26 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'reported_itteta_shi',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ dictionaryForm: '言う', pos0: '動詞' },
+			{ surface: ['て', 'で'], pos0: '助詞' },
+			{ surface: 'た', pos0: '助動詞' },
+			{ surface: 'し', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'reported_itteta_shi_compact',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ surface: ['言ってた', 'いってた'] },
+			{ surface: 'し', pos0: '助詞' },
+		],
+	},
+	{
 		name: 'suru_masu',
 		priority: 101,
 		resultType: 'phrase',
@@ -1809,6 +1829,20 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_aux_seru_split_ru',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['せ', 'させ'],
+				dictionaryForm: ['せる', 'させる'],
+				pos0: ['助動詞', '動詞'],
+			},
+			{ surface: 'る', pos0: ['助動詞', '動詞'] },
+		],
+	},
+	{
 		name: 'verb_aux_reru_split',
 		priority: 96,
 		resultType: 'phrase',
@@ -1817,6 +1851,19 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{
 				surface: ['れ', 'られ'],
 				dictionaryForm: ['れる', 'られる'],
+				pos0: ['助動詞', '動詞'],
+			},
+		],
+	},
+	{
+		name: 'verb_aux_seru',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['せる', 'させる'],
+				dictionaryForm: ['せる', 'させる'],
 				pos0: ['助動詞', '動詞'],
 			},
 		],
@@ -1917,6 +1964,22 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 95,
 		resultType: 'phrase',
 		pattern: [{ surface: 'だっ' }, { surface: 'た' }],
+	},
+	{
+		name: 'noun_or_na_adjective_datte',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [{ pos0: ['名詞', '代名詞', '形状詞'] }, { surface: 'だって' }],
+	},
+	{
+		name: 'noun_or_na_adjective_datte_split',
+		priority: 95,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: ['名詞', '代名詞', '形状詞'] },
+			{ surface: 'だ', pos0: '助動詞' },
+			{ surface: 'って', pos0: '助詞' },
+		],
 	},
 	{
 		name: 'ja_nakute',
@@ -2378,6 +2441,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		resultType: 'fixed_expression',
 		pattern: [
 			{ surface: 'か', pos0: '助詞' },
+			{ surface: 'な', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'fixed_ii_yo_na',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: ['いい', '良い'], pos0: '形容詞' },
+			{ surface: ['よ', 'よっ'], pos0: '助詞' },
 			{ surface: 'な', pos0: '助詞' },
 		],
 	},

@@ -373,6 +373,7 @@ Current proof-of-concept rule:
   `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
+  sentence-final turns like `いいよな`, copula quote spans like `ヒマだって`, reason-clause chunks like `言ってたし`,
   contractions like `どうしよ` (`どうしよう`), lexicalized adverbials like `どうやら`, `そうやって`,
   colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`, `なかった`,
   `じゃなくて`, and grammar chunks like `のは`, `それで`, `こうして`, `なんと`, `と言ったら`.
@@ -394,7 +395,7 @@ Current proof-of-concept rule:
   `〜なくてはならない`, `〜なければならない`, `〜ないといけない`, `〜ないとならない`,
   `〜なきゃいけない`, `〜なくちゃいけない`,
   `〜なきゃならない`, `〜なくちゃならない`, `〜てはいけない`), inability forms (`〜ていられない`, `〜てられない`,
-  `〜じゃいれない`), progression/permission chunks (`〜ようになる`, `〜てもいい`, `〜なくてもいい`, `何も`,
+  `〜じゃいれない`), causative auxiliaries (`〜せる`, `〜させる`), progression/permission chunks (`〜ようになる`, `〜てもいい`, `〜なくてもいい`, `何も`,
   `〜ばいい`, `ではない`, `行けない`),
   and fixed expressions like `〜ざるを得ない`, `仕方がない`.
 - Inline furigana-style text (for example, `面白おもしろくない`, `作つくったら`, `馬鹿ばか...`)
