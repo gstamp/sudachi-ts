@@ -11,6 +11,7 @@ export { IgnoreYomiganaPlugin } from './inputText/ignoreYomiganaPlugin.js';
 export { ProlongedSoundMarkInputTextPlugin } from './inputText/prolongedSoundMarkPlugin.js';
 export { type LoadedPlugin, PluginLoader } from './loader.js';
 export { OovProviderPlugin } from './oov/base.js';
+export { CounterAliasOovProviderPlugin } from './oov/counterAliasOovProviderPlugin.js';
 export { MeCabOovProviderPlugin } from './oov/meCabOovProviderPlugin.js';
 export { RegexOovProviderPlugin } from './oov/regexOovProviderPlugin.js';
 export { SimpleOovProviderPlugin } from './oov/simpleOovProviderPlugin.js';

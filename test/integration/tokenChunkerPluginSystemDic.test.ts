@@ -690,6 +690,16 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 				with: ['なんだよ'],
 			},
 			{
+				text: 'なんです',
+				without: ['な', 'ん', 'です'],
+				with: ['なんです'],
+			},
+			{
+				text: 'そうなの？',
+				without: ['そう', 'な', 'の', '?'],
+				with: ['そう', 'なの', '?'],
+			},
+			{
 				text: '買ったんだよ？',
 				without: ['買っ', 'た', 'ん', 'だ', 'よ', '?'],
 				with: ['買ったんだよ', '?'],

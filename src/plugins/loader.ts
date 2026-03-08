@@ -12,6 +12,7 @@ import { DefaultInputTextPlugin } from './inputText/defaultInputTextPlugin.js';
 import { IgnoreYomiganaPlugin } from './inputText/ignoreYomiganaPlugin.js';
 import { ProlongedSoundMarkInputTextPlugin } from './inputText/prolongedSoundMarkPlugin.js';
 import type { OovProviderPlugin } from './oov/base.js';
+import { CounterAliasOovProviderPlugin } from './oov/counterAliasOovProviderPlugin.js';
 import { MeCabOovProviderPlugin } from './oov/meCabOovProviderPlugin.js';
 import { RegexOovProviderPlugin } from './oov/regexOovProviderPlugin.js';
 import { SimpleOovProviderPlugin } from './oov/simpleOovProviderPlugin.js';
@@ -257,6 +258,7 @@ const BUILT_IN_PLUGINS: Record<string, new () => Plugin> = {
 	ProlongedSoundMarkInputTextPlugin,
 	MeCabOovProviderPlugin,
 	RegexOovProviderPlugin,
+	CounterAliasOovProviderPlugin,
 	SimpleOovProviderPlugin,
 	JoinKatakanaOovPlugin,
 	JoinNumericPlugin,
@@ -268,6 +270,8 @@ const BUILT_IN_PLUGINS: Record<string, new () => Plugin> = {
 		ProlongedSoundMarkInputTextPlugin,
 	'com.worksap.nlp.sudachi.MeCabOovProviderPlugin': MeCabOovProviderPlugin,
 	'com.worksap.nlp.sudachi.RegexOovProviderPlugin': RegexOovProviderPlugin,
+	'com.worksap.nlp.sudachi.CounterAliasOovProviderPlugin':
+		CounterAliasOovProviderPlugin,
 	'com.worksap.nlp.sudachi.SimpleOovProviderPlugin': SimpleOovProviderPlugin,
 	'com.worksap.nlp.sudachi.JoinKatakanaOovPlugin': JoinKatakanaOovPlugin,
 	'com.worksap.nlp.sudachi.JoinNumericPlugin': JoinNumericPlugin,

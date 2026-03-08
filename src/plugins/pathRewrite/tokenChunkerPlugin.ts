@@ -3,6 +3,11 @@ import type { Lattice, LatticeNode } from '../../core/lattice.js';
 import { SplitMode } from '../../core/tokenizer.js';
 import type { Grammar } from '../../dictionary/grammar.js';
 import { WordInfo } from '../../dictionary/wordInfo.js';
+import {
+	COUNTER_SUFFIXES,
+	DAY_COUNTER_RULES,
+	resolveCounterSpec,
+} from '../counter/counterData.js';
 import { PathRewritePlugin } from './base.js';
 
 type ChunkType =
@@ -40,8 +45,6 @@ type ChunkToken = {
 	chunkType: ChunkType;
 	nodes: LatticeNode[];
 };
-
-type CounterPhonology = Record<string, Record<string, string>>;
 
 /**
  * Token chunking plugin with an internal chunk pipeline.
@@ -378,7 +381,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 
 	private isCounterChunk(chunk: ChunkToken | undefined): boolean {
 		if (!chunk) return false;
-		return COUNTER_WORDS.has(chunk.surface);
+		return this.getCounterSpec(chunk) !== undefined;
 	}
 
 	private mergeCounterChunks(
@@ -390,8 +393,14 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			return merged;
 		}
 
-		const coreCounter = chunks.find((c) => COUNTER_WORDS.has(c.surface));
+		const coreCounter = chunks.find(
+			(c) => this.getCounterSpec(c) !== undefined,
+		);
 		if (!coreCounter) {
+			return merged;
+		}
+		const counterSpec = this.getCounterSpec(coreCounter);
+		if (!counterSpec) {
 			return merged;
 		}
 
@@ -404,7 +413,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 		const counterOrSuffix = chunks[chunks.length - 1];
 
 		const numberReading = numberChunks.map((c) => c.reading).join('');
-		const counterSurface = coreCounter.surface;
+		const counterSurface = counterSpec.canonicalSurface;
 		const counterReading = coreCounter.reading;
 
 		let normalizedReading = numberReading + counterReading;
@@ -419,7 +428,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 				}
 			}
 		} else {
-			const rules = COUNTER_PHONOLOGY[counterSurface];
+			const rules = counterSpec.phonology;
 			if (rules && numberReading in rules) {
 				normalizedReading = rules[numberReading]!;
 			}
@@ -433,6 +442,14 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			...merged,
 			reading: normalizedReading,
 		};
+	}
+
+	private getCounterSpec(chunk: ChunkToken) {
+		return resolveCounterSpec(
+			chunk.surface,
+			chunk.normalizedForm,
+			chunk.dictionaryForm,
+		);
 	}
 
 	private applyMergeStage(source: ChunkToken[]): ChunkToken[] {
@@ -744,116 +761,6 @@ const KANA_PATTERN = /^[ぁ-ゖァ-ヺー]+$/u;
 const HIRAGANA_PATTERN = /^[ぁ-ゖー]+$/u;
 const SINGLE_KANA_PATTERN = /^[ぁ-ゖァ-ヺー]$/u;
 const SMALL_KANA_SUFFIXES = new Set(['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ']);
-
-const COUNTER_WORDS = new Set([
-	'本',
-	'匹',
-	'枚',
-	'個',
-	'人',
-	'歳',
-	'才',
-	'つ',
-	'年',
-	'ヶ月',
-	'カ月',
-	'月',
-	'週',
-	'日',
-	'時間',
-	'分',
-	'秒',
-	'円',
-	'回',
-	'階',
-	'番',
-	'号',
-]);
-
-const COUNTER_SUFFIXES = new Set([
-	'後',
-	'間',
-	'目',
-	'以内',
-	'以上',
-	'未満',
-	'程度',
-	'くらい',
-	'頃',
-	'前',
-]);
-
-const DAY_COUNTER_RULES: Array<[string, string]> = [
-	['イチ', 'ツイタチ'],
-	['ニ', 'フツカ'],
-	['サン', 'ミッカ'],
-	['ヨン', 'ヨッカ'],
-	['ゴ', 'イツカ'],
-	['ロク', 'ムイカ'],
-	['ナナ', 'ナノカ'],
-	['ハチ', 'ヨウカ'],
-	['キュウ', 'ココノカ'],
-	['ジュウ', 'トウカ'],
-	['ニジュウ', 'ハツカ'],
-];
-
-const COUNTER_PHONOLOGY: CounterPhonology = {
-	本: {
-		イチ: 'イッポン',
-		ニ: 'ニホン',
-		サン: 'サンボン',
-		ヨン: 'ヨンホン',
-		ゴ: 'ゴホン',
-		ロク: 'ロッポン',
-		ナナ: 'ナナホン',
-		ハチ: 'ハッポン',
-		キュウ: 'キュウホン',
-	},
-	匹: {
-		イチ: 'イッピキ',
-		ニ: 'ニヒキ',
-		サン: 'サンピキ',
-		ヨン: 'ヨンヒキ',
-		ゴ: 'ゴヒキ',
-		ロク: 'ロッピキ',
-		ナナ: 'ナナヒキ',
-		ハチ: 'ハッピキ',
-		キュウ: 'キュウヒキ',
-	},
-	分: {
-		イチ: 'イップン',
-		ニ: 'ニフン',
-		サン: 'サンプン',
-		ヨン: 'ヨンプン',
-		ゴ: 'ゴフン',
-		ロク: 'ロップン',
-		ナナ: 'ナナフン',
-		ハチ: 'ハップン',
-		キュウ: 'キュウフン',
-	},
-	階: {
-		イチ: 'イッカイ',
-		ニ: 'ニカイ',
-		サン: 'サンガイ',
-		ヨン: 'ヨンカイ',
-		ゴ: 'ゴカイ',
-		ロク: 'ロッカイ',
-		ナナ: 'ナナカイ',
-		ハチ: 'ハッカイ',
-		キュウ: 'キュウカイ',
-	},
-	回: {
-		イチ: 'イッカイ',
-		ニ: 'ニカイ',
-		サン: 'サンカイ',
-		ヨン: 'ヨンカイ',
-		ゴ: 'ゴカイ',
-		ロク: 'ロッカイ',
-		ナナ: 'ナナカイ',
-		ハチ: 'ハッカイ',
-		キュウ: 'キュウカイ',
-	},
-};
 
 const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 	{
@@ -2348,6 +2255,27 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 94,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: 'です' }, { surface: 'よ' }],
+	},
+	{
+		name: 'fixed_nan_desu',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: ['なん', '何'] }, { surface: 'です' }],
+	},
+	{
+		name: 'fixed_na_n_desu',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [{ surface: 'な' }, { surface: 'ん' }, { surface: 'です' }],
+	},
+	{
+		name: 'fixed_na_no_ending',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'な', dictionaryForm: 'だ', pos0: '助動詞' },
+			{ surface: 'の', pos0: '助詞', pos1: '終助詞' },
+		],
 	},
 	{
 		name: 'fixed_n_da_yo',

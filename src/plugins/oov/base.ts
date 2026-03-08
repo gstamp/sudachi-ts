@@ -2,6 +2,7 @@ import type { InputText } from '../../core/inputText.js';
 import { LatticeNodeImpl } from '../../core/lattice.js';
 import type { Grammar } from '../../dictionary/grammar.js';
 import type { GrammarImpl } from '../../dictionary/grammarImpl.js';
+import type { Lexicon } from '../../dictionary/lexicon.js';
 import type { POS } from '../../dictionary/pos.js';
 import { Plugin } from '../base.js';
 
@@ -10,7 +11,7 @@ export abstract class OovProviderPlugin extends Plugin {
 	static readonly USER_POS_FORBID = 'forbid';
 	static readonly USER_POS_ALLOW = 'allow';
 
-	setUp(_grammar: Grammar): void {}
+	setUp(_grammar: Grammar, _lexicon?: Lexicon): void | Promise<void> {}
 
 	abstract provideOOV(
 		inputText: InputText,

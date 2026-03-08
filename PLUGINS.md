@@ -86,6 +86,11 @@ OOV (Out-of-Vocabulary) provider plugins handle words that aren't in the diction
 - Providing fallback tokenization
 - Supporting dynamic vocabulary
 
+Sudachi-TS ships with a built-in `CounterAliasOovProviderPlugin` that adds
+same-length counter candidates in numeric contexts before Viterbi selection.
+This is designed for cases such as `1こ`, where the raw dictionary would
+otherwise prefer an unrelated parse over the intended counter.
+
 ### Example: Simple Single-Character OOV
 
 ```typescript
@@ -201,6 +206,29 @@ export class MeCabOovPlugin extends Plugin implements OovProviderPlugin {
   private isHiragana(char: string): boolean {
     return char >= '\u3040' && char <= '\u309F';
   }
+}
+```
+
+### Built-In CounterAliasOovProviderPlugin
+
+Use this plugin when you want kana counter aliases to participate in lattice
+construction without rewriting the original surface text. It reuses canonical
+counter entries from the loaded dictionary and only activates after numeric
+expressions.
+
+```json
+{
+  "oovProviderPlugin": [
+    {
+      "className": "com.worksap.nlp.sudachi.CounterAliasOovProviderPlugin"
+    },
+    {
+      "className": "com.worksap.nlp.sudachi.MeCabOovProviderPlugin"
+    },
+    {
+      "className": "com.worksap.nlp.sudachi.SimpleOovProviderPlugin"
+    }
+  ]
 }
 ```
 
@@ -370,7 +398,7 @@ Current proof-of-concept rule:
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
   `爆発した`, `感動した`, `感動してた`, `スカっとした`, `欲しかったんだ`, `貰えた`, `貰えない`,
   `言われた`, `ですよ`, `では`), plus variants such as
-  `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
+  `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `なんです`, `なの`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
   sentence-final turns like `いいよな`, copula quote spans like `ヒマだって`, reason-clause chunks like `言ってたし`,

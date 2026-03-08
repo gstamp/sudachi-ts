@@ -6,6 +6,9 @@ export const DEFAULT_CONFIG_JSON = `{
     ],
     "oovProviderPlugin" : [
         {
+            "class" : "com.worksap.nlp.sudachi.CounterAliasOovProviderPlugin"
+        },
+        {
             "class" : "com.worksap.nlp.sudachi.MeCabOovProviderPlugin",
             "charDef" : "char.def",
             "unkDef" : "unk.def"

@@ -114,6 +114,30 @@ function createNodeWithForms(
 	return node;
 }
 
+function createNodeWithCounterForms(
+	surface: string,
+	normalizedForm: string,
+	dictionaryForm: string,
+	reading: string,
+	posId: number,
+	begin: number,
+	end: number,
+): LatticeNodeImpl {
+	const node = new LatticeNodeImpl(null, 0, 0, 0, -1);
+	node.setRange(begin, end);
+	node.setWordInfo(
+		new WordInfo(
+			surface,
+			end - begin,
+			posId,
+			normalizedForm,
+			dictionaryForm,
+			reading,
+		),
+	);
+	return node;
+}
+
 function createInputText(): InputText {
 	return {} as InputText;
 }
@@ -375,6 +399,25 @@ describe('TokenChunkerPlugin', () => {
 
 		expect(path.length).toBe(1);
 		expect(path[0]?.getWordInfo().getReadingForm()).toBe('サンボン');
+	});
+
+	test('normalizes counter reading for kana alias 個', () => {
+		const plugin = new TokenChunkerPlugin();
+		plugin.setSettings(
+			new Settings({
+				enablePatternRules: true,
+			}),
+		);
+		plugin.setUp(createGrammar());
+
+		const path = [
+			createNodeWithForms('一', '一', 'イチ', 3, 0, 1),
+			createNodeWithCounterForms('こ', '個', '個', 'コ', 1, 1, 2),
+		];
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.length).toBe(1);
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('イッコ');
 	});
 
 	test('normalizes day counter reading for 一日', () => {
@@ -1774,6 +1817,31 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'なんです',
+				expected: 'なんです',
+				specs: [
+					{ surface: 'なん', posId: 8 },
+					{ surface: 'です', posId: 7 },
+				],
+			},
+			{
+				name: 'なんです (な + ん + です)',
+				expected: 'なんです',
+				specs: [
+					{ surface: 'な', posId: 7, dictionaryForm: 'だ', reading: 'ナ' },
+					{ surface: 'ん', posId: 2 },
+					{ surface: 'です', posId: 7 },
+				],
+			},
+			{
+				name: 'なの (sentence-ending)',
+				expected: 'なの',
+				specs: [
+					{ surface: 'な', posId: 7, dictionaryForm: 'だ', reading: 'ナ' },
+					{ surface: 'の', posId: 14 },
+				],
+			},
+			{
 				name: 'でし + た',
 				expected: 'でした',
 				specs: [
@@ -2417,5 +2485,3 @@ describe('TokenChunkerPlugin', () => {
 		expect(path[0]?.getWordInfo().getReadingForm()).toBe('でハ');
 	});
 });
-
-

@@ -91,7 +91,7 @@ export class DictionaryFactory {
 					conf.className,
 					conf.settings,
 				);
-				await loaded.plugin.setUp(grammar);
+				await loaded.plugin.setUp(grammar, lexicon);
 				oovProviderPlugins.push(loaded.plugin);
 			} catch (e) {
 				// Only catch expected errors like missing plugin classes

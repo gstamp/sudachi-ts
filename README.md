@@ -15,6 +15,7 @@ TypeScript port of [Sudachi](https://github.com/WorksApplications/Sudachi) Japan
 - **Sentence Detection**: Multi-sentence text processing
 - **UTF-8 Handling**: Proper Japanese text normalization and character encoding
 - **POS Matching**: Flexible part-of-speech filtering and matching
+- **Counter Alias Recovery**: Resolves numeric kana counters such as `1こ` to the canonical counter lattice before best-path selection
 
 ## Requirements
 
@@ -136,6 +137,11 @@ and `だから` are tokenized as single morphemes. Set it to `false` to disable:
   "enableDefaultCompoundParticles": false
 }
 ```
+
+The default OOV plugin stack also injects counter aliases in numeric contexts,
+so kana counters such as `りんごを1こください。` are analyzed as
+`りんご / を / 1 / こ / ください / 。` with the counter normalized to `個`
+instead of falling through to unrelated dictionary entries.
 
 ## Working with Morphemes
 

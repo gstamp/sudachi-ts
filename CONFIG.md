@@ -36,6 +36,9 @@ Sudachi-TS uses JSON configuration files (default: `sudachi.json`). The configur
   ],
   "oovProviderPlugin": [
     {
+      "className": "sudachi-ts/plugins/oov/counterAliasOovProviderPlugin.js"
+    },
+    {
       "className": "sudachi-ts/plugins/oov/meCabOovProviderPlugin.js",
       "settings": {
         "oovPOS": "名詞,未知語,一般,*"
@@ -156,6 +159,11 @@ List of input text plugins for preprocessing.
 #### oovProviderPlugin (optional)
 
 List of OOV (Out-of-Vocabulary) provider plugins.
+
+The default Sudachi-TS configuration includes `CounterAliasOovProviderPlugin`
+ahead of the standard OOV providers. It adds counter candidates such as
+`こ -> 個` only when they appear immediately after a numeric expression, which
+prevents incorrect paths like `1 / こく / ださい`.
 
 ```json
 {
@@ -356,6 +364,29 @@ MeCab-compatible OOV handling.
 **Settings**:
 - `oovPOS` (string): Part-of-speech for OOV words (default: `"名詞,未知語,一般,*"`)
 - `cost` (number): Base cost for OOV words (default: `5000`)
+
+### Counter Alias OOV Provider Plugin
+
+Adds same-length counter candidates for kana aliases in numeric contexts by
+borrowing the canonical counter entry from the loaded dictionary.
+
+Examples:
+- `1こ` adds a `こ` candidate normalized to `個`
+- `3にん` can add a `にん` candidate normalized to `人`
+- aliases are only considered immediately after a numeric expression
+
+```json
+{
+  "oovProviderPlugin": [
+    {
+      "className": "sudachi-ts/plugins/oov/counterAliasOovProviderPlugin.js"
+    }
+  ]
+}
+```
+
+**Settings**:
+- None. The built-in alias table is data-driven and activates only for counters present in the loaded dictionary.
 
 ### Simple OOV Provider Plugin
 
