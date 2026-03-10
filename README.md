@@ -301,8 +301,8 @@ The chunker also handles polite progressive colloquial forms where `て/で` is
 an auxiliary (`てる/でる`) such as `残ってます` and `残ってますよ`, plus
 polite colloquial contraction forms like `太っちゃいます` and
 `太っちゃいますよ`, and colloquial `〜てく` past contractions like
-`持ってった`, plus discourse chunks like `だなって` and contractions like
-`してんだ`, `あっけど`, sentence-final turns like `いいよな`, copula quote
+`持ってった`, colloquial `〜ておく` past contractions like `やめといた`, plus discourse chunks like `だなって` and contractions like
+`してんだ`, `あっけど`, particle chunks like `とか`, sentence-final turns like `いいよな`, copula quote
 spans like `ヒマだって`, and quoted reason clauses like `言ってたし`. It also chunks causative auxiliaries such as
 `打たせる` / `内させる` into a single learner-facing token.
 The core tokenizer also rewrites sentence-ending ambiguities such as

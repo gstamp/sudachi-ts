@@ -795,6 +795,14 @@ describe('TokenChunkerPlugin', () => {
 				],
 			},
 			{
+				name: 'とか',
+				expected: 'とか',
+				specs: [
+					{ surface: 'と', posId: 2 },
+					{ surface: 'か', posId: 14 },
+				],
+			},
+			{
 				name: '見たい',
 				expected: '見たい',
 				specs: [
@@ -2266,6 +2274,35 @@ describe('TokenChunkerPlugin', () => {
 		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
 			'布団',
 			'持ってった',
+		]);
+	});
+
+	test('merges colloquial 〜ておく past contraction (やめといた)', () => {
+		const plugin = createPatternOnlyPlugin();
+		const path = createPath([
+			{
+				surface: 'やめ',
+				posId: 5,
+				dictionaryForm: 'やめる',
+				reading: 'ヤメ',
+			},
+			{
+				surface: 'とい',
+				posId: 7,
+				dictionaryForm: 'とく',
+				reading: 'トイ',
+			},
+			{ surface: 'た', posId: 7 },
+			{ surface: '方', posId: 1 },
+			{ surface: 'が', posId: 2 },
+			{ surface: 'いい', posId: 12 },
+		]);
+
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.map((node) => node.getWordInfo().getSurface())).toEqual([
+			'やめといた',
+			'方がいい',
 		]);
 	});
 

@@ -398,7 +398,7 @@ Current proof-of-concept rule:
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
   `爆発した`, `感動した`, `感動してた`, `スカっとした`, `欲しかったんだ`, `貰えた`, `貰えない`,
   `言われた`, `ですよ`, `では`), plus variants such as
-  `何で`, `なんか`, `誰か`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `なんです`, `なの`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
+  `何で`, `なんか`, `誰か`, `とか`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `なんです`, `なの`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
   sentence-final turns like `いいよな`, copula quote spans like `ヒマだって`, reason-clause chunks like `言ってたし`,
@@ -416,6 +416,8 @@ Current proof-of-concept rule:
   `太っちゃいます`, `太っちゃいますよ`.
 - Additional colloquial `〜てく` past contractions cover
   `動詞 + てっ/でっ(=てく/でく) + た`, for example `持ってった`.
+- Additional colloquial `〜ておく` past contractions cover
+  `動詞 + とい/どい(=とく/どく) + た`, for example `やめといた`.
 - Additional colloquial `〜てんだ` contractions cover
   `動詞 + て/で(=てる/でる) + ん + だ`, for example `してんだ`.
 - Additional fixed-expression merges include patterns like `かもしれない`.

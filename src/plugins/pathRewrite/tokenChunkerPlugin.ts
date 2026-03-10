@@ -1143,6 +1143,29 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'colloquial_te_oku_ta',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['とい', 'どい'],
+				dictionaryForm: ['とく', 'どく'],
+				pos0: '助動詞',
+			},
+			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'colloquial_te_oku_ta_compact',
+		priority: 97,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: ['といた', 'どいた'], dictionaryForm: ['とく', 'どく'] },
+		],
+	},
+	{
 		name: 'colloquial_te_ta_compact',
 		priority: 97,
 		resultType: 'progressive_form',
@@ -2370,6 +2393,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		pattern: [
 			{ surface: 'か', pos0: '助詞' },
 			{ surface: 'な', pos0: '助詞' },
+		],
+	},
+	{
+		name: 'fixed_toka_particle',
+		priority: 94,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: 'と', pos0: '助詞' },
+			{ surface: 'か', pos0: '助詞' },
 		],
 	},
 	{
