@@ -304,7 +304,10 @@ polite colloquial contraction forms like `太っちゃいます` and
 `持ってった`, colloquial `〜ておく` past contractions like `やめといた`, plus discourse chunks like `だなって` and contractions like
 `してんだ`, `あっけど`, particle chunks like `とか`, sentence-final turns like `いいよな`, copula quote
 spans like `ヒマだって`, and quoted reason clauses like `言ってたし`. It also chunks causative auxiliaries such as
-`打たせる` / `内させる` into a single learner-facing token.
+`打たせる` / `内させる` into a single learner-facing token, along with
+ polite connective forms such as `込めまして`, negative connective forms such as
+`遣わなくて`, lexicalized adverbials such as `別に`, conversational turns such as
+`いいよ`, and causative te-forms such as `させて`.
 The core tokenizer also rewrites sentence-ending ambiguities such as
 `ね | こと | ね` into `ねこ | と | ね` when the lattice supports that path.
 

@@ -874,6 +874,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'verb_masu_te',
+		priority: 101,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'まし', dictionaryForm: 'ます', pos0: '助動詞' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
+		],
+	},
+	{
 		name: 'copula_desu_past_split',
 		priority: 101,
 		resultType: 'phrase',
@@ -1237,6 +1247,20 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			},
 			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
 			{ surface: 'た', pos0: '助動詞' },
+		],
+	},
+	{
+		name: 'verb_causative_te',
+		priority: 96,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{
+				surface: ['せ', 'させ'],
+				dictionaryForm: ['せる', 'させる'],
+				pos0: ['助動詞', '動詞'],
+			},
+			{ surface: ['て', 'で'], pos0: '助詞', pos1: '接続助詞' },
 		],
 	},
 	{
@@ -1648,6 +1672,16 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 			{ surface: 'て' },
 			{ surface: 'も', pos0: '助詞' },
 			{ surface: 'いい' },
+		],
+	},
+	{
+		name: 'verb_nakute',
+		priority: 94,
+		resultType: 'phrase',
+		pattern: [
+			{ pos0: '動詞' },
+			{ surface: 'なく', dictionaryForm: 'ない', pos0: '助動詞' },
+			{ surface: 'て', pos0: '助詞', pos1: '接続助詞' },
 		],
 	},
 	{
@@ -2415,6 +2449,15 @@ const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 		],
 	},
 	{
+		name: 'fixed_ii_yo',
+		priority: 93,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: ['いい', '良い'], pos0: '形容詞' },
+			{ surface: ['よ', 'よっ'], pos0: '助詞' },
+		],
+	},
+	{
 		name: 'fixed_yada',
 		priority: 94,
 		resultType: 'fixed_expression',
@@ -2727,6 +2770,15 @@ const FIXED_SEQUENCE_RULES: SequenceRule[] = [
 		priority: 72,
 		resultType: 'fixed_expression',
 		pattern: [{ surface: ['ホント', 'ほんと', '本当'] }, { surface: 'に' }],
+	},
+	{
+		name: 'fixed_betsu_ni',
+		priority: 72,
+		resultType: 'fixed_expression',
+		pattern: [
+			{ surface: '別', pos0: '名詞' },
+			{ surface: 'に', dictionaryForm: 'だ', pos0: '助動詞' },
+		],
 	},
 	{
 		name: 'fixed_zaruwo_enai',

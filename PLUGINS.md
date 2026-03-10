@@ -401,6 +401,9 @@ Current proof-of-concept rule:
   `何で`, `なんか`, `誰か`, `とか`, `だからっ`, `だけど`, `なんだけど`, `なんだよ`, `なんです`, `なの`, `だなって`, `あっけど`, `やだ`, `撮影してます`, `してます`, `撮らせてたんだ`, `んだよ`, `日中`, `弱っていって`, `自伝的`, `つまらない`, `わけない`, `悪くはない`, `だった`, `お父さんっ`, `しちゃった`, `それでっ`, `もう一回`, `もーいっかい` and colloquial
   families like `〜てない`, `〜てん`, `〜ちゃう`, `〜なきゃ`, `〜なくちゃ`,
   `〜じゃん`, `〜でしょ`, `〜たら`, sentence endings like `かな`, polite-past forms like `来ました`,
+  polite connective forms like `込めまして`, negative connective forms like `遣わなくて`,
+  lexicalized adverbials like `別に`, conversational turns like `いいよ`,
+  and causative te-forms like `させて`,
   sentence-final turns like `いいよな`, copula quote spans like `ヒマだって`, reason-clause chunks like `言ってたし`,
   contractions like `どうしよ` (`どうしよう`), lexicalized adverbials like `どうやら`, `そうやって`,
   colloquial emphatic endings like `汚いっ`, lexicalized forms like `血い`, copula/negative forms such as `〜だった`, `〜だったら`, `なかった`,
