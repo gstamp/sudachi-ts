@@ -69,6 +69,23 @@ function createLattice(): Lattice {
 	};
 }
 
+function createLatticeWithNodes(nodes: LatticeNodeImpl[]): Lattice {
+	return {
+		getNodesWithEnd: () => [],
+		getNodes: (begin: number, end: number) =>
+			nodes.filter((node) => node.getBegin() === begin && node.getEnd() === end),
+		getMinimumNode: () => null,
+		insert: () => {},
+		remove: () => {},
+		createNode: () => new LatticeNodeImpl(null, 0, 0, 0, -1),
+		resize: () => {},
+		clear: () => {},
+		hasPreviousNode: () => false,
+		connectEosNode: () => {},
+		getBestPath: () => [],
+	};
+}
+
 function createNode(
 	surface: string,
 	posId: number,
@@ -437,6 +454,29 @@ describe('TokenChunkerPlugin', () => {
 
 		expect(path.length).toBe(1);
 		expect(path[0]?.getWordInfo().getReadingForm()).toBe('ツイタチ');
+	});
+
+	test('prefers learner-facing reading for 明日 when the lattice has アシタ', () => {
+		const plugin = new TokenChunkerPlugin();
+		plugin.setSettings(
+			new Settings({
+				enablePatternRules: true,
+			}),
+		);
+		plugin.setUp(createGrammar());
+
+		const original = createNodeWithForms('明日', '明日', 'アス', 1, 0, 2);
+		const preferred = createNodeWithForms('明日', '明日', 'アシタ', 1, 0, 2);
+		const path = [original];
+		plugin.rewrite(
+			createInputText(),
+			path,
+			createLatticeWithNodes([original, preferred]),
+		);
+
+		expect(path.length).toBe(1);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('明日');
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('アシタ');
 	});
 
 	test('normalizes counter reading for 本 with suffix', () => {

@@ -80,6 +80,11 @@ function tokenizeSurfaces(dictionary: Dictionary, text: string): string[] {
 	return [...tokenizer.tokenize(SplitMode.C, text)].map((m) => m.surface());
 }
 
+function tokenizeReadings(dictionary: Dictionary, text: string): string[] {
+	const tokenizer = dictionary.create();
+	return [...tokenizer.tokenize(SplitMode.C, text)].map((m) => m.readingForm());
+}
+
 type ObligationSentencePattern = {
 	naiToIkenai: string;
 	nakerebaNaranai: string;
@@ -1174,6 +1179,23 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 		).rejects.toThrow(
 			'TokenChunkerPlugin is only compatible when enableDefaultCompoundParticles is true.',
 		);
+	});
+
+	test('prefers learner-facing 明日 reading when chunker is enabled', () => {
+		expect(tokenizeReadings(withoutChunker, '明日は寒いです。')).toEqual([
+			'アス',
+			'ハ',
+			'サムイ',
+			'デス',
+			'。',
+		]);
+		expect(tokenizeReadings(withChunker, '明日は寒いです。')).toEqual([
+			'アシタ',
+			'ハ',
+			'サムイ',
+			'デス',
+			'。',
+		]);
 	});
 
 	test('handles 2000 adversarial obligation/chunking sentences with system.dic', () => {

@@ -81,6 +81,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 		}
 
 		let chunks = this.toInitialChunks(path);
+		chunks = this.applyLexicalReadingPreferenceStage(chunks, lattice);
 		if (this.enablePatternRules) {
 			chunks = this.applyInlineRubyExactStage(chunks);
 			chunks = this.applyPatternStage(chunks);
@@ -106,6 +107,57 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 				nodes: [node],
 			};
 		});
+	}
+
+	private applyLexicalReadingPreferenceStage(
+		chunks: ChunkToken[],
+		lattice: Lattice,
+	): ChunkToken[] {
+		return chunks.map((chunk) =>
+			this.applyChunkReadingPreference(chunk, lattice),
+		);
+	}
+
+	private applyChunkReadingPreference(
+		chunk: ChunkToken,
+		lattice: Lattice,
+	): ChunkToken {
+		if (chunk.chunkType !== 'single_token' || chunk.nodes.length !== 1) {
+			return chunk;
+		}
+
+		const node = chunk.nodes[0];
+		if (!node) {
+			return chunk;
+		}
+
+		const preference = LEXICAL_READING_PREFERENCES.get(chunk.surface);
+		if (!preference) {
+			return chunk;
+		}
+
+		const preferredNode = lattice
+			.getNodes(node.getBegin(), node.getEnd())
+			.find((candidate) => {
+				const info = candidate.getWordInfo();
+				return (
+					info.getSurface() === preference.surface &&
+					info.getReadingForm() === preference.reading
+				);
+			});
+		if (!preferredNode) {
+			return chunk;
+		}
+
+		const info = preferredNode.getWordInfo();
+		return {
+			...chunk,
+			reading: info.getReadingForm(),
+			dictionaryForm: info.getDictionaryForm(),
+			normalizedForm: info.getNormalizedForm(),
+			posId: info.getPOSId(),
+			nodes: [preferredNode],
+		};
 	}
 
 	private applyPatternStage(chunks: ChunkToken[]): ChunkToken[] {
@@ -761,6 +813,9 @@ const KANA_PATTERN = /^[ぁ-ゖァ-ヺー]+$/u;
 const HIRAGANA_PATTERN = /^[ぁ-ゖー]+$/u;
 const SINGLE_KANA_PATTERN = /^[ぁ-ゖァ-ヺー]$/u;
 const SMALL_KANA_SUFFIXES = new Set(['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ']);
+const LEXICAL_READING_PREFERENCES = new Map([
+	['明日', { surface: '明日', reading: 'アシタ' }],
+]);
 
 const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [
 	{
