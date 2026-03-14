@@ -1,3 +1,0 @@
-[submodule "token-chunker-ts"]
-	path = token-chunker-ts
-	url = git@github.com:gstamp/token-chunker-ts.git

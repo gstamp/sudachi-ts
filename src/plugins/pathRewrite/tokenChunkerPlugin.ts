@@ -83,6 +83,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 		let chunks = this.toInitialChunks(path);
 		chunks = this.applyLexicalReadingPreferenceStage(chunks, lattice);
 		if (this.enablePatternRules) {
+			chunks = this.applyLexicalCompoundPreferenceStage(chunks, lattice);
 			chunks = this.applyInlineRubyExactStage(chunks);
 			chunks = this.applyPatternStage(chunks);
 			chunks = this.applyNumericExpressionStage(chunks);
@@ -157,6 +158,147 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			normalizedForm: info.getNormalizedForm(),
 			posId: info.getPOSId(),
 			nodes: [preferredNode],
+		};
+	}
+
+	private applyLexicalCompoundPreferenceStage(
+		source: ChunkToken[],
+		lattice: Lattice,
+	): ChunkToken[] {
+		const chunks = [...source];
+		let i = 0;
+		while (i < chunks.length - 1) {
+			const current = chunks[i];
+			const next = chunks[i + 1];
+			if (!current || !next) {
+				i++;
+				continue;
+			}
+
+			const preferred = this.findLexicalCompoundPreference(
+				current,
+				next,
+				lattice,
+			);
+			if (!preferred) {
+				i++;
+				continue;
+			}
+
+			chunks.splice(i, 2, preferred);
+		}
+		return chunks;
+	}
+
+	private findLexicalCompoundPreference(
+		current: ChunkToken,
+		next: ChunkToken,
+		lattice: Lattice,
+	): ChunkToken | undefined {
+		if (
+			current.chunkType !== 'single_token' ||
+			next.chunkType !== 'single_token'
+		) {
+			return undefined;
+		}
+
+		const lexicalizedNounCompound = this.findLexicalizedNounCompoundPreference(
+			current,
+			next,
+			lattice,
+		);
+		if (lexicalizedNounCompound) {
+			return lexicalizedNounCompound;
+		}
+
+		return this.findWeekdayCompoundPreference(current, next);
+	}
+
+	private findLexicalizedNounCompoundPreference(
+		current: ChunkToken,
+		next: ChunkToken,
+		lattice: Lattice,
+	): ChunkToken | undefined {
+		const currentPos = this.getPosById(current.posId);
+		const nextPos = this.getPosById(next.posId);
+		if (!currentPos || !nextPos) {
+			return undefined;
+		}
+		if (currentPos[0] !== '名詞' || currentPos[1] === '数詞') {
+			return undefined;
+		}
+		if (nextPos[0] !== '接尾辞' || nextPos[1] !== '名詞的') {
+			return undefined;
+		}
+
+		const firstNode = current.nodes[0];
+		const lastNode = next.nodes[next.nodes.length - 1];
+		if (!firstNode || !lastNode) {
+			return undefined;
+		}
+
+		const combinedSurface = current.surface + next.surface;
+		const preferredNode = lattice
+			.getNodes(firstNode.getBegin(), lastNode.getEnd())
+			.find((candidate) => {
+				const info = candidate.getWordInfo();
+				const candidatePos = this.getPosById(info.getPOSId());
+				return (
+					info.getSurface() === combinedSurface && candidatePos?.[0] === '名詞'
+				);
+			});
+		if (!preferredNode) {
+			return undefined;
+		}
+
+		const info = preferredNode.getWordInfo();
+		return {
+			surface: info.getSurface(),
+			reading: info.getReadingForm(),
+			dictionaryForm: info.getDictionaryForm(),
+			normalizedForm: info.getNormalizedForm(),
+			posId: info.getPOSId(),
+			chunkType: 'compound_noun',
+			nodes: [preferredNode],
+		};
+	}
+
+	private findWeekdayCompoundPreference(
+		current: ChunkToken,
+		next: ChunkToken,
+	): ChunkToken | undefined {
+		const currentPos = this.getPosById(current.posId);
+		const nextPos = this.getPosById(next.posId);
+		if (!currentPos || !nextPos) {
+			return undefined;
+		}
+		if (currentPos[0] !== '名詞' || nextPos[0] !== '名詞') {
+			return undefined;
+		}
+		if (
+			next.surface !== '日' ||
+			next.dictionaryForm !== '日' ||
+			next.normalizedForm !== '日'
+		) {
+			return undefined;
+		}
+		if (!WEEKDAY_STEM_NORMALIZED_FORMS.has(current.normalizedForm)) {
+			return undefined;
+		}
+		if (!current.reading.endsWith('ヨウ')) {
+			return undefined;
+		}
+
+		const merged = this.mergeChunks([current, next], 'compound_noun');
+		const weekdaySurface = `${current.surface}${next.surface}`;
+		const weekdayReading = `${current.reading}${WEEKDAY_READING_SUFFIX}`;
+		const weekdayDictionaryForm = `${current.normalizedForm}${next.dictionaryForm}`;
+		return {
+			...merged,
+			surface: weekdaySurface,
+			reading: weekdayReading,
+			normalizedForm: weekdayDictionaryForm,
+			dictionaryForm: weekdayDictionaryForm,
 		};
 	}
 
@@ -813,6 +955,16 @@ const KANA_PATTERN = /^[ぁ-ゖァ-ヺー]+$/u;
 const HIRAGANA_PATTERN = /^[ぁ-ゖー]+$/u;
 const SINGLE_KANA_PATTERN = /^[ぁ-ゖァ-ヺー]$/u;
 const SMALL_KANA_SUFFIXES = new Set(['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ']);
+const WEEKDAY_STEM_NORMALIZED_FORMS = new Set([
+	'月曜',
+	'火曜',
+	'水曜',
+	'木曜',
+	'金曜',
+	'土曜',
+	'日曜',
+]);
+const WEEKDAY_READING_SUFFIX = 'ビ';
 const LEXICAL_READING_PREFERENCES = new Map([
 	['明日', { surface: '明日', reading: 'アシタ' }],
 ]);
@@ -2611,12 +2763,6 @@ const PHRASE_SEQUENCE_RULES: SequenceRule[] = [
 			{ chunkType: 'suru_verb_te_form' },
 			{ surface: 'も', pos0: '助詞' },
 		],
-	},
-	{
-		name: 'pronoun_no',
-		priority: 74,
-		resultType: 'phrase',
-		pattern: [{ pos0: '代名詞' }, { surface: 'の', pos0: '助詞' }],
 	},
 	{
 		name: 'nanimo',

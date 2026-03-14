@@ -1064,6 +1064,23 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 		expect(withChunkerResult).not.toContain('口とらえて');
 	});
 
+	test('keeps possessive pronoun + の split in simple noun phrases', () => {
+		const text = '私の町はしずかです。';
+		const without = tokenizeSurfaces(withoutChunker, text);
+		const withChunkerResult = tokenizeSurfaces(withChunker, text);
+
+		expect(without).toEqual(['私', 'の', '町', 'は', 'しずか', 'です', '。']);
+		expect(withChunkerResult).toEqual([
+			'私',
+			'の',
+			'町',
+			'は',
+			'しずか',
+			'です',
+			'。',
+		]);
+	});
+
 	test('prefers learner-friendly grammar chunks over dictionary-fragmented tokens', () => {
 		const cases: Array<{
 			text: string;
@@ -1172,6 +1189,28 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 		}
 	});
 
+	test('prefers lexicalized noun plus suffix compounds when the lattice has a single-word candidate', () => {
+		expect(tokenizeSurfaces(withoutChunker, '郵便局は学校の向かいです。')).toEqual([
+			'郵便局',
+			'は',
+			'学',
+			'校',
+			'の',
+			'向かい',
+			'です',
+			'。',
+		]);
+		expect(tokenizeSurfaces(withChunker, '郵便局は学校の向かいです。')).toEqual([
+			'郵便局',
+			'は',
+			'学校',
+			'の',
+			'向かい',
+			'です',
+			'。',
+		]);
+	});
+
 	test('throws when TokenChunkerPlugin is used with default compounds disabled', async () => {
 		const factory = new DictionaryFactory();
 		await expect(
@@ -1194,6 +1233,37 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			'ハ',
 			'サムイ',
 			'デス',
+			'。',
+		]);
+	});
+
+	test('merges mixed-script weekday compounds and uses the weekday reading', () => {
+		expect(tokenizeSurfaces(withoutChunker, '火よう日はジムへ行きます。')).toEqual([
+			'火よう',
+			'日',
+			'は',
+			'ジム',
+			'へ',
+			'行き',
+			'ます',
+			'。',
+		]);
+		expect(tokenizeSurfaces(withChunker, '火よう日はジムへ行きます。')).toEqual([
+			'火よう日',
+			'は',
+			'ジム',
+			'へ',
+			'行き',
+			'ます',
+			'。',
+		]);
+		expect(tokenizeReadings(withChunker, '火よう日はジムへ行きます。')).toEqual([
+			'カヨウビ',
+			'ハ',
+			'ジム',
+			'ヘ',
+			'イキ',
+			'マス',
 			'。',
 		]);
 	});

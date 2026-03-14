@@ -389,10 +389,13 @@ Design note:
 - Learner-facing goal: prefer grammar-unit chunks that are easier to study
   (for example, `かもしれない`, `〜なくなってしまう`, `〜てない`) rather than
   raw dictionary-level token fragments.
+- When the lattice already exposes a lexicalized noun compound over a
+  `名詞 + 接尾辞(名詞的)` split, prefer the compound form (for example,
+  `学校` over `学` + `校`).
 
 Current proof-of-concept rule:
 - Conservative pattern-rule families (fixed expressions, suru/progressive, te-form,
-  noun-particle, pronoun+の, ために).
+  noun-particle, ために).
 - Colloquial/conversational chunking for common contractions and discourse forms
   (for example, `僕じゃない`, `方がいい`, `んじゃない`, `なんじゃない`, `見たい`, `惚れてる`,
   `作ったって`, `聞きたかった`, `って言ってる`, `って言ってた`, `進んでた`,
@@ -434,6 +437,7 @@ Current proof-of-concept rule:
 - Inline furigana-style text (for example, `面白おもしろくない`, `作つくったら`, `馬鹿ばか...`)
   is also merged into learner-friendly chunks when reliable kana/kanji alignment signals are present.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
+- Mixed-script weekday compounds such as `火よう日` are merged into a single learner-facing token with weekday readings like `カヨウビ`.
 
 Settings:
 - `enablePatternRules` (default: `true`)

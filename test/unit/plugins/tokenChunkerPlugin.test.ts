@@ -28,6 +28,7 @@ function createGrammar(): Grammar {
 		[14, new POS('助詞', '終助詞', '*', '*', '*', '*')],
 		[15, new POS('接尾辞', '形状詞的', '*', '*', '*', '*')],
 		[16, new POS('形状詞', '一般', '*', '*', '*', '*')],
+		[17, new POS('接尾辞', '名詞的', '一般', '*', '*', '*')],
 	]);
 
 	return {
@@ -253,6 +254,54 @@ describe('TokenChunkerPlugin', () => {
 		expect(path.length).toBe(2);
 	});
 
+	test('merges lexicalized noun plus noun-like suffix compounds', () => {
+		const plugin = createPatternOnlyPlugin();
+
+		const path = [
+			createNodeWithForms('学', '学', 'ガク', 1, 0, 1),
+			createNodeWithForms('校', '校', 'コウ', 17, 1, 2),
+		];
+		const lexicalized = createNodeWithForms('学校', '学校', 'ガッコウ', 1, 0, 2);
+		plugin.rewrite(
+			createInputText(),
+			path,
+			createLatticeWithNodes([lexicalized]),
+		);
+
+		expect(path.length).toBe(1);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('学校');
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('ガッコウ');
+	});
+
+	test('does not merge noun plus noun-like suffix compounds without a lexicalized lattice node', () => {
+		const plugin = createPatternOnlyPlugin();
+
+		const path = [
+			createNodeWithForms('学', '学', 'ガク', 1, 0, 1),
+			createNodeWithForms('校', '校', 'コウ', 17, 1, 2),
+		];
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.length).toBe(2);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('学');
+		expect(path[1]?.getWordInfo().getSurface()).toBe('校');
+	});
+
+	test('merges mixed-script weekday compounds and fixes the weekday reading', () => {
+		const plugin = createPatternOnlyPlugin();
+
+		const path = [
+			createNodeWithCounterForms('火よう', '火曜', '火よう', 'カヨウ', 1, 0, 3),
+			createNodeWithCounterForms('日', '日', '日', 'ヒ', 1, 3, 4),
+		];
+		plugin.rewrite(createInputText(), path, createLattice());
+
+		expect(path.length).toBe(1);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('火よう日');
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('カヨウビ');
+		expect(path[0]?.getWordInfo().getDictionaryForm()).toBe('火曜日');
+	});
+
 	test('merges fixed expression わけがない', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(new Settings({}));
@@ -289,7 +338,7 @@ describe('TokenChunkerPlugin', () => {
 		expect(path[0]?.getWordInfo().getSurface()).toBe('勉強している');
 	});
 
-	test('merges pronoun + の', () => {
+	test('keeps pronoun + の split', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(new Settings({}));
 		plugin.setUp(createGrammar());
@@ -297,8 +346,9 @@ describe('TokenChunkerPlugin', () => {
 		const path = [createNode('私', 8, 0, 1), createNode('の', 2, 1, 2)];
 		plugin.rewrite(createInputText(), path, createLattice());
 
-		expect(path.length).toBe(1);
-		expect(path[0]?.getWordInfo().getSurface()).toBe('私の');
+		expect(path.length).toBe(2);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('私');
+		expect(path[1]?.getWordInfo().getSurface()).toBe('の');
 	});
 
 	test('merges については sequence', () => {

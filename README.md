@@ -297,6 +297,9 @@ particles disabled.
 `TokenChunkerPlugin` is intended for `SplitMode.C` tokenization; calling
 `tokenize(SplitMode.A, ...)` or `tokenize(SplitMode.B, ...)` with this plugin
 enabled throws an error.
+When the lattice already contains a lexicalized compound candidate, the chunker
+also prefers learner-facing noun compounds such as `学校` over split analyses
+like `学` + `校`.
 The chunker also handles polite progressive colloquial forms where `て/で` is
 an auxiliary (`てる/でる`) such as `残ってます` and `残ってますよ`, plus
 polite colloquial contraction forms like `太っちゃいます` and
@@ -309,7 +312,8 @@ spans like `ヒマだって`, and quoted reason clauses like `言ってたし`. 
 `遣わなくて`, lexicalized adverbials such as `別に`, conversational turns such as
 `いいよ`, and causative te-forms such as `させて`. For learner-facing output it
 also prefers more natural alternate dictionary readings when the lattice already
-contains them, such as `明日` -> `アシタ`.
+contains them, such as `明日` -> `アシタ`, and it normalizes mixed-script
+weekday compounds such as `火よう日` -> `カヨウビ`.
 The core tokenizer also rewrites sentence-ending ambiguities such as
 `ね | こと | ね` into `ねこ | と | ね` when the lattice supports that path.
 
