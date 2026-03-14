@@ -144,35 +144,31 @@ export class JapaneseTokenizer implements Tokenizer {
 		input?: ReadableStream<string> | AsyncIterable<string>,
 	): AsyncIterable<Morpheme[]> {
 		let mode: SplitMode;
-		let inputStream: ReadableStream<string> | AsyncIterable<string>;
+		let inputStream: ReadableStream<string>;
 
 		if (typeof modeOrInput === 'object') {
 			mode = SplitMode.C;
-			inputStream = modeOrInput as
-				| ReadableStream<string>
-				| AsyncIterable<string>;
+			inputStream =
+				modeOrInput instanceof ReadableStream
+					? modeOrInput
+					: this.readableStreamFromAsyncIterable(modeOrInput);
 		} else {
 			mode = modeOrInput as SplitMode;
-			inputStream = input as ReadableStream<string> | AsyncIterable<string>;
+			const source = input as ReadableStream<string> | AsyncIterable<string>;
+			inputStream =
+				source instanceof ReadableStream
+					? source
+					: this.readableStreamFromAsyncIterable(source);
 		}
 
-		if (inputStream instanceof ReadableStream) {
-			const lazyAnalysis = new SentenceSplittingLazyAnalysis(
-				mode,
-				this.grammar,
-				this.lexicon,
-				inputStream,
-				(m, input) => this.tokenizeSentence(m, input),
-			);
-			yield* lazyAnalysis;
-		} else if (inputStream) {
-			for await (const chunk of inputStream as AsyncIterable<string>) {
-				const sentences = this.tokenizeSentences(mode, chunk);
-				for (const sentence of sentences) {
-					yield [...sentence];
-				}
-			}
-		}
+		const lazyAnalysis = new SentenceSplittingLazyAnalysis(
+			mode,
+			this.grammar,
+			this.lexicon,
+			inputStream,
+			(m, inputText) => this.tokenizeSentence(m, inputText),
+		);
+		yield* lazyAnalysis;
 	}
 
 	setDumpOutput(output: WritableStream<string>): void {
@@ -411,6 +407,25 @@ export class JapaneseTokenizer implements Tokenizer {
 		}
 
 		this.lattice.connectEosNode();
+	}
+
+	private readableStreamFromAsyncIterable(
+		input: AsyncIterable<string>,
+	): ReadableStream<string> {
+		const iterator = input[Symbol.asyncIterator]();
+		return new ReadableStream<string>({
+			pull: async (controller) => {
+				const { value, done } = await iterator.next();
+				if (done) {
+					controller.close();
+					return;
+				}
+				controller.enqueue(value);
+			},
+			cancel: async () => {
+				await iterator.return?.();
+			},
+		});
 	}
 
 	private hasPreviousNode(index: number): boolean {

@@ -205,9 +205,10 @@ for (const sentence of sentences) {
 }
 ```
 
-`tokenizeSentences(...)` treats quoted dialogue endings (for example `「...！」` and
-`「...。」`) as sentence boundaries and skips leading inter-sentence whitespace such
-as newlines before tokenization.
+`tokenizeSentences(...)` treats standalone quoted dialogue endings (for example
+`「...！」`) as sentence boundaries, but keeps quoted speech attached to following
+reporting clauses such as `「...。」と言いました。`. It also skips leading
+inter-sentence whitespace such as newlines before tokenization.
 
 Lazy sentence processing for streaming:
 

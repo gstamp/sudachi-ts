@@ -146,6 +146,24 @@ describe('JapaneseTokenizer - Sentence Tokenization', () => {
 		expect(secondSurfaces.slice(0, 2).join('')).toBe('タマ');
 		expect(secondSurfaces).not.toContain('\n');
 	});
+
+	test('tokenizeSentences - keeps quoted speech with reporting clause', () => {
+		const text =
+			'夜、私は「かぎはどこですか。」と言いました。\n' +
+			'かばんの中にありませんでした。\n' +
+			'机の上にもありませんでした。\n' +
+			'でも、かぎは台所のたなにありました。\n' +
+			'私は「よかった。」と言いました。';
+		const list = [...tokenizer.tokenizeSentences(SplitMode.C, text)];
+
+		expect(list).toHaveLength(5);
+		expect([...list[0]!].map((m) => m.surface()).join('')).toBe(
+			'夜、私は「かぎはどこですか。」と言いました。',
+		);
+		expect([...list[4]!].map((m) => m.surface()).join('')).toBe(
+			'私は「よかった。」と言いました。',
+		);
+	});
 });
 
 describe('JapaneseTokenizer - Lazy Tokenization', () => {
@@ -212,6 +230,45 @@ describe('JapaneseTokenizer - Lazy Tokenization', () => {
 		const secondSurfaces = chunks[1]?.map((m) => m.surface()) ?? [];
 		expect(secondSurfaces[0]).toBe('東京');
 		expect(secondSurfaces).not.toContain('\n');
+	});
+
+	test('lazyTokenizeSentences - keeps quoted speech together across async chunks', async () => {
+		const chunks: Morpheme[][] = [];
+
+		for await (const sentence of tokenizer.lazyTokenizeSentences(
+			SplitMode.C,
+			toAsyncIterable(['夜、私は「かぎはどこですか。', '」と言いました。']),
+		)) {
+			chunks.push([...sentence]);
+		}
+
+		expect(chunks).toHaveLength(1);
+		expect(chunks[0]?.map((m) => m.surface()).join('')).toBe(
+			'夜、私は「かぎはどこですか。」と言いました。',
+		);
+	});
+
+	test('lazyTokenizeSentences - keeps quoted speech together across stream chunks', async () => {
+		const stream = new ReadableStream<string>({
+			start(controller) {
+				controller.enqueue('夜、私は「かぎはどこですか。');
+				controller.enqueue('」と言いました。');
+				controller.close();
+			},
+		});
+		const chunks: Morpheme[][] = [];
+
+		for await (const sentence of tokenizer.lazyTokenizeSentences(
+			SplitMode.C,
+			stream,
+		)) {
+			chunks.push([...sentence]);
+		}
+
+		expect(chunks).toHaveLength(1);
+		expect(chunks[0]?.map((m) => m.surface()).join('')).toBe(
+			'夜、私は「かぎはどこですか。」と言いました。',
+		);
 	});
 });
 

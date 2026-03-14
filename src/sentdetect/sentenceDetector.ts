@@ -65,7 +65,7 @@ export class SentenceDetector {
 				match = SENTENCE_BREAKER_PATTERN.exec(s);
 				continue;
 			}
-			if (eos < s.length && this.isContinuousPhrase(s, eos)) {
+			if (adjustedEos < s.length && this.isContinuousPhrase(s, adjustedEos)) {
 				match = SENTENCE_BREAKER_PATTERN.exec(s);
 				continue;
 			}
@@ -109,16 +109,18 @@ export class SentenceDetector {
 		return match ? match[0].length : 0;
 	}
 
-	isContinuousPhrase(s: string, eos: number): boolean {
+	isContinuousPhrase(s: string, boundary: number): boolean {
 		QUOTE_MARKER_PATTERN.lastIndex = 0;
 		const match = QUOTE_MARKER_PATTERN.exec(s);
-		if (match && match.index === eos - 1) {
+		if (match && match.index === boundary - 1) {
 			return true;
 		}
 
-		const c = s[eos];
+		const c = s[boundary];
 		EOS_ITEMIZE_HEADER_PATTERN.lastIndex = 0;
-		const hasItemizeHeader = EOS_ITEMIZE_HEADER_PATTERN.test(s.slice(0, eos));
+		const hasItemizeHeader = EOS_ITEMIZE_HEADER_PATTERN.test(
+			s.slice(0, boundary),
+		);
 		return (c === 'と' || c === 'や' || c === 'の') && hasItemizeHeader;
 	}
 }

@@ -51,6 +51,9 @@ describe('SentenceDetector', () => {
 		expect(detector.getEos('「そうだ。」\n次の文。', null)).toBe(
 			'「そうだ。」'.length,
 		);
+		expect(detector.getEos('「そうだ。」と言った。', null)).toBe(
+			'「そうだ。」と言った。'.length,
+		);
 	});
 
 	test('getEosWithProhibitedBOS', () => {

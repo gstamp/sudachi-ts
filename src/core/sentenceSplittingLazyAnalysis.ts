@@ -16,6 +16,7 @@ const LEADING_WHITESPACE_PATTERN = /^\s+/u;
 export class SentenceSplittingLazyAnalysis
 	implements NonBreakChecker, AsyncIterable<Morpheme[]>
 {
+	private readonly detector = new SentenceDetector();
 	private readonly mode: SplitMode;
 	private readonly grammar: Grammar;
 	private readonly lexicon: Lexicon;
@@ -29,6 +30,7 @@ export class SentenceSplittingLazyAnalysis
 	private input: InputText;
 	private bos: number;
 	private normalized: string;
+	private sourceDone: boolean;
 
 	constructor(
 		mode: SplitMode,
@@ -46,6 +48,7 @@ export class SentenceSplittingLazyAnalysis
 		this.input = new UTF8InputTextBuilder('', grammar).build();
 		this.bos = 0;
 		this.normalized = '';
+		this.sourceDone = false;
 	}
 
 	async *[Symbol.asyncIterator](): AsyncIterator<Morpheme[]> {
@@ -65,7 +68,7 @@ export class SentenceSplittingLazyAnalysis
 
 				if (reader === null) break;
 				const nread = await this.reloadBuffer(reader);
-				if (nread < 0 && this.buffer.length === 0) {
+				if (nread < 0) {
 					break;
 				}
 			}
@@ -83,13 +86,17 @@ export class SentenceSplittingLazyAnalysis
 			this.bos = 0;
 		}
 
-		if (this.buffer.length < BUFFER_SIZE) {
+		while (this.buffer.length < BUFFER_SIZE && !this.sourceDone) {
 			const { value, done } = await (reader as any).read();
-			if (value !== undefined && !done) {
+			if (done) {
+				this.sourceDone = true;
+				break;
+			}
+			if (value !== undefined) {
 				this.buffer += value;
 			}
-			if (done && !value) {
-				return -1;
+			if (value === '') {
+				break;
 			}
 		}
 
@@ -99,7 +106,9 @@ export class SentenceSplittingLazyAnalysis
 		this.bos = 0;
 		this.normalized = this.input.getText();
 
-		return this.buffer.length;
+		return this.sourceDone && this.buffer.length === 0
+			? -1
+			: this.buffer.length;
 	}
 
 	private processNextSentence(): MorphemeList | null {
@@ -113,8 +122,7 @@ export class SentenceSplittingLazyAnalysis
 			}
 		}
 
-		const detector = new SentenceDetector();
-		const eosLength = detector.getEos(this.normalized, this);
+		const eosLength = this.detector.getEos(this.normalized, this);
 
 		if (eosLength > 0) {
 			let eos = this.bos + eosLength;
@@ -127,12 +135,19 @@ export class SentenceSplittingLazyAnalysis
 			return this.tokenizeSentence(this.mode, sentence);
 		}
 
-		// Buffer is just after reload but no (safe) eos found.
-		// Tokenize all text in buffer if bos is 0
-		if (this.bos === 0 && eosLength < 0) {
-			this.bos = this.normalized.length;
-			this.normalized = '';
-			return this.tokenizeSentence(this.mode, this.input);
+		if (
+			eosLength < 0 &&
+			(this.sourceDone || this.buffer.length >= BUFFER_SIZE)
+		) {
+			const length = Math.abs(eosLength);
+			let eos = this.bos + length;
+			if (eos < this.normalized.length) {
+				eos = this.input.getNextInOriginal(eos - 1);
+			}
+			const sentence = this.input.slice(this.bos, eos);
+			this.bos = eos;
+			this.normalized = this.normalized.slice(length);
+			return this.tokenizeSentence(this.mode, sentence);
 		}
 
 		return null;
