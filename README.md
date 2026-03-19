@@ -313,8 +313,10 @@ spans like `ヒマだって`, and quoted reason clauses like `言ってたし`. 
 `遣わなくて`, lexicalized adverbials such as `別に`, conversational turns such as
 `いいよ`, and causative te-forms such as `させて`. For learner-facing output it
 also prefers more natural alternate dictionary readings when the lattice already
-contains them, such as `明日` -> `アシタ`, and it normalizes mixed-script
-weekday compounds such as `火よう日` -> `カヨウビ`.
+contains them, such as `明日` -> `アシタ`, `明後日` -> `アサッテ`, and
+`私` -> `ワタシ`, and it supports additional `preferredReadings` overrides
+via plugin settings using entries like `"私=ワタシ"`. It also normalizes
+mixed-script weekday compounds such as `火よう日` -> `カヨウビ`.
 The core tokenizer also rewrites sentence-ending ambiguities such as
 `ね | こと | ね` into `ねこ | と | ね` when the lattice supports that path.
 

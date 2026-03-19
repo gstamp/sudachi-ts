@@ -438,10 +438,12 @@ Current proof-of-concept rule:
   is also merged into learner-friendly chunks when reliable kana/kanji alignment signals are present.
 - Reading-aware counter normalization (for example, `三本 -> サンボン`, `一日 -> ツイタチ`) with contextual safeguards for chained counters (for example, `一日三回 -> イチニチ | サンカイ`).
 - Mixed-script weekday compounds such as `火よう日` are merged into a single learner-facing token with weekday readings like `カヨウビ`.
+- Learner-facing reading overrides prefer more common dictionary alternatives when the lattice exposes them, including built-in defaults such as `明日 -> アシタ`, `明後日 -> アサッテ`, and `私 -> ワタシ`.
 
 Settings:
 - `enablePatternRules` (default: `true`)
 - `enableBroadRules` (default: `false`) for more aggressive phrase-merging rules
+- `preferredReadings` (default: built-in learner-facing overrides) as a string array of `surface=READING` entries, for example `["私=ワタシ", "明日=アシタ", "明後日=アサッテ"]`
 - `TokenChunkerPlugin` requires `SplitMode.C` tokenization. Using `SplitMode.A`
   or `SplitMode.B` throws an error.
 - `TokenChunkerPlugin` is only compatible with

@@ -57,6 +57,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 	private grammar: Grammar | null = null;
 	private enablePatternRules = true;
 	private enableBroadRules = false;
+	private preferredReadings = new Map(DEFAULT_LEXICAL_READING_PREFERENCES);
 
 	override setUp(grammar: Grammar): void {
 		this.grammar = grammar;
@@ -65,6 +66,23 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			true,
 		);
 		this.enableBroadRules = this.settings.getBoolean('enableBroadRules', false);
+		this.preferredReadings = new Map(DEFAULT_LEXICAL_READING_PREFERENCES);
+		for (const entry of this.settings.getStringList('preferredReadings')) {
+			const separator = entry.indexOf('=');
+			if (separator <= 0 || separator === entry.length - 1) {
+				throw new Error(
+					`Invalid preferredReadings entry "${entry}". Expected "surface=READING".`,
+				);
+			}
+			const surface = entry.slice(0, separator).trim();
+			const reading = entry.slice(separator + 1).trim();
+			if (!surface || !reading) {
+				throw new Error(
+					`Invalid preferredReadings entry "${entry}". Expected "surface=READING".`,
+				);
+			}
+			this.preferredReadings.set(surface, { surface, reading });
+		}
 	}
 
 	override validateSplitMode(mode: SplitMode): void {
@@ -132,7 +150,7 @@ export class TokenChunkerPlugin extends PathRewritePlugin {
 			return chunk;
 		}
 
-		const preference = LEXICAL_READING_PREFERENCES.get(chunk.surface);
+		const preference = this.preferredReadings.get(chunk.surface);
 		if (!preference) {
 			return chunk;
 		}
@@ -965,8 +983,10 @@ const WEEKDAY_STEM_NORMALIZED_FORMS = new Set([
 	'日曜',
 ]);
 const WEEKDAY_READING_SUFFIX = 'ビ';
-const LEXICAL_READING_PREFERENCES = new Map([
+const DEFAULT_LEXICAL_READING_PREFERENCES = new Map([
 	['明日', { surface: '明日', reading: 'アシタ' }],
+	['明後日', { surface: '明後日', reading: 'アサッテ' }],
+	['私', { surface: '私', reading: 'ワタシ' }],
 ]);
 
 const COLLOQUIAL_SEQUENCE_RULES: SequenceRule[] = [

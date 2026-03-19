@@ -529,6 +529,53 @@ describe('TokenChunkerPlugin', () => {
 		expect(path[0]?.getWordInfo().getReadingForm()).toBe('アシタ');
 	});
 
+	test('prefers learner-facing reading for 明後日 when the lattice has アサッテ', () => {
+		const plugin = new TokenChunkerPlugin();
+		plugin.setSettings(
+			new Settings({
+				enablePatternRules: true,
+			}),
+		);
+		plugin.setUp(createGrammar());
+
+		const original = createNodeWithForms('明後日', '明後日', 'ミョウゴニチ', 1, 0, 3);
+		const preferred = createNodeWithForms('明後日', '明後日', 'アサッテ', 1, 0, 3);
+		const path = [original];
+		plugin.rewrite(
+			createInputText(),
+			path,
+			createLatticeWithNodes([original, preferred]),
+		);
+
+		expect(path.length).toBe(1);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('明後日');
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('アサッテ');
+	});
+
+	test('prefers configured learner-facing reading when lattice exposes it', () => {
+		const plugin = new TokenChunkerPlugin();
+		plugin.setSettings(
+			new Settings({
+				enablePatternRules: true,
+				preferredReadings: ['私=ワタシ'],
+			}),
+		);
+		plugin.setUp(createGrammar());
+
+		const original = createNodeWithForms('私', '私', 'ワタクシ', 8, 0, 1);
+		const preferred = createNodeWithForms('私', '私', 'ワタシ', 8, 0, 1);
+		const path = [original];
+		plugin.rewrite(
+			createInputText(),
+			path,
+			createLatticeWithNodes([original, preferred]),
+		);
+
+		expect(path.length).toBe(1);
+		expect(path[0]?.getWordInfo().getSurface()).toBe('私');
+		expect(path[0]?.getWordInfo().getReadingForm()).toBe('ワタシ');
+	});
+
 	test('normalizes counter reading for 本 with suffix', () => {
 		const plugin = new TokenChunkerPlugin();
 		plugin.setSettings(

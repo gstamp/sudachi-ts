@@ -1079,6 +1079,24 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			'です',
 			'。',
 		]);
+		expect(tokenizeReadings(withoutChunker, text)).toEqual([
+			'ワタクシ',
+			'ノ',
+			'マチ',
+			'ハ',
+			'シズカ',
+			'デス',
+			'。',
+		]);
+		expect(tokenizeReadings(withChunker, text)).toEqual([
+			'ワタシ',
+			'ノ',
+			'マチ',
+			'ハ',
+			'シズカ',
+			'デス',
+			'。',
+		]);
 	});
 
 	test('prefers learner-friendly grammar chunks over dictionary-fragmented tokens', () => {
@@ -1232,6 +1250,23 @@ describeIfSystemDic('TokenChunkerPlugin system.dic validation', () => {
 			'アシタ',
 			'ハ',
 			'サムイ',
+			'デス',
+			'。',
+		]);
+	});
+
+	test('prefers learner-facing 明後日 reading when chunker is enabled', () => {
+		expect(tokenizeReadings(withoutChunker, '明後日は休みです。')).toEqual([
+			'ミョウゴニチ',
+			'ハ',
+			'ヤスミ',
+			'デス',
+			'。',
+		]);
+		expect(tokenizeReadings(withChunker, '明後日は休みです。')).toEqual([
+			'アサッテ',
+			'ハ',
+			'ヤスミ',
 			'デス',
 			'。',
 		]);
