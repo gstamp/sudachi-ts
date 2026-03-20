@@ -10,6 +10,7 @@ import type { Tokenizer } from './tokenizer.js';
 
 export class Dictionary {
 	private readonly grammar: Grammar;
+	private readonly lexicon: Lexicon;
 	private readonly tokenizer: Tokenizer;
 
 	constructor(
@@ -20,6 +21,7 @@ export class Dictionary {
 		pathRewritePlugins: PathRewritePlugin[] = [],
 	) {
 		this.grammar = grammar;
+		this.lexicon = lexicon;
 		this.tokenizer = new JapaneseTokenizer(
 			grammar,
 			lexicon,
@@ -34,6 +36,14 @@ export class Dictionary {
 	}
 
 	async close(): Promise<void> {}
+
+	getGrammar(): Grammar {
+		return this.grammar;
+	}
+
+	getLexicon(): Lexicon {
+		return this.lexicon;
+	}
 
 	getPartOfSpeechSize(): number {
 		return this.grammar.getPartOfSpeechSize();

@@ -13,6 +13,8 @@ class Dictionary {
   constructor(grammar: Grammar, lexicon: Lexicon)
   create(): Tokenizer
   close(): Promise<void>
+  getGrammar(): Grammar
+  getLexicon(): Lexicon
   getPartOfSpeechSize(): number
   getPartOfSpeechString(posId: number): string[]
   posMatcher(predicate: (pos: string[]) => boolean): PosMatcher
@@ -34,6 +36,24 @@ Closes the dictionary and releases resources.
 
 ```typescript
 await dict.close();
+```
+
+**`getGrammar()`**
+Returns the public grammar interface backing this dictionary.
+
+```typescript
+const grammar = dict.getGrammar();
+const nounPosId = grammar.getPartOfSpeechId(['名詞', '普通名詞', '一般', '*', '*', '*']);
+```
+
+**`getLexicon()`**
+Returns the public lexicon interface backing this dictionary, including merged
+user dictionaries when loaded through `DictionaryFactory`.
+
+```typescript
+const lexicon = dict.getLexicon();
+const kyotoId = lexicon.getWordId('京都', 3, 'キョウト');
+const wordInfo = lexicon.getWordInfo(kyotoId);
 ```
 
 **`getPartOfSpeechSize()`**
@@ -636,12 +656,12 @@ Interface for lexicon data.
 ```typescript
 interface Lexicon {
   size(): number
-  get(wordId: number): WordInfo
+  getWordId(headword: string, posId: number, readingForm: string): number
   getLeftId(wordId: number): number
   getRightId(wordId: number): number
   getCost(wordId: number): number
-  lookup(word: string, offset: number): number[]
-  getWordIds(text: string): number[]
+  getWordInfo(wordId: number): WordInfo
+  lookup(text: Uint8Array, offset: number): IterableIterator<[number, number]>
 }
 ```
 

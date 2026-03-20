@@ -174,6 +174,30 @@ console.log(morpheme.length());
 console.log(morpheme.isOov()); // True if out-of-vocabulary
 ```
 
+## Public Dictionary Access
+
+`DictionaryFactory` returns a public `Dictionary` that now exposes stable
+dictionary metadata APIs without requiring internal imports.
+
+```typescript
+import { DictionaryFactory } from 'sudachi-ts';
+
+const dictionary = await new DictionaryFactory().create('./sudachi.json');
+
+const grammar = dictionary.getGrammar();
+const lexicon = dictionary.getLexicon();
+
+const kyotoId = lexicon.getWordId('京都', 3, 'キョウト');
+const kyotoInfo = lexicon.getWordInfo(kyotoId);
+
+console.log(grammar.getPartOfSpeechString(kyotoInfo.getPOSId()));
+console.log(kyotoInfo.getSynonymGroupIds());
+```
+
+When user dictionaries are configured, `dictionary.getLexicon()` exposes the
+merged lexicon view used by tokenization, so downstream plugins can look up both
+system and user dictionary entries through the same public API.
+
 ## Splitting Morphemes
 
 Use the split method to change granularity:

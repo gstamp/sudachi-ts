@@ -19,6 +19,7 @@ export { Connection } from './dictionary/connection.js';
 export { DictionaryFactory } from './dictionary/dictionaryFactory.js';
 export type { Grammar } from './dictionary/grammar.js';
 export { GrammarImpl } from './dictionary/grammarImpl.js';
+export type { Lexicon } from './dictionary/lexicon.js';
 export { DEPTH, MAX_COMPONENT_LENGTH, POS } from './dictionary/pos.js';
 export { PartialPOS, PosMatcher } from './dictionary/posMatcher.js';
 export { WordInfo } from './dictionary/wordInfo.js';
