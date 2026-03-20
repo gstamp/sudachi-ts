@@ -21,7 +21,7 @@ import { InputTextPlugin } from '../../../src/plugins/inputText/base.js';
 import { PluginLoader } from '../../../src/plugins/loader.js';
 import { OovProviderPlugin } from '../../../src/plugins/oov/base.js';
 import { PathRewritePlugin } from '../../../src/plugins/pathRewrite/base.js';
-import { TokenChunkerPlugin } from '../../../src/plugins/pathRewrite/tokenChunkerPlugin.js';
+import { JoinNumericPlugin } from '../../../src/plugins/pathRewrite/joinNumericPlugin.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -354,16 +354,16 @@ describe('PluginLoader', () => {
 		);
 	});
 
-	test('should load built-in TokenChunkerPlugin', async () => {
+	test('should load built-in JoinNumericPlugin', async () => {
 		const loader = new PluginLoader();
 		const settings = new Settings({});
 
 		const plugin = await loader.loadPathRewritePlugin(
-			'TokenChunkerPlugin',
+			'JoinNumericPlugin',
 			settings,
 		);
-		expect(plugin.plugin).toBeInstanceOf(TokenChunkerPlugin);
-		expect(plugin.className).toBe('TokenChunkerPlugin');
+		expect(plugin.plugin).toBeInstanceOf(JoinNumericPlugin);
+		expect(plugin.className).toBe('JoinNumericPlugin');
 	});
 
 	test('should resolve relative plugin modules with anchor', async () => {

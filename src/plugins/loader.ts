@@ -19,7 +19,6 @@ import { SimpleOovProviderPlugin } from './oov/simpleOovProviderPlugin.js';
 import type { PathRewritePlugin } from './pathRewrite/base.js';
 import { JoinKatakanaOovPlugin } from './pathRewrite/joinKatakanaOovPlugin.js';
 import { JoinNumericPlugin } from './pathRewrite/joinNumericPlugin.js';
-import { TokenChunkerPlugin } from './pathRewrite/tokenChunkerPlugin.js';
 
 export interface LoadedPlugin<T extends Plugin> {
 	plugin: T;
@@ -262,7 +261,6 @@ const BUILT_IN_PLUGINS: Record<string, new () => Plugin> = {
 	SimpleOovProviderPlugin,
 	JoinKatakanaOovPlugin,
 	JoinNumericPlugin,
-	TokenChunkerPlugin,
 	InhibitConnectionPlugin,
 	'com.worksap.nlp.sudachi.DefaultInputTextPlugin': DefaultInputTextPlugin,
 	'com.worksap.nlp.sudachi.IgnoreYomiganaPlugin': IgnoreYomiganaPlugin,
@@ -275,6 +273,5 @@ const BUILT_IN_PLUGINS: Record<string, new () => Plugin> = {
 	'com.worksap.nlp.sudachi.SimpleOovProviderPlugin': SimpleOovProviderPlugin,
 	'com.worksap.nlp.sudachi.JoinKatakanaOovPlugin': JoinKatakanaOovPlugin,
 	'com.worksap.nlp.sudachi.JoinNumericPlugin': JoinNumericPlugin,
-	'com.worksap.nlp.sudachi.TokenChunkerPlugin': TokenChunkerPlugin,
 	'com.worksap.nlp.sudachi.InhibitConnectionPlugin': InhibitConnectionPlugin,
 };

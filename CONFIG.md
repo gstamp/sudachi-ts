@@ -114,9 +114,8 @@ and conjunction-like forms (for example: `かも`, `のか`, `だから`).
 
 **Default**: `true`
 
-When using `TokenChunkerPlugin`, this setting must remain `true`. Dictionary
-creation throws an error if `TokenChunkerPlugin` is configured while
-`enableDefaultCompoundParticles` is `false`.
+This setting controls whether the built-in compound-particle lexicon is loaded.
+Disabling it keeps tokenization closer to the raw system dictionary.
 
 #### characterDefinitionFile (optional)
 

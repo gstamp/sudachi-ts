@@ -305,42 +305,7 @@ const plugin = await loader.loadInputTextPlugin(
 
 See [PLUGINS.md](./PLUGINS.md) for detailed plugin development guide.
 
-Quick local comparison for the PoC token chunker plugin:
 
-```bash
-npm exec tsx examples/token-chunker-plugin.ts /path/to/system.dic "東京大学"
-```
-
-This example prints each token as `surface/reading` so the chunking impact on
-readings is visible in the baseline vs plugin outputs.
-`TokenChunkerPlugin` is designed and validated against the full Sudachi system
-dictionary (`system_full.dic` / `system.dic`), so prefer full-dictionary checks
-when adding or tuning chunk rules.
-`TokenChunkerPlugin` requires `enableDefaultCompoundParticles: true`. Dictionary
-creation throws an error when this plugin is configured with default compound
-particles disabled.
-`TokenChunkerPlugin` is intended for `SplitMode.C` tokenization; calling
-`tokenize(SplitMode.A, ...)` or `tokenize(SplitMode.B, ...)` with this plugin
-enabled throws an error.
-When the lattice already contains a lexicalized compound candidate, the chunker
-also prefers learner-facing noun compounds such as `学校` over split analyses
-like `学` + `校`.
-The chunker also handles polite progressive colloquial forms where `て/で` is
-an auxiliary (`てる/でる`) such as `残ってます` and `残ってますよ`, plus
-polite colloquial contraction forms like `太っちゃいます` and
-`太っちゃいますよ`, and colloquial `〜てく` past contractions like
-`持ってった`, colloquial `〜ておく` past contractions like `やめといた`, plus discourse chunks like `だなって` and contractions like
-`してんだ`, `あっけど`, particle chunks like `とか`, sentence-final turns like `いいよな`, copula quote
-spans like `ヒマだって`, and quoted reason clauses like `言ってたし`. It also chunks causative auxiliaries such as
-`打たせる` / `内させる` into a single learner-facing token, along with
- polite connective forms such as `込めまして`, negative connective forms such as
-`遣わなくて`, lexicalized adverbials such as `別に`, conversational turns such as
-`いいよ`, and causative te-forms such as `させて`. For learner-facing output it
-also prefers more natural alternate dictionary readings when the lattice already
-contains them, such as `明日` -> `アシタ`, `明後日` -> `アサッテ`, and
-`私` -> `ワタシ`, and it supports additional `preferredReadings` overrides
-via plugin settings using entries like `"私=ワタシ"`. It also normalizes
-mixed-script weekday compounds such as `火よう日` -> `カヨウビ`.
 The core tokenizer also rewrites sentence-ending ambiguities such as
 `ね | こと | ね` into `ねこ | と | ね` when the lattice supports that path.
 

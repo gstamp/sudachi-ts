@@ -9,13 +9,6 @@ import { loadDefaultCompoundLexicon } from './defaultCompoundLexicon.js';
 import type { Lexicon } from './lexicon.js';
 import { LexiconSet } from './lexiconSet.js';
 
-function isTokenChunkerPlugin(className: string): boolean {
-	if (className === 'com.worksap.nlp.sudachi.TokenChunkerPlugin') {
-		return true;
-	}
-	return className.split('.').pop() === 'TokenChunkerPlugin';
-}
-
 export class DictionaryFactory {
 	async create(
 		configPath?: string,
@@ -112,16 +105,6 @@ export class DictionaryFactory {
 		let pathRewritePluginConfs = config.getPlugins('pathRewritePlugin');
 		if (!pathRewritePluginConfs || pathRewritePluginConfs.length === 0) {
 			pathRewritePluginConfs = defaultConfig.getPlugins('pathRewritePlugin');
-		}
-		if (
-			!enableDefaultCompoundParticles &&
-			(pathRewritePluginConfs || []).some((conf) =>
-				isTokenChunkerPlugin(conf.className),
-			)
-		) {
-			throw new Error(
-				'TokenChunkerPlugin is only compatible when enableDefaultCompoundParticles is true.',
-			);
 		}
 		const pathRewritePlugins = (
 			await loader.loadPathRewritePlugins(pathRewritePluginConfs || [], grammar)
