@@ -708,6 +708,8 @@ List of word information.
 
 ## Dictionary Building
 
+Public package entrypoint: `sudachi-ts/dictionary-build`
+
 ### SystemDictionaryBuilder
 
 Builder for system dictionaries.

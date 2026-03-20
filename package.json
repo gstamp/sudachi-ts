@@ -26,7 +26,12 @@
     ".": "./build/src/index.js",
     "./dictionary": "./build/src/dictionary/index.js",
     "./config": "./build/src/config/index.js",
-    "./plugins": "./build/src/plugins/index.js"
+    "./plugins": "./build/src/plugins/index.js",
+    "./dictionary-build": {
+      "types": "./build/src/dictionary-build/index.d.ts",
+      "import": "./build/src/dictionary-build/index.js",
+      "default": "./build/src/dictionary-build/index.js"
+    }
   },
   "bin": {
     "sudachi": "./build/bin/sudachi.js",

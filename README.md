@@ -349,15 +349,16 @@ The core tokenizer also rewrites sentence-ending ambiguities such as
 Build binary dictionaries from CSV source:
 
 ```typescript
-import { SystemDictionaryBuilder } from 'sudachi-ts/dictionary-build/dicBuilder.js';
+import { systemBuilder } from 'sudachi-ts/dictionary-build';
 
-const builder = new SystemDictionaryBuilder();
+const builder = systemBuilder();
 
 // Add lexicon entries from CSV
-await builder.buildFromCsv('./lexicon.csv');
+await builder.matrix(matrixDefContents);
+await builder.lexicon(lexiconCsvContents, 'lexicon.csv');
 
-// Write binary dictionary
-await builder.write('./output.dic');
+// Build binary dictionary
+const { buffer } = await builder.build();
 ```
 
 CSV format:
