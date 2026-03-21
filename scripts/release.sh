@@ -241,6 +241,17 @@ check_npm_auth() {
     fi
 }
 
+# Check if the release tag already exists
+check_tag_does_not_exist() {
+    local version="$1"
+    local tag_name="v${version}"
+
+    if git rev-parse -q --verify "refs/tags/${tag_name}" >/dev/null; then
+        echo -e "${RED}Error: Git tag ${tag_name} already exists. Remove it or choose a different version.${NC}"
+        exit 1
+    fi
+}
+
 # Main script
 main() {
     parse_args "$@"
@@ -302,6 +313,10 @@ main() {
 
     echo "New version: $NEW_VERSION"
     echo ""
+
+    if [[ "$SKIP_GIT" == false ]]; then
+        check_tag_does_not_exist "$NEW_VERSION"
+    fi
 
     # Update version in package.json
     update_version "$NEW_VERSION" "$DRY_RUN"

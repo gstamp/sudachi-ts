@@ -248,6 +248,17 @@ function Check-NpmAuth {
     }
 }
 
+function Check-TagDoesNotExist {
+    param([Parameter(Mandatory = $true)][string]$Version)
+
+    $tagName = "v$Version"
+    git rev-parse -q --verify "refs/tags/$tagName" *> $null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Color "Error: Git tag $tagName already exists. Remove it or choose a different version." $RED
+        exit 1
+    }
+}
+
 function Main {
     param([string[]]$CliArgs)
 
@@ -306,6 +317,10 @@ function Main {
 
     Write-Host "New version: $newVersion"
     Write-Host ""
+
+    if (-not $SkipGit) {
+        Check-TagDoesNotExist -Version $newVersion
+    }
 
     Update-Version -NewVersion $newVersion -IsDryRun $DryRun
     Run-Cmd -Command "npm run build" -Description "Build project" -IsDryRun $DryRun

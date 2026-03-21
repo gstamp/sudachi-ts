@@ -92,18 +92,19 @@ When you run the release script, it performs the following steps:
    - Beta mode default from stable: next patch beta (e.g., `1.2.3` → `1.2.4-beta.0`)
    - Beta mode default from beta: increment beta counter (e.g., `1.2.4-beta.2` → `1.2.4-beta.3`)
    - Beta mode with explicit bump: bump base and reset beta counter (e.g., `--beta --minor` → `1.3.0-beta.0`)
-3. **Update package.json**: Bumps the version number in package.json
-4. **Build**: Compiles the TypeScript code
-5. **Test**: Runs the test suite
-6. **Type Check**: Validates TypeScript types
-7. **Git Commit** (unless `--skip-git`):
+3. **Tag Check** (unless `--skip-git`): Fails fast if `v{version}` already exists locally
+4. **Update package.json**: Bumps the version number in package.json
+5. **Build**: Compiles the TypeScript code
+6. **Test**: Runs the test suite
+7. **Type Check**: Validates TypeScript types
+8. **Git Commit** (unless `--skip-git`):
    - Stages the updated package.json
    - Creates a commit with message "chore: release v{version}"
    - Creates an annotated tag "v{version}"
-8. **Publish** (unless `--skip-publish`): Publishes to npm using npm
+9. **Publish** (unless `--skip-publish`): Publishes to npm using npm
    - Stable release: `npm publish` (`latest` dist-tag)
    - Beta release: `npm publish --tag beta` (`beta` dist-tag)
-9. **Git Push** (unless `--skip-git`): Pushes commit and tags to remote
+10. **Git Push** (unless `--skip-git`): Pushes commit and tags to remote
 
 ## Prerequisites
 
@@ -180,6 +181,15 @@ Commit or stash your changes before running the release:
 git status
 git add .
 git commit -m "WIP"
+```
+
+### "Git tag v1.2.3 already exists"
+
+The release scripts now stop before modifying files if the target tag already exists:
+
+```bash
+git tag -d v1.2.3
+git push origin :refs/tags/v1.2.3
 ```
 
 ### "Failed: Run tests"
