@@ -25,6 +25,14 @@ export interface LoadedPlugin<T extends Plugin> {
 	className: string;
 }
 
+type PluginConfig = {
+	className: string;
+	settings: Settings;
+};
+
+type PluginConstructor = new () => Plugin;
+type MaybePluginConstructor = PluginConstructor | null;
+
 export class PluginLoader {
 	constructor(private readonly anchor: PathAnchor = PathAnchor.none()) {}
 
@@ -81,67 +89,52 @@ export class PluginLoader {
 	}
 
 	async loadInputTextPlugins(
-		configs: { className: string; settings: Settings }[],
+		configs: PluginConfig[],
 		grammar: Grammar,
 	): Promise<LoadedPlugin<InputTextPlugin>[]> {
-		const results: LoadedPlugin<InputTextPlugin>[] = [];
-		for (const config of configs) {
-			const loaded = await this.loadInputTextPlugin(
-				config.className,
-				config.settings,
-			);
-			loaded.plugin.setUp(grammar);
-			results.push(loaded);
-		}
-		return results;
+		return this.loadConfiguredPlugins(
+			configs,
+			grammar,
+			(config) => this.loadInputTextPlugin(config.className, config.settings),
+			(plugin) => plugin.setUp(grammar),
+		);
 	}
 
 	async loadOovProviderPlugins(
-		configs: { className: string; settings: Settings }[],
+		configs: PluginConfig[],
 		grammar: Grammar,
 	): Promise<LoadedPlugin<OovProviderPlugin>[]> {
-		const results: LoadedPlugin<OovProviderPlugin>[] = [];
-		for (const config of configs) {
-			const loaded = await this.loadOovProviderPlugin(
-				config.className,
-				config.settings,
-			);
-			loaded.plugin.setUp(grammar);
-			results.push(loaded);
-		}
-		return results;
+		return this.loadConfiguredPlugins(
+			configs,
+			grammar,
+			(config) => this.loadOovProviderPlugin(config.className, config.settings),
+			(plugin) => plugin.setUp(grammar),
+		);
 	}
 
 	async loadPathRewritePlugins(
-		configs: { className: string; settings: Settings }[],
+		configs: PluginConfig[],
 		grammar: Grammar,
 	): Promise<LoadedPlugin<PathRewritePlugin>[]> {
-		const results: LoadedPlugin<PathRewritePlugin>[] = [];
-		for (const config of configs) {
-			const loaded = await this.loadPathRewritePlugin(
-				config.className,
-				config.settings,
-			);
-			loaded.plugin.setUp(grammar);
-			results.push(loaded);
-		}
-		return results;
+		return this.loadConfiguredPlugins(
+			configs,
+			grammar,
+			(config) => this.loadPathRewritePlugin(config.className, config.settings),
+			(plugin) => plugin.setUp(grammar),
+		);
 	}
 
 	async loadEditConnectionCostPlugins(
-		configs: { className: string; settings: Settings }[],
+		configs: PluginConfig[],
 		grammar: Grammar,
 	): Promise<LoadedPlugin<EditConnectionCostPlugin>[]> {
-		const results: LoadedPlugin<EditConnectionCostPlugin>[] = [];
-		for (const config of configs) {
-			const loaded = await this.loadEditConnectionCostPlugin(
-				config.className,
-				config.settings,
-			);
-			loaded.plugin.setUp(grammar);
-			results.push(loaded);
-		}
-		return results;
+		return this.loadConfiguredPlugins(
+			configs,
+			grammar,
+			(config) =>
+				this.loadEditConnectionCostPlugin(config.className, config.settings),
+			(plugin) => plugin.setUp(grammar),
+		);
 	}
 
 	private async loadPlugin<T extends Plugin>(
@@ -149,10 +142,11 @@ export class PluginLoader {
 		settings: Settings,
 	): Promise<T> {
 		try {
-			let PluginClass: new () => Plugin;
+			let PluginClass: PluginConstructor;
 
-			if (this.isBuiltIn(className)) {
-				PluginClass = this.getBuiltIn(className);
+			const builtInClass = this.getBuiltIn(className);
+			if (builtInClass !== null) {
+				PluginClass = builtInClass;
 			} else {
 				const classSpecifier = await this.resolveClassSpecifier(className);
 				const module = await import(classSpecifier);
@@ -167,6 +161,21 @@ export class PluginLoader {
 				`Failed to load plugin ${className}: ${error instanceof Error ? error.message : String(error)}`,
 			);
 		}
+	}
+
+	private async loadConfiguredPlugins<T extends Plugin>(
+		configs: PluginConfig[],
+		grammar: Grammar,
+		loadPlugin: (config: PluginConfig) => Promise<LoadedPlugin<T>>,
+		setUp: (plugin: T, grammar: Grammar) => void | Promise<void>,
+	): Promise<LoadedPlugin<T>[]> {
+		const results: LoadedPlugin<T>[] = [];
+		for (const config of configs) {
+			const loaded = await loadPlugin(config);
+			await setUp(loaded.plugin, grammar);
+			results.push(loaded);
+		}
+		return results;
 	}
 
 	private findPluginClass(
@@ -233,13 +242,7 @@ export class PluginLoader {
 		);
 	}
 
-	private isBuiltIn(name: string): boolean {
-		return (
-			name in BUILT_IN_PLUGINS || name.split('.').pop()! in BUILT_IN_PLUGINS
-		);
-	}
-
-	private getBuiltIn(name: string): new () => Plugin {
+	private getBuiltIn(name: string): MaybePluginConstructor {
 		if (name in BUILT_IN_PLUGINS) {
 			return BUILT_IN_PLUGINS[name]!;
 		}
@@ -247,11 +250,11 @@ export class PluginLoader {
 		if (shortName in BUILT_IN_PLUGINS) {
 			return BUILT_IN_PLUGINS[shortName]!;
 		}
-		throw new Error(`Plugin ${name} not found in built-ins`);
+		return null;
 	}
 }
 
-const BUILT_IN_PLUGINS: Record<string, new () => Plugin> = {
+const BUILT_IN_PLUGINS: Record<string, PluginConstructor> = {
 	DefaultInputTextPlugin,
 	IgnoreYomiganaPlugin,
 	ProlongedSoundMarkInputTextPlugin,

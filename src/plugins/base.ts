@@ -1,10 +1,10 @@
-import type { Settings } from '../config/settings.js';
+import { Settings } from '../config/settings.js';
 
 export abstract class Plugin {
 	protected settings: Settings;
 
 	constructor() {
-		this.settings = { getString: () => null } as any;
+		this.settings = Settings.empty();
 	}
 
 	setSettings(settings: Settings): void {

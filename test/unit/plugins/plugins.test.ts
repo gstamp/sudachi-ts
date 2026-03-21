@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, test } from 'vitest';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { PathAnchor } from '../../../src/config/pathAnchor.js';
 import { Settings } from '../../../src/config/settings.js';
 import type { InputText } from '../../../src/core/inputText.js';
@@ -22,6 +22,7 @@ import { PluginLoader } from '../../../src/plugins/loader.js';
 import { OovProviderPlugin } from '../../../src/plugins/oov/base.js';
 import { PathRewritePlugin } from '../../../src/plugins/pathRewrite/base.js';
 import { JoinNumericPlugin } from '../../../src/plugins/pathRewrite/joinNumericPlugin.js';
+import TestSetupInputTextPlugin from './testSetupInputTextPlugin.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -354,6 +355,27 @@ describe('PluginLoader', () => {
 		);
 	});
 
+	test('should load multiple input text plugins and run setup', async () => {
+		const loader = new PluginLoader();
+		const settings = new Settings({});
+
+		const loaded = await loader.loadInputTextPlugins(
+			[
+				{
+					className: '../../test/unit/plugins/testSetupInputTextPlugin.ts',
+					settings,
+				},
+			],
+			createMockGrammar(),
+		);
+
+		expect(loaded).toHaveLength(1);
+		expect(loaded[0]?.plugin).toBeInstanceOf(TestSetupInputTextPlugin);
+		expect((loaded[0]?.plugin as TestSetupInputTextPlugin).setUpCalled).toBe(
+			true,
+		);
+	});
+
 	test('should load built-in JoinNumericPlugin', async () => {
 		const loader = new PluginLoader();
 		const settings = new Settings({});
@@ -367,9 +389,7 @@ describe('PluginLoader', () => {
 	});
 
 	test('should resolve relative plugin modules with anchor', async () => {
-		const anchor = PathAnchor.filesystem(__dirname).andThen(
-			PathAnchor.none(),
-		);
+		const anchor = PathAnchor.filesystem(__dirname).andThen(PathAnchor.none());
 		const loader = new PluginLoader(anchor);
 		const settings = new Settings({});
 
