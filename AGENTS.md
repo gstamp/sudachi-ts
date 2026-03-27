@@ -8,3 +8,5 @@ This project is a TypeScript port of [Sudachi](https://github.com/WorksApplicati
 - Use `npm test` to run tests.
 - Use `npm run build` to build the project.
 - Use `npm run check` to lint the project and `npm run check:fix` to autofix some lint errors.
+
+The full dictionary is in `resources/system.dic`
