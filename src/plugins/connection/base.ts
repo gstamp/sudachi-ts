@@ -1,8 +1,9 @@
 import type { Grammar } from '../../dictionary/grammar.js';
+import type { Lexicon } from '../../dictionary/lexicon.js';
 import { Plugin } from '../base.js';
 
 export abstract class EditConnectionCostPlugin extends Plugin {
-	setUp(_grammar: Grammar): void {}
+	setUp(_grammar: Grammar, _lexicon?: Lexicon): void {}
 
 	abstract edit(grammar: Grammar): void;
 

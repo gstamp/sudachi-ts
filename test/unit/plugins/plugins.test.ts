@@ -16,6 +16,7 @@ import type { Grammar } from '../../../src/dictionary/grammar.js';
 import { POS } from '../../../src/dictionary/pos.js';
 import { WordInfo } from '../../../src/dictionary/wordInfo.js';
 import { EditConnectionCostPlugin } from '../../../src/plugins/connection/base.js';
+import { TargetedConnectionCostPlugin } from '../../../src/plugins/connection/targetedConnectionCostPlugin.js';
 import { MorphemeFormatterPlugin } from '../../../src/plugins/formatter/base.js';
 import { InputTextPlugin } from '../../../src/plugins/inputText/base.js';
 import { PluginLoader } from '../../../src/plugins/loader.js';
@@ -386,6 +387,18 @@ describe('PluginLoader', () => {
 		);
 		expect(plugin.plugin).toBeInstanceOf(JoinNumericPlugin);
 		expect(plugin.className).toBe('JoinNumericPlugin');
+	});
+
+	test('should load built-in TargetedConnectionCostPlugin', async () => {
+		const loader = new PluginLoader();
+		const settings = new Settings({});
+
+		const plugin = await loader.loadEditConnectionCostPlugin(
+			'TargetedConnectionCostPlugin',
+			settings,
+		);
+		expect(plugin.plugin).toBeInstanceOf(TargetedConnectionCostPlugin);
+		expect(plugin.className).toBe('TargetedConnectionCostPlugin');
 	});
 
 	test('should resolve relative plugin modules with anchor', async () => {

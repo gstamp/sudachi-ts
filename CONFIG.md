@@ -518,6 +518,48 @@ Inhibits connections between specific POS.
 
 When a rule matches, the connection is prevented (cost set to maximum).
 
+### Targeted Connection Cost Plugin
+
+Adjusts a specific connection by resolving the matching entries from the
+loaded lexicon at startup. This is useful when you want to bias one surface
+pair without hardcoding word IDs.
+
+```json
+{
+  "editConnectionCostPlugin": [
+    {
+      "className": "com.worksap.nlp.sudachi.TargetedConnectionCostPlugin",
+      "settings": {
+        "rules": [
+          {
+            "left": {
+              "surface": "いなか",
+              "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+              "reading": "イナカ"
+            },
+            "right": {
+              "surface": "の",
+              "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+              "reading": "ノ"
+            },
+            "cost": -3000
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Settings**:
+- `rules` (object[]): Array of connection rules
+- Each rule must provide `left`, `right`, and `cost`
+- Each entry spec must provide `surface`, `pos`, and `reading`
+
+This plugin is resolved dynamically, so the rule keeps working across
+dictionary rebuilds as long as the target entries still exist with the same
+surface, POS, and reading.
+
 ### Simple Morpheme Formatter
 
 Formats morpheme output.

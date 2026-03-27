@@ -65,6 +65,24 @@ export class DictionaryFactory {
 		const loader = new PluginLoader(anchor);
 		const defaultConfig = Config.parse(DEFAULT_CONFIG_JSON).setAnchor(anchor);
 
+		let editConnectionPluginConfs = config.getPlugins(
+			'editConnectionCostPlugin',
+		);
+		if (!editConnectionPluginConfs || editConnectionPluginConfs.length === 0) {
+			editConnectionPluginConfs = defaultConfig.getPlugins(
+				'editConnectionCostPlugin',
+			);
+		}
+		if (editConnectionPluginConfs && editConnectionPluginConfs.length > 0) {
+			for (const loaded of await loader.loadEditConnectionCostPlugins(
+				editConnectionPluginConfs,
+				grammar,
+				lexicon,
+			)) {
+				loaded.plugin.edit(grammar);
+			}
+		}
+
 		let inputTextPluginConfs = config.getPlugins('inputTextPlugin');
 		if (!inputTextPluginConfs || inputTextPluginConfs.length === 0) {
 			inputTextPluginConfs = defaultConfig.getPlugins('inputTextPlugin');

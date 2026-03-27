@@ -1,6 +1,7 @@
 export { Plugin } from './base.js';
 export { EditConnectionCostPlugin } from './connection/base.js';
 export { InhibitConnectionPlugin } from './connection/inhibitConnectionPlugin.js';
+export { TargetedConnectionCostPlugin } from './connection/targetedConnectionCostPlugin.js';
 export { MorphemeFormatterPlugin } from './formatter/base.js';
 export { SimpleMorphemeFormatter } from './formatter/simpleMorphemeFormatter.js';
 export { WordSegmentationFormatter } from './formatter/wordSegmentationFormatter.js';

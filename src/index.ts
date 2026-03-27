@@ -33,6 +33,7 @@ export {
 	PathRewritePlugin,
 	Plugin,
 	PluginLoader,
+	TargetedConnectionCostPlugin,
 } from './plugins/index.js';
 export type { NonBreakChecker } from './sentdetect/sentenceDetector.js';
 export {

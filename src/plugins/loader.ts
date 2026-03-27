@@ -3,9 +3,11 @@ import { pathToFileURL } from 'node:url';
 import { PathAnchor } from '../config/pathAnchor.js';
 import type { Settings } from '../config/settings.js';
 import type { Grammar } from '../dictionary/grammar.js';
+import type { Lexicon } from '../dictionary/lexicon.js';
 import type { Plugin } from './base.js';
 import type { EditConnectionCostPlugin } from './connection/base.js';
 import { InhibitConnectionPlugin } from './connection/inhibitConnectionPlugin.js';
+import { TargetedConnectionCostPlugin } from './connection/targetedConnectionCostPlugin.js';
 import type { MorphemeFormatterPlugin } from './formatter/base.js';
 import type { InputTextPlugin } from './inputText/base.js';
 import { DefaultInputTextPlugin } from './inputText/defaultInputTextPlugin.js';
@@ -127,14 +129,18 @@ export class PluginLoader {
 	async loadEditConnectionCostPlugins(
 		configs: PluginConfig[],
 		grammar: Grammar,
+		lexicon: Lexicon,
 	): Promise<LoadedPlugin<EditConnectionCostPlugin>[]> {
-		return this.loadConfiguredPlugins(
-			configs,
-			grammar,
-			(config) =>
-				this.loadEditConnectionCostPlugin(config.className, config.settings),
-			(plugin) => plugin.setUp(grammar),
-		);
+		const results: LoadedPlugin<EditConnectionCostPlugin>[] = [];
+		for (const config of configs) {
+			const loaded = await this.loadEditConnectionCostPlugin(
+				config.className,
+				config.settings,
+			);
+			await loaded.plugin.setUp(grammar, lexicon);
+			results.push(loaded);
+		}
+		return results;
 	}
 
 	private async loadPlugin<T extends Plugin>(
@@ -265,6 +271,7 @@ const BUILT_IN_PLUGINS: Record<string, PluginConstructor> = {
 	JoinKatakanaOovPlugin,
 	JoinNumericPlugin,
 	InhibitConnectionPlugin,
+	TargetedConnectionCostPlugin,
 	'com.worksap.nlp.sudachi.DefaultInputTextPlugin': DefaultInputTextPlugin,
 	'com.worksap.nlp.sudachi.IgnoreYomiganaPlugin': IgnoreYomiganaPlugin,
 	'com.worksap.nlp.sudachi.ProlongedSoundMarkInputTextPlugin':
@@ -277,4 +284,6 @@ const BUILT_IN_PLUGINS: Record<string, PluginConstructor> = {
 	'com.worksap.nlp.sudachi.JoinKatakanaOovPlugin': JoinKatakanaOovPlugin,
 	'com.worksap.nlp.sudachi.JoinNumericPlugin': JoinNumericPlugin,
 	'com.worksap.nlp.sudachi.InhibitConnectionPlugin': InhibitConnectionPlugin,
+	'com.worksap.nlp.sudachi.TargetedConnectionCostPlugin':
+		TargetedConnectionCostPlugin,
 };
